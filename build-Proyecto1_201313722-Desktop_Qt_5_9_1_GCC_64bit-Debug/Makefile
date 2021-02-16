@@ -50,8 +50,12 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../main.cpp 
-OBJECTS       = main.o
+SOURCES       = ../main.cpp \
+		../scanner.cpp \
+		../parser.cpp 
+OBJECTS       = main.o \
+		scanner.o \
+		parser.o
 DIST          = ../lexico.l \
 		../parser.y \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -213,6 +217,7 @@ DIST          = ../lexico.l \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/qt_config.prf \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_post.prf \
+		../.qmake.stash \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/toolchain.prf \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -230,7 +235,10 @@ DIST          = ../lexico.l \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/exceptions.prf \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/yacc.prf \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/lex.prf \
-		../../Proyecto1_201313722.pro  ../main.cpp
+		../../Proyecto1_201313722.pro ../scanner.h \
+		../parser.h ../main.cpp \
+		../scanner.cpp \
+		../parser.cpp
 QMAKE_TARGET  = Proyecto1_201313722
 DESTDIR       = 
 TARGET        = Proyecto1_201313722
@@ -401,6 +409,7 @@ Makefile: ../Proyecto1_201313722.pro ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/featu
 		../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/qt_config.prf \
 		../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/toolchain.prf \
 		../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -580,6 +589,7 @@ Makefile: ../Proyecto1_201313722.pro ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/featu
 ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/qt_config.prf:
 ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/linux-g++/qmake.conf:
 ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/toolchain.prf:
 ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/default_pre.prf:
@@ -614,7 +624,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../main.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../scanner.h ../parser.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -708,8 +719,93 @@ main.o: ../main.cpp ../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/QCoreApplicatio
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvarlengtharray.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontainerfwd.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobject_impl.h \
-		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qeventloop.h
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/QString \
+		../parser.h \
+		../scanner.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/QTextStream \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtextstream.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qiodevice.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlocale.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvariant.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmap.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdebug.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qhash.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvector.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qpoint.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qset.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qshareddata.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../main.cpp
+
+scanner.o: ../scanner.cpp ../parser.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o scanner.o ../scanner.cpp
+
+parser.o: ../parser.cpp ../scanner.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/QString \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstring.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qchar.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qglobal.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qconfig.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtcore-config.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsysinfo.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlogging.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qflags.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmutex.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qnumeric.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qversiontagging.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbytearray.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qrefcount.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qnamespace.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qarraydata.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringbuilder.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qdebug.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qalgorithms.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qhash.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qiterator.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlist.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qhashfunctions.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qpair.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qbytearraylist.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringlist.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qregexp.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qstringmatcher.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmap.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qtextstream.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qiodevice.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobject.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobjectdefs.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcoreevent.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qscopedpointer.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qmetatype.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qobject_impl.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qlocale.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvariant.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qshareddata.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qvector.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qpoint.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qset.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o parser.o ../parser.cpp
 
 ####### Install
 

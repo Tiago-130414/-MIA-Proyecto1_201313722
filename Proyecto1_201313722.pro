@@ -9,7 +9,9 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    scanner.cpp \
+    parser.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -25,3 +27,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DISTFILES += \
     lexico.l \
     parser.y
+
+HEADERS += \
+    scanner.h \
+    parser.h
