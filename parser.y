@@ -4,12 +4,16 @@
 #include <string>
 #include "qdebug.h"
 #include <iostream>
+#include <QList>
+#include <typeinfo>
+#include <comando_mkdisk.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
 extern int columna; //columna actual donde se encuentra el parser (analisis lexico) lo maneja BISON
 extern char *yytext; //lexema actual donde esta el parser (analisis lexico) lo maneja BISON
 //string vec_p_mkdisk[2]={" "," "};
+vector <string> valores_mkdisk;//titulos en posiciones pares, valores en posiciones impares
 int yyerror(const char* mens)
 {
 std::cout << mens <<" "<<yytext<< std::endl;
@@ -26,7 +30,7 @@ return 0;
 //char TEXT [256];
 //QString TEXT;
 char TEXT[256];
-class ejecutar_mkdisk *mkdisk;
+class comando_mkdisk *mkdisk;
 }
 //TERMINALES DE TIPO TEXT, SON STRINGS
 
@@ -107,18 +111,32 @@ LISTA_COMANDOS : LISTA_COMANDOS COMANDOS
 
 COMANDOS : MKDISK; 
 
-MKDISK : c_mkdisk LS_PAR_MKDISK {printf("MKDISK RECONOCIDO");};
+MKDISK : c_mkdisk LS_PAR_MKDISK {
+     //mkdisk *objmkdisk =  new mkdisk();
+     /*for (int i= 0;i<valores_mkdisk.size();i++){
+          cout<<" valor: "<<valores_mkdisk[i]<<endl;
+     titulos
+          cout<<valores_mkdisk[0]<<endl;
+          cout<<valores_mkdisk[2]<<endl;
+          cout<<valores_mkdisk[4]<<endl;
+          cout<<valores_mkdisk[6]<<endl;
+     valores
+          cout<<valores_mkdisk[1]<<endl;
+          cout<<valores_mkdisk[3]<<endl;
+          cout<<valores_mkdisk[5]<<endl;
+          cout<<valores_mkdisk[7]<<endl;
+     }*/
+     comando_mkdisk *objmkdisk = new comando_mkdisk();
+     objmkdisk->prueba2(valores_mkdisk);   
+};
 
 LS_PAR_MKDISK : LS_PAR_MKDISK PARAMETROS_MKDISK
               | PARAMETROS_MKDISK
 ;
 
-PARAMETROS_MKDISK :   menos p_size igual entero 
-                    | menos p_path igual RUTA
-                    | menos p_f igual identificador
-                    | menos p_u igual identificador
-;
-
-RUTA : cadena
-     | ruta
+PARAMETROS_MKDISK :   menos p_size igual entero        {valores_mkdisk.push_back($2);valores_mkdisk.push_back($4);}//size
+                    | menos p_path igual ruta          {valores_mkdisk.push_back($2);valores_mkdisk.push_back($4);}//ruta
+                    | menos p_path igual cadena        {valores_mkdisk.push_back($2);valores_mkdisk.push_back($4);}//ruta
+                    | menos p_f igual identificador    {valores_mkdisk.push_back($2);valores_mkdisk.push_back($4);}//fit
+                    | menos p_u igual identificador    {valores_mkdisk.push_back($2);valores_mkdisk.push_back($4);}//unit
 ;

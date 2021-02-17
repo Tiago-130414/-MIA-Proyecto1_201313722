@@ -52,10 +52,12 @@ OBJECTS_DIR   = ./
 
 SOURCES       = ../main.cpp \
 		../scanner.cpp \
-		../parser.cpp 
+		../parser.cpp \
+		../comando_mkdisk.cpp 
 OBJECTS       = main.o \
 		scanner.o \
-		parser.o
+		parser.o \
+		comando_mkdisk.o
 DIST          = ../lexico.l \
 		../parser.y \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -236,9 +238,11 @@ DIST          = ../lexico.l \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/yacc.prf \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/lex.prf \
 		../../Proyecto1_201313722.pro ../scanner.h \
-		../parser.h ../main.cpp \
+		../parser.h \
+		../comando_mkdisk.h ../main.cpp \
 		../scanner.cpp \
-		../parser.cpp
+		../parser.cpp \
+		../comando_mkdisk.cpp
 QMAKE_TARGET  = Proyecto1_201313722
 DESTDIR       = 
 TARGET        = Proyecto1_201313722
@@ -624,8 +628,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../scanner.h ../parser.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -804,8 +808,12 @@ parser.o: ../parser.cpp ../scanner.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qset.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontiguouscache.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer.h \
-		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/QList
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o parser.o ../parser.cpp
+
+comando_mkdisk.o: ../comando_mkdisk.cpp ../comando_mkdisk.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o comando_mkdisk.o ../comando_mkdisk.cpp
 
 ####### Install
 
