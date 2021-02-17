@@ -127,7 +127,7 @@ MKDISK : c_mkdisk LS_PAR_MKDISK {
           cout<<valores_mkdisk[7]<<endl;
      }*/
      comando_mkdisk *objmkdisk = new comando_mkdisk();
-     objmkdisk->prueba2(valores_mkdisk);   
+     objmkdisk->ejecutarMkdisk(valores_mkdisk); valores_mkdisk.clear();
 };
 
 LS_PAR_MKDISK : LS_PAR_MKDISK PARAMETROS_MKDISK

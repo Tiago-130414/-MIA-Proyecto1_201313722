@@ -53,11 +53,13 @@ OBJECTS_DIR   = ./
 SOURCES       = ../main.cpp \
 		../scanner.cpp \
 		../parser.cpp \
-		../comando_mkdisk.cpp 
+		../comando_mkdisk.cpp \
+		../estructuras.cpp 
 OBJECTS       = main.o \
 		scanner.o \
 		parser.o \
-		comando_mkdisk.o
+		comando_mkdisk.o \
+		estructuras.o
 DIST          = ../lexico.l \
 		../parser.y \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -239,10 +241,12 @@ DIST          = ../lexico.l \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/lex.prf \
 		../../Proyecto1_201313722.pro ../scanner.h \
 		../parser.h \
-		../comando_mkdisk.h ../main.cpp \
+		../comando_mkdisk.h \
+		../estructuras.h ../main.cpp \
 		../scanner.cpp \
 		../parser.cpp \
-		../comando_mkdisk.cpp
+		../comando_mkdisk.cpp \
+		../estructuras.cpp
 QMAKE_TARGET  = Proyecto1_201313722
 DESTDIR       = 
 TARGET        = Proyecto1_201313722
@@ -628,8 +632,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h ../estructuras.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp ../estructuras.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -809,11 +813,15 @@ parser.o: ../parser.cpp ../scanner.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontiguouscache.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
-		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/QList
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/QList \
+		../comando_mkdisk.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o parser.o ../parser.cpp
 
 comando_mkdisk.o: ../comando_mkdisk.cpp ../comando_mkdisk.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o comando_mkdisk.o ../comando_mkdisk.cpp
+
+estructuras.o: ../estructuras.cpp ../estructuras.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o estructuras.o ../estructuras.cpp
 
 ####### Install
 

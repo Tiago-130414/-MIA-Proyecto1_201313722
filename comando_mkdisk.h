@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cstring>
+#include <stdlib.h>
 using namespace std;
 
 class comando_mkdisk
@@ -13,8 +15,10 @@ public:
   string path;
   string unit;
   string fit;
-  void prueba(string size,string path, string unit,string fit);
-  void prueba2(vector<string> valores_mkdisk);
+  void ejecutarMkdisk(vector<string> valores_mkdisk);
+  void crearDisco(int size,string path,string unit,string fit);
+  string aMayuscula(string cadena);
+  string aMinuscula(string cadena);
 };
 
 #endif // COMANDO_MKDISK_H

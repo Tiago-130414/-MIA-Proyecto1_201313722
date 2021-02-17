@@ -12,7 +12,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
     scanner.cpp \
     parser.cpp \
-    comando_mkdisk.cpp
+    comando_mkdisk.cpp \
+    estructuras.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -32,4 +33,5 @@ DISTFILES += \
 HEADERS += \
     scanner.h \
     parser.h \
-    comando_mkdisk.h
+    comando_mkdisk.h \
+    estructuras.h

@@ -1531,7 +1531,7 @@ yyreduce:
           cout<<valores_mkdisk[7]<<endl;
      }*/
      comando_mkdisk *objmkdisk = new comando_mkdisk();
-     objmkdisk->prueba2(valores_mkdisk);   
+     objmkdisk->ejecutarMkdisk(valores_mkdisk); valores_mkdisk.clear();
 }
 #line 1537 "parser.cpp"
     break;
