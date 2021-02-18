@@ -32,7 +32,7 @@ string p="------------------------------Ingrese un comando----------------------
 
                 if(yyparse()==0) // Si nos da un número negativo, signifca error.
                 {
-                    printf("\n\Comando ejecutado correctamente\n\n");
+                    //printf("\n\Comando ejecutado correctamente\n\n");
 
                 }else {
 

@@ -120,9 +120,8 @@ union YYSTYPE
 //char TEXT [256];
 //QString TEXT;
 char TEXT[256];
-class comando_mkdisk *mkdisk;
 
-#line 126 "parser.h"
+#line 125 "parser.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

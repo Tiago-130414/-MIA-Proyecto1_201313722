@@ -208,9 +208,8 @@ union YYSTYPE
 //char TEXT [256];
 //QString TEXT;
 char TEXT[256];
-class comando_mkdisk *mkdisk;
 
-#line 214 "parser.cpp"
+#line 213 "parser.cpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -606,10 +605,10 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_int8 yyrline[] =
 {
-       0,   106,   106,   108,   109,   112,   114,   133,   134,   137,
-     138,   139,   140,   141
+       0,   105,   105,   107,   108,   111,   113,   118,   119,   122,
+     123,   124,   125,   126
 };
 #endif
 
@@ -1514,60 +1513,46 @@ yyreduce:
   switch (yyn)
     {
   case 6:
-#line 114 "parser.y"
+#line 113 "parser.y"
                                 {
-     //mkdisk *objmkdisk =  new mkdisk();
-     /*for (int i= 0;i<valores_mkdisk.size();i++){
-          cout<<" valor: "<<valores_mkdisk[i]<<endl;
-     titulos
-          cout<<valores_mkdisk[0]<<endl;
-          cout<<valores_mkdisk[2]<<endl;
-          cout<<valores_mkdisk[4]<<endl;
-          cout<<valores_mkdisk[6]<<endl;
-     valores
-          cout<<valores_mkdisk[1]<<endl;
-          cout<<valores_mkdisk[3]<<endl;
-          cout<<valores_mkdisk[5]<<endl;
-          cout<<valores_mkdisk[7]<<endl;
-     }*/
-     comando_mkdisk *objmkdisk = new comando_mkdisk();
-     objmkdisk->ejecutarMkdisk(valores_mkdisk); valores_mkdisk.clear();
+     comando_mkdisk objmkdisk;
+     objmkdisk.ejecutarMkdisk(valores_mkdisk); valores_mkdisk.clear();
 }
-#line 1537 "parser.cpp"
+#line 1522 "parser.cpp"
     break;
 
   case 9:
-#line 137 "parser.y"
+#line 122 "parser.y"
                                                        {valores_mkdisk.push_back((yyvsp[-2].TEXT));valores_mkdisk.push_back((yyvsp[0].TEXT));}
-#line 1543 "parser.cpp"
+#line 1528 "parser.cpp"
     break;
 
   case 10:
-#line 138 "parser.y"
+#line 123 "parser.y"
                                                        {valores_mkdisk.push_back((yyvsp[-2].TEXT));valores_mkdisk.push_back((yyvsp[0].TEXT));}
-#line 1549 "parser.cpp"
+#line 1534 "parser.cpp"
     break;
 
   case 11:
-#line 139 "parser.y"
+#line 124 "parser.y"
                                                        {valores_mkdisk.push_back((yyvsp[-2].TEXT));valores_mkdisk.push_back((yyvsp[0].TEXT));}
-#line 1555 "parser.cpp"
+#line 1540 "parser.cpp"
     break;
 
   case 12:
-#line 140 "parser.y"
+#line 125 "parser.y"
                                                        {valores_mkdisk.push_back((yyvsp[-2].TEXT));valores_mkdisk.push_back((yyvsp[0].TEXT));}
-#line 1561 "parser.cpp"
+#line 1546 "parser.cpp"
     break;
 
   case 13:
-#line 141 "parser.y"
+#line 126 "parser.y"
                                                        {valores_mkdisk.push_back((yyvsp[-2].TEXT));valores_mkdisk.push_back((yyvsp[0].TEXT));}
-#line 1567 "parser.cpp"
+#line 1552 "parser.cpp"
     break;
 
 
-#line 1571 "parser.cpp"
+#line 1556 "parser.cpp"
 
       default: break;
     }

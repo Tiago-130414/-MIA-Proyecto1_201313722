@@ -30,7 +30,6 @@ return 0;
 //char TEXT [256];
 //QString TEXT;
 char TEXT[256];
-class comando_mkdisk *mkdisk;
 }
 //TERMINALES DE TIPO TEXT, SON STRINGS
 
@@ -112,22 +111,8 @@ LISTA_COMANDOS : LISTA_COMANDOS COMANDOS
 COMANDOS : MKDISK; 
 
 MKDISK : c_mkdisk LS_PAR_MKDISK {
-     //mkdisk *objmkdisk =  new mkdisk();
-     /*for (int i= 0;i<valores_mkdisk.size();i++){
-          cout<<" valor: "<<valores_mkdisk[i]<<endl;
-     titulos
-          cout<<valores_mkdisk[0]<<endl;
-          cout<<valores_mkdisk[2]<<endl;
-          cout<<valores_mkdisk[4]<<endl;
-          cout<<valores_mkdisk[6]<<endl;
-     valores
-          cout<<valores_mkdisk[1]<<endl;
-          cout<<valores_mkdisk[3]<<endl;
-          cout<<valores_mkdisk[5]<<endl;
-          cout<<valores_mkdisk[7]<<endl;
-     }*/
-     comando_mkdisk *objmkdisk = new comando_mkdisk();
-     objmkdisk->ejecutarMkdisk(valores_mkdisk); valores_mkdisk.clear();
+     comando_mkdisk objmkdisk;
+     objmkdisk.ejecutarMkdisk(valores_mkdisk); valores_mkdisk.clear();
 };
 
 LS_PAR_MKDISK : LS_PAR_MKDISK PARAMETROS_MKDISK
