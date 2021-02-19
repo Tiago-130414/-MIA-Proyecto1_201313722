@@ -5,8 +5,6 @@
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
-#include <stdlib.h>
-#include <bits/stdc++.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <estructuras.h>
@@ -25,13 +23,6 @@ public:
   void ejecutarMkdisk(vector<string> valores_mkdisk);
   void crearDisco(int size,string path,string unit,string fit);
   void generarDisco(int size,string path, string unit, string fit);
-  bool extensionRutaValida(string nombreArchivo);
-
-  char tiempo();
-  string rRuta(vector<string> path);
-  string quitarComillas(string ruta);
-
-  vector<string> descomponerRuta(string ruta);
 };
 
 #endif // COMANDO_MKDISK_H
