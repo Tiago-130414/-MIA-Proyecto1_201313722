@@ -26,23 +26,20 @@ void comando_rmdisk::eliminarDisco(vector<string> ruta){
           //CIERRO EL ARCHIVO
           fclose(archivo);
           //ELIMINO EL ARCHIVO
-          string op;
-          cout<<"Desea eliminar disco [s/n]:"<<endl;
-          cin>>op;
-          op= aMinuscula(op);
-          if(op=="s"){
+
+          if(confirmarEliminarArchivo()==true){
               remove(rArchivo.c_str());
-              cout<<"Disco eliminado con exito"<<endl;
-            }else if(op =="n"){
-              cout<<"Eliminacion cancelada por usuario"<<endl;
+              cout<<"*** Disco eliminado con exito ***"<<endl;
+            }else{
+              cout<<"*** Eliminacion cancelada por usuario ***"<<endl;
             }
         }else{
           //SI HAY ALGUN PROBLEMA AL ABRIR EL ARCHIVO
-          cout<<"El disco buscado no se encuentra"<<endl;
+          cout<<"*** El disco buscado no se encuentra ***"<<endl;
         }
     }else{
       //SI LA EXTENSION DEL ARCHIVO NO EXISTE
-      cout<<"Archivo a elminar con extension no valida"<<endl;
+      cout<<"*** Archivo a elminar con extension no valida ***"<<endl;
     }
 }
 
@@ -51,7 +48,7 @@ bool comando_rmdisk::confirmarEliminarArchivo(){
   int aux=1;
   bool answer = false;
   while(aux==1){
-      cout<<"Desea eliminar disco [s/n]:"<<endl;
+      cout<<"-> Desea eliminar disco [s/n]:"<<endl;
       cin>>op;
       op= aMinuscula(op);
       if(op=="s"){

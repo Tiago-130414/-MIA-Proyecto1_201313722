@@ -12,13 +12,11 @@ extern int yylineno;
 using namespace std;
 int main()
 {
-string p="------------------------------Ingrese un comando------------------------------\n";
-
     QTextStream qtin(stdin);
     QString line;
 
     while(line!="salir"){    //esto me sirve para seguir leyendo siempre los comandos sin salirme
-        cout << p;
+
         line = qtin.readLine();
         if(line!="salir"){
             if(line.isEmpty()==false){
@@ -32,7 +30,7 @@ string p="------------------------------Ingrese un comando----------------------
 
                 if(yyparse()==0) // Si nos da un número negativo, signifca error.
                 {
-                    //printf("\n\Comando ejecutado correctamente\n\n");
+                    printf("\n\n********* Comando ejecutado correctamente *********\n\n");
 
                 }else {
 

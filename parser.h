@@ -99,14 +99,15 @@ extern int yydebug;
     p_dest = 305,
     p_ruta = 306,
     entero = 307,
-    cadena = 308,
-    identificador = 309,
-    punto = 310,
-    menos = 311,
-    multiplicacion = 312,
-    igual = 313,
-    interrogacion = 314,
-    ruta = 315
+    negativo = 308,
+    cadena = 309,
+    identificador = 310,
+    punto = 311,
+    menos = 312,
+    multiplicacion = 313,
+    igual = 314,
+    interrogacion = 315,
+    ruta = 316
   };
 #endif
 
@@ -114,14 +115,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 30 "parser.y"
+#line 35 "parser.y"
 
 //se especifican los tipo de valores para los no terminales y lo terminales
 //char TEXT [256];
 //QString TEXT;
 char TEXT[256];
 
-#line 125 "parser.h"
+#line 126 "parser.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

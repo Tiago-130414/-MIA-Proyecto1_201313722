@@ -75,3 +75,22 @@ bool extensionRutaValida(string nombreArchivo){
     }
   return valida;
 }
+
+//METODO QUE IMPRIME VALORES DENTRO DE DISCO (MBR)
+void imprimirDisco(string path){
+   FILE *archivo;
+   archivo = fopen(path.c_str(),"rb+");
+   if(archivo!=NULL){
+       mbr MBR;
+       fseek(archivo,0,SEEK_SET);
+       fread(&MBR,sizeof(mbr),1,archivo);
+       fclose(archivo);
+       //cout<<"Datos del disco"<<endl;
+       cout<<"-> tamano: "<<MBR.mbr_tamano<<endl;
+       cout<<"-> fecha: "<<MBR.mbr_fecha_creacion<<endl;
+       cout<<"-> fit: "<<MBR.disk_fit<<endl;
+       cout<<"-> id: "<<MBR.mbr_disk_signature<<endl;
+     }else{
+       cout<<"Problema al leer el disco"<<endl;
+     }
+}

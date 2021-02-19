@@ -57,7 +57,8 @@ void comando_mkdisk::crearDisco(int size,string path,string unit,string fit){
       mkdir(rutaCarpetas.c_str(), 0777);
       string te =rutaCarpetas+"/"+nombreArchivo;
       generarDisco(size,te,unit,fit);
-      cout << "Comando ejcutado correctamente"<<endl;
+      cout << "*** Disco creado correctamente ***"<<endl;
+      imprimirDisco(te);
     }else{
       cout<<"extension de disco invalida"<<endl;
     }

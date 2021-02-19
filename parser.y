@@ -8,6 +8,7 @@
 #include <typeinfo>
 #include <comando_mkdisk.h>
 #include <comando_rmdisk.h>
+#include <comando_fdisk.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -16,9 +17,13 @@ extern char *yytext; //lexema actual donde esta el parser (analisis lexico) lo m
 //string vec_p_mkdisk[2]={" "," "};
 vector <string> valores_mkdisk;//titulos en posiciones pares, valores en posiciones impares
 vector <string> valores_rmdisk;
+vector <string> valores_fdisk;
 int yyerror(const char* mens)
 {
 std::cout << mens <<" "<<yytext<< std::endl;
+valores_fdisk.clear();
+valores_rmdisk.clear();
+valores_mkdisk.clear();
 return 0;
 }
 %}
@@ -87,6 +92,7 @@ char TEXT[256];
 %token<TEXT> p_dest;
 %token<TEXT> p_ruta;
 %token<TEXT> entero;
+%token<TEXT> negativo;
 %token<TEXT> cadena;
 %token<TEXT> identificador;
 
@@ -100,7 +106,9 @@ char TEXT[256];
 
 
 //%type<mkdisk> LS_PAR_MKDISK; // lista de instrucciones
-//%type <string> PARAMETROS_MKDISK;
+/*%type <TEXT> RUTA;
+%type <TEXT> NAME;
+%type <TEXT> NUMEROS_PN;*/
 %start INICIO
 %%
 
@@ -112,6 +120,7 @@ LISTA_COMANDOS : LISTA_COMANDOS COMANDOS
 
 COMANDOS : MKDISK
           | RMDISK
+          | FDISK
 ; 
 
 MKDISK : c_mkdisk LS_PAR_MKDISK {
@@ -133,3 +142,24 @@ PARAMETROS_MKDISK :   menos p_size igual entero        {valores_mkdisk.push_back
 RMDISK : c_rmdisk menos p_path igual cadena            {valores_rmdisk.push_back($5); comando_rmdisk objrmdisk; objrmdisk.eliminarDisco(valores_rmdisk); valores_rmdisk.clear();}
        | c_rmdisk menos p_path igual ruta              {valores_rmdisk.push_back($5); comando_rmdisk objrmdisk; objrmdisk.eliminarDisco(valores_rmdisk); valores_rmdisk.clear();}
 ;
+
+FDISK: c_fdisk LS_PAR_FDISK   {comando_fdisk objfdisk;objfdisk.ejecutarFdisk(valores_fdisk);valores_fdisk.clear();}
+;
+
+LS_PAR_FDISK : LS_PAR_FDISK PARAMETROS_FDISK
+              | PARAMETROS_FDISK
+;
+
+PARAMETROS_FDISK: menos p_size igual entero            {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_path igual ruta              {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_path igual cadena            {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_type igual identificador     {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_f igual identificador        {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_delete igual identificador   {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_name igual cadena            {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_name igual identificador     {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_add igual negativo           {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_add igual entero             {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+;
+
+
