@@ -4,9 +4,9 @@
 using namespace std;
 
 typedef struct{
-  char part_status[1];
-  char part_type[1];
-  char part_fit[1];
+  char part_status;
+  char part_type;
+  char part_fit;
   int  part_start;
   int  part_size;
   char part_name[16];
@@ -17,7 +17,10 @@ typedef struct{
   char mbr_fecha_creacion[16];
   int  mbr_disk_signature;//numero random que identifica al disco
   char disk_fit [1];
-  particion mbr_partitions[4];
+  particion mbr_partition_1;
+  particion mbr_partition_2;
+  particion mbr_partition_3;
+  particion mbr_partition_4;
 }mbr;
 
 class estructuras

@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <estructuras.h>
+#include <time.h>
+#include "libreria.h"
 using namespace std;
 
 class comando_mkdisk
@@ -24,10 +26,11 @@ public:
   void crearDisco(int size,string path,string unit,string fit);
   void generarDisco(int size,string path, string unit, string fit);
   bool extensionRutaValida(string nombreArchivo);
+
+  char tiempo();
   string rRuta(vector<string> path);
   string quitarComillas(string ruta);
-  string aMayuscula(string cadena);
-  string aMinuscula(string cadena);
+
   vector<string> descomponerRuta(string ruta);
 };
 

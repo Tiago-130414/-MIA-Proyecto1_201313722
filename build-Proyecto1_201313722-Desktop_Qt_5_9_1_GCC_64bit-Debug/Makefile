@@ -54,12 +54,16 @@ SOURCES       = ../main.cpp \
 		../scanner.cpp \
 		../parser.cpp \
 		../comando_mkdisk.cpp \
-		../estructuras.cpp 
+		../estructuras.cpp \
+		../comando_rmdisk.cpp \
+		../libreria.cpp 
 OBJECTS       = main.o \
 		scanner.o \
 		parser.o \
 		comando_mkdisk.o \
-		estructuras.o
+		estructuras.o \
+		comando_rmdisk.o \
+		libreria.o
 DIST          = ../lexico.l \
 		../parser.y \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -242,11 +246,15 @@ DIST          = ../lexico.l \
 		../../Proyecto1_201313722.pro ../scanner.h \
 		../parser.h \
 		../comando_mkdisk.h \
-		../estructuras.h ../main.cpp \
+		../estructuras.h \
+		../comando_rmdisk.h \
+		../libreria.h ../main.cpp \
 		../scanner.cpp \
 		../parser.cpp \
 		../comando_mkdisk.cpp \
-		../estructuras.cpp
+		../estructuras.cpp \
+		../comando_rmdisk.cpp \
+		../libreria.cpp
 QMAKE_TARGET  = Proyecto1_201313722
 DESTDIR       = 
 TARGET        = Proyecto1_201313722
@@ -632,8 +640,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h ../estructuras.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp ../estructuras.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h ../estructuras.h ../comando_rmdisk.h ../libreria.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp ../estructuras.cpp ../comando_rmdisk.cpp ../libreria.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -814,14 +822,25 @@ parser.o: ../parser.cpp ../scanner.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/QList \
-		../comando_mkdisk.h
+		../comando_mkdisk.h \
+		../estructuras.h \
+		../comando_rmdisk.h \
+		../libreria.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o parser.o ../parser.cpp
 
-comando_mkdisk.o: ../comando_mkdisk.cpp ../comando_mkdisk.h
+comando_mkdisk.o: ../comando_mkdisk.cpp ../comando_mkdisk.h \
+		../estructuras.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o comando_mkdisk.o ../comando_mkdisk.cpp
 
 estructuras.o: ../estructuras.cpp ../estructuras.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o estructuras.o ../estructuras.cpp
+
+comando_rmdisk.o: ../comando_rmdisk.cpp ../comando_rmdisk.h \
+		../libreria.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o comando_rmdisk.o ../comando_rmdisk.cpp
+
+libreria.o: ../libreria.cpp ../libreria.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o libreria.o ../libreria.cpp
 
 ####### Install
 

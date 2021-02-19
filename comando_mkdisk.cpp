@@ -54,14 +54,6 @@ void comando_mkdisk::crearDisco(int size,string path,string unit,string fit){
   //Verificando si la extension del archivo es valida
   if(valida != false){
       rutaCarpetas = rRuta(carpetas);
-      /*if (mkdir(rutaCarpetas.c_str(), 0777) == -1){
-        cout<<"problema al crear carpeta"<<endl;
-      }else{
-         string te =rutaCarpetas+"/"+nombreArchivo;
-        //aqui se crean el disco
-         generarDisco(size,te,unit,fit);
-        cout << "Comando ejcutado correctamente"<<endl;
-      }*/
       mkdir(rutaCarpetas.c_str(), 0777);
       string te =rutaCarpetas+"/"+nombreArchivo;
       generarDisco(size,te,unit,fit);
@@ -107,7 +99,53 @@ void comando_mkdisk::generarDisco(int size,string path, string unit, string fit)
           fclose(archivo);
         }
 
+      //OBTENIENDO TIEMPO
+      time_t rawtime;
+      struct tm * timeinfo;
+      char fC [16];
+      time (&rawtime);
+      timeinfo = localtime (&rawtime);
+      strftime(fC,16,"%d/%m/%y %H:%M",timeinfo);
+      strcpy (disco.mbr_fecha_creacion, fC);
+      disco.mbr_disk_signature = (rand()% 100);
 
+      //VALIDANDO EL AJUSTE DEL DISCO
+      if(fit=="-1"){
+          fit="F";
+        }else if(fit=="bf"){
+          fit="B";
+        }else if(fit=="ff"){
+          fit="F";
+        }else if(fit=="wf"){
+          fit="W";
+        }
+      //AGREGANDO EL AJUSTE DEL DISCO
+      strcpy (disco.disk_fit,fit.c_str());
+
+      //ANADIENDO PARTICIONES AL DISCO
+      particion new_partition;
+      //AGREGANDO VALORES POR DEFECTO A SUS ATRIBUTOS
+
+      new_partition.part_status='0';
+      new_partition.part_start=-1;
+      new_partition.part_size=0;
+
+      //AGREGANDO PARTICIONES AL MBR
+      disco.mbr_partition_1 = new_partition;
+      disco.mbr_partition_2 = new_partition;
+      disco.mbr_partition_3 = new_partition;
+      disco.mbr_partition_4 = new_partition;
+
+      //AGREGANDO MBR AL DISCO
+      archivo = fopen(path.c_str(),"rb+");
+      if(archivo != NULL){
+          fseek(archivo,0,SEEK_SET);
+          fwrite(&disco,sizeof(mbr),1,archivo);
+          fclose(archivo);
+          //cout<<"DISCO CREADO CORRECTAMENTE"<<endl;
+        }else{
+          cout<<"Problema al crear el mbr"<<endl;
+        }
     }else{
       cout<<"Problema al crear disco"<<endl;
     }
@@ -177,16 +215,6 @@ bool comando_mkdisk:: extensionRutaValida(string nombreArchivo){
       valida = true;
     }
   return valida;
-}
-
-//METODOS STRING PARA PASAR DE MAYUSCULA A MINUSCULA
-string comando_mkdisk::aMayuscula(string cadena) {
-  for (int i = 0; i < cadena.length(); i++) cadena[i] = toupper(cadena[i]);
-  return cadena;
-}
-string comando_mkdisk::aMinuscula(string cadena) {
-  for (int i = 0; i < cadena.length(); i++) cadena[i] = tolower(cadena[i]);
-  return cadena;
 }
 
 

@@ -7,6 +7,7 @@
 #include <QList>
 #include <typeinfo>
 #include <comando_mkdisk.h>
+#include <comando_rmdisk.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -14,6 +15,7 @@ extern int columna; //columna actual donde se encuentra el parser (analisis lexi
 extern char *yytext; //lexema actual donde esta el parser (analisis lexico) lo maneja BISON
 //string vec_p_mkdisk[2]={" "," "};
 vector <string> valores_mkdisk;//titulos en posiciones pares, valores en posiciones impares
+vector <string> valores_rmdisk;
 int yyerror(const char* mens)
 {
 std::cout << mens <<" "<<yytext<< std::endl;
@@ -108,7 +110,9 @@ LISTA_COMANDOS : LISTA_COMANDOS COMANDOS
                | COMANDOS
 ;
 
-COMANDOS : MKDISK; 
+COMANDOS : MKDISK
+          | RMDISK
+; 
 
 MKDISK : c_mkdisk LS_PAR_MKDISK {
      comando_mkdisk objmkdisk;
@@ -124,4 +128,8 @@ PARAMETROS_MKDISK :   menos p_size igual entero        {valores_mkdisk.push_back
                     | menos p_path igual cadena        {valores_mkdisk.push_back($2);valores_mkdisk.push_back($4);}//ruta
                     | menos p_f igual identificador    {valores_mkdisk.push_back($2);valores_mkdisk.push_back($4);}//fit
                     | menos p_u igual identificador    {valores_mkdisk.push_back($2);valores_mkdisk.push_back($4);}//unit
+;
+
+RMDISK : c_rmdisk menos p_path igual cadena            {valores_rmdisk.push_back($5); comando_rmdisk objrmdisk; objrmdisk.eliminarDisco(valores_rmdisk); valores_rmdisk.clear();}
+       | c_rmdisk menos p_path igual ruta              {valores_rmdisk.push_back($5); comando_rmdisk objrmdisk; objrmdisk.eliminarDisco(valores_rmdisk); valores_rmdisk.clear();}
 ;

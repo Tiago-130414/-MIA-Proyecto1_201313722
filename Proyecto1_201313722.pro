@@ -13,7 +13,9 @@ SOURCES += main.cpp \
     scanner.cpp \
     parser.cpp \
     comando_mkdisk.cpp \
-    estructuras.cpp
+    estructuras.cpp \
+    comando_rmdisk.cpp \
+    libreria.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -34,4 +36,6 @@ HEADERS += \
     scanner.h \
     parser.h \
     comando_mkdisk.h \
-    estructuras.h
+    estructuras.h \
+    comando_rmdisk.h \
+    libreria.h
