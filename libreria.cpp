@@ -1,6 +1,6 @@
 #include "libreria.h"
 
-//METODOS STRING PARA PASAR DE MAYUSCULA A MINUSCULA
+//FUNCIONES STRING PARA PASAR DE MAYUSCULA A MINUSCULA
 string aMayuscula(string cadena) {
   for (int i = 0; i < cadena.length(); i++) cadena[i] = toupper(cadena[i]);
   return cadena;
@@ -10,7 +10,7 @@ string aMinuscula(string cadena) {
   return cadena;
 }
 
-//METODO QUE RETORNA LA RUTA COMO STRING
+//FUNCION QUE RETORNA LA RUTA COMO STRING
 string rRuta(vector<string> path){
   string ruta="";
   for(int i =0;i<path.size()-1;i++){
@@ -19,7 +19,7 @@ string rRuta(vector<string> path){
   return ruta;
 }
 
-//METODO QUE RETORNA UN ARRAY CON TODAS LAS CARPETAS
+//FUNCION QUE RETORNA UN ARRAY CON TODAS LAS CARPETAS
 vector<string> descomponerRuta(string ruta){
   vector<string> vCarpetas;
   int posInit = 0;
@@ -39,7 +39,7 @@ vector<string> descomponerRuta(string ruta){
   return vCarpetas;
 }
 
-//METODO QUE QUITA COMILLAS EN DADO CASO VENGAN
+//FUNCION QUE QUITA COMILLAS EN DADO CASO VENGAN
 string quitarComillas(string ruta){
   string cad="";
   int tam = ruta.length();
@@ -53,7 +53,7 @@ string quitarComillas(string ruta){
   return cad;
 }
 
-//METODO QUE EVALUA LA EXTENSION
+//FUNCION QUE EVALUA LA EXTENSION
 bool extensionRutaValida(string nombreArchivo){
   vector<string> archivo;
   int posInit = 0;
@@ -76,7 +76,7 @@ bool extensionRutaValida(string nombreArchivo){
   return valida;
 }
 
-//METODO QUE IMPRIME VALORES DENTRO DE DISCO (MBR)
+//FUNCION QUE IMPRIME VALORES DENTRO DE DISCO (MBR)
 void imprimirDisco(string path){
    FILE *archivo;
    archivo = fopen(path.c_str(),"rb+");
