@@ -10,7 +10,7 @@ void comando_exec::leerScript(vector<string> ruta){
   //recorriendo vector para obtener ruta
   for(int i=0;i<ruta.size();i++){
       if(aMinuscula(ruta[i]) == "path"){
-          path = ruta[i+1];
+          path = quitarComillas(ruta[i+1]);
         }
     }
   //separando la ruta enviada para extraer nombre del archivo

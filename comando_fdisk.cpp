@@ -63,6 +63,7 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
                   //si el size llego antes que el add
                   if(posicionSize<posicionAdd){
                       //se crea particion
+                      crearParticion(size,unit,path,type,name,fit);
                     }else{
                       //se agrega o disminuye tamano de particion
                     }
@@ -109,19 +110,90 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
           mbr mbrTemp; //mbr temporal donde se guardaran los datos que se lean del archivo
           fread(&mbrTemp,sizeof(mbr),1,archivo);//mbrTemp donde se guarda, size el tamano del mbr que se lee, 1 es la cantidad de elementos que se leen y archivo es el disco
           //verificando el tipo de unidad dato en el que se creara la unidad
-           if(unit == "-1"){
-               unit = "K";
-             }
-           //calculando el tamanio de la particion
-           if(unit == "b"){
-               tamanioParticion = size;
-             }else if(unit == "k"){
-               tamanioParticion = size *1024;
-             }else if(unit == "m"){
-               tamanioParticion = size*1024*1024;
-             }
-            //aqui va lo del fit - tipo de ajuste
+          if(unit == "-1"){
+              unit = "k";
+            }
+          //calculando el tamanio de la particion
+          if(unit == "b"){
+              tamanioParticion = size;
+            }else if(unit == "k"){
+              tamanioParticion = size *1024;
+            }else if(unit == "m"){
+              tamanioParticion = size*1024*1024;
+            }
+          //aqui va lo del fit - tipo de ajuste
+          char fitT;
+          if(fit == "-1"){
+              fit = "wf";
+            }
+          if(fit == "bf"){
+              fitT = 'B';
+            }else if(fit == "ff"){
+              fitT = 'F';
+            }else if(fit == "wf"){
+              fitT = 'W';
+            }
+          //verificando valor del type
+          char typeT;
+          if(type == "-1"){
+              type= "p";
+            }
+          if(type == "p" ){
+              typeT = 'P';
+            }else if(type == "e"){
+              typeT = 'E';
+            }else if(type == "l"){
+              typeT = 'L';
+            }
+          int particionAsignada = 0;
+          if(mbrTemp.mbr_partition_1.part_status == '0'){
+              particionAsignada = 1;
+              mbrTemp.mbr_partition_1.part_status = '1';
+              mbrTemp.mbr_partition_1.part_fit = fitT;
+              mbrTemp.mbr_partition_1.part_size = tamanioParticion;
+              mbrTemp.mbr_partition_1.part_start = sizeof(mbr) + 1;
+              //strcpy(particion.part_name,_name.c_str());
+              strcpy(mbrTemp.mbr_partition_1.part_name,name.c_str());
+              //mbrTemp.mbr_partition_1.part_name = name.c_str();
+              mbrTemp.mbr_partition_1.part_type = typeT;
+              ///falta el type
+            }else if(mbrTemp.mbr_partition_2.part_status == '0'){
+              particionAsignada = 2;
+              mbrTemp.mbr_partition_2.part_status = '1';
+              mbrTemp.mbr_partition_2.part_fit = fitT;
+              mbrTemp.mbr_partition_2.part_size = tamanioParticion;
+              mbrTemp.mbr_partition_2.part_start = sizeof(mbr) + 1;
+              strcpy(mbrTemp.mbr_partition_2.part_name,name.c_str());
+              //mbrTemp.mbr_partition_2.part_name = name.c_str();
+              mbrTemp.mbr_partition_2.part_type = typeT;
+              ///falta el type
+            }else if(mbrTemp.mbr_partition_3.part_status == '0'){
+              particionAsignada = 3;
+              mbrTemp.mbr_partition_3.part_status = '1';
+              mbrTemp.mbr_partition_3.part_fit = fitT;
+              mbrTemp.mbr_partition_3.part_size = tamanioParticion;
+              mbrTemp.mbr_partition_3.part_start = sizeof(mbr) + 1;
+              strcpy(mbrTemp.mbr_partition_3.part_name,name.c_str());
+              //mbrTemp.mbr_partition_3.part_name = name.c_str();
+              mbrTemp.mbr_partition_3.part_type = typeT;
+              ///falta el type
+            }else if(mbrTemp.mbr_partition_4.part_status == '0'){
+              particionAsignada = 4;
+              mbrTemp.mbr_partition_4.part_status = '1';
+              mbrTemp.mbr_partition_4.part_fit = fitT;
+              mbrTemp.mbr_partition_4.part_size = tamanioParticion;
+              mbrTemp.mbr_partition_4.part_start = sizeof(mbr) + 1;
+              //mbrTemp.mbr_partition_4.part_name = name.c_str();
+              strcpy(mbrTemp.mbr_partition_4.part_name,name.c_str());
+              mbrTemp.mbr_partition_1.part_type = typeT;
+              ///falta el type
+            }else {
+              cout<<"*** Espacio en disco insuficiente para agregar particion ***"<<endl;
+            }
 
+          fseek(archivo, 0, SEEK_SET);//QUEREMOS modificar en donde estaba el MBR original
+          fwrite(&mbrTemp, sizeof(mbr), 1, archivo);
+          fclose(archivo);
 
         }else{
           cout<<"*** Error el disco a particionar no existe! ***"<<endl;
@@ -130,6 +202,7 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
       cout<<"*** La extension del archivo proporcionado no es valida ***"<<endl;
     }
 }
+
 
 
 
