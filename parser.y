@@ -9,6 +9,7 @@
 #include <comando_mkdisk.h>
 #include <comando_rmdisk.h>
 #include <comando_fdisk.h>
+#include <comando_exec.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -18,6 +19,7 @@ extern char *yytext; //lexema actual donde esta el parser (analisis lexico) lo m
 vector <string> valores_mkdisk;//titulos en posiciones pares, valores en posiciones impares
 vector <string> valores_rmdisk;
 vector <string> valores_fdisk;
+vector <string> valores_exec;
 int yyerror(const char* mens)
 {
 std::cout << mens <<" "<<yytext<< std::endl;
@@ -95,6 +97,7 @@ char TEXT[256];
 %token<TEXT> negativo;
 %token<TEXT> cadena;
 %token<TEXT> identificador;
+%token<TEXT> comentario;
 
 
 %token<TEXT> punto;
@@ -121,6 +124,8 @@ LISTA_COMANDOS : LISTA_COMANDOS COMANDOS
 COMANDOS : MKDISK
           | RMDISK
           | FDISK
+          | EXEC
+          | comentario
 ; 
 
 MKDISK : c_mkdisk LS_PAR_MKDISK {
@@ -160,6 +165,10 @@ PARAMETROS_FDISK: menos p_size igual entero            {valores_fdisk.push_back(
                 | menos p_name igual identificador     {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
                 | menos p_add igual negativo           {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
                 | menos p_add igual entero             {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+;
+
+EXEC: c_exec menos p_path igual ruta                   {valores_exec.push_back($3); valores_exec.push_back($5); comando_exec execute; execute.leerScript(valores_exec); valores_exec.clear();}
+    | c_exec menos p_path igual cadena                 {valores_exec.push_back($3); valores_exec.push_back($5); comando_exec execute; execute.leerScript(valores_exec); valores_exec.clear();}
 ;
 
 

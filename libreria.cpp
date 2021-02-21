@@ -60,7 +60,6 @@ bool extensionRutaValida(string nombreArchivo){
   int posFound = 0;
   string splitted;
   string pattern = ".";
-  string extension;
   bool valida = false;
   while(posFound >= 0){
       posFound = nombreArchivo.find(pattern, posInit);
@@ -93,4 +92,23 @@ void imprimirDisco(string path){
      }else{
        cout<<"Problema al leer el disco"<<endl;
      }
+}
+
+bool extensionScriptValida(string nombreArchivo){
+  vector<string> archivo;
+  int posInit = 0;
+  int posFound = 0;
+  string splitted;
+  string pattern = ".";
+  bool valida = false;
+  while(posFound >= 0){
+      posFound = nombreArchivo.find(pattern, posInit);
+      splitted = nombreArchivo.substr(posInit, posFound - posInit);
+      posInit = posFound + 1;
+      archivo.push_back(splitted);
+    }
+  if(archivo[archivo.size()-1]=="script" && archivo.size() != 1){
+      valida = true;
+    }
+  return valida;
 }

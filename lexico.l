@@ -26,6 +26,7 @@ negativo -[0-9]+
 letra [a-zA-Z]+
 cadena [\"][^\"\n]*[\"\n]
 ruta ([/]([^\n' '])*)
+comentario #.*
 /*caracter "\'"("\\")?({letra}|{entero})"\'"*/
 
 
@@ -64,7 +65,6 @@ ruta ([/]([^\n' '])*)
 "REP"       {columna=columna+ anterior;  anterior = strlen(yytext); strcpy(yylval.TEXT, yytext);return c_rep;}
 
 
-
 "SIZE"      {columna=columna+ anterior;  anterior = strlen(yytext); strcpy(yylval.TEXT, yytext);return p_size;}
 "PATH"      {columna=columna+ anterior;  anterior = strlen(yytext); strcpy(yylval.TEXT, yytext);return p_path;}
 "F"         {columna=columna+ anterior;  anterior = strlen(yytext); strcpy(yylval.TEXT, yytext);return p_f;}
@@ -86,11 +86,13 @@ ruta ([/]([^\n' '])*)
 "DEST"      {columna=columna+ anterior;  anterior = strlen(yytext); strcpy(yylval.TEXT, yytext);return p_dest;}
 "RUTA"      {columna=columna+ anterior;  anterior = strlen(yytext); strcpy(yylval.TEXT, yytext);return p_ruta;}
 
-{entero}    {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return entero;}
-{negativo}    {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return entero;}
-{cadena}    {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return cadena;}
-{identificador} {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return identificador;}
-{ruta}      {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return ruta;}
+
+{entero}          {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return entero;}
+{negativo}        {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return entero;}
+{cadena}          {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return cadena;}
+{identificador}   {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return identificador;}
+{ruta}            {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return ruta;}
+{comentario}      {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return comentario;}
 
 
 "."         {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext);return punto;}
