@@ -148,7 +148,7 @@ RMDISK : c_rmdisk menos p_path igual cadena            {valores_rmdisk.push_back
        | c_rmdisk menos p_path igual ruta              {valores_rmdisk.push_back($5); comando_rmdisk objrmdisk; objrmdisk.eliminarDisco(valores_rmdisk); valores_rmdisk.clear();}
 ;
 
-FDISK: c_fdisk LS_PAR_FDISK   {comando_fdisk objfdisk;objfdisk.ejecutarFdisk(valores_fdisk);valores_fdisk.clear();}
+FDISK: c_fdisk LS_PAR_FDISK                            {comando_fdisk objfdisk;objfdisk.ejecutarFdisk(valores_fdisk);valores_fdisk.clear();}
 ;
 
 LS_PAR_FDISK : LS_PAR_FDISK PARAMETROS_FDISK
@@ -159,8 +159,10 @@ PARAMETROS_FDISK: menos p_size igual entero            {valores_fdisk.push_back(
                 | menos p_path igual ruta              {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
                 | menos p_path igual cadena            {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
                 | menos p_type igual identificador     {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_type igual p_p               {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
                 | menos p_f igual identificador        {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
                 | menos p_delete igual identificador   {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
+                | menos p_u igual identificador        {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
                 | menos p_name igual cadena            {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
                 | menos p_name igual identificador     {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}
                 | menos p_add igual negativo           {valores_fdisk.push_back($2);valores_fdisk.push_back($4);}

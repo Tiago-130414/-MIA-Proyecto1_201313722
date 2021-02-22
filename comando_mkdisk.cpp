@@ -132,11 +132,15 @@ void comando_mkdisk::generarDisco(int size,string path, string unit, string fit)
       new_partition.part_size=0;
 
       //AGREGANDO PARTICIONES AL MBR
+      /*
       disco.mbr_partition_1 = new_partition;
       disco.mbr_partition_2 = new_partition;
       disco.mbr_partition_3 = new_partition;
       disco.mbr_partition_4 = new_partition;
-
+      */
+      for(int i = 0;i<4;i++){
+          disco.mbr_particiones[i] = new_partition;
+        }
       //AGREGANDO MBR AL DISCO
       archivo = fopen(path.c_str(),"rb+");
       if(archivo != NULL){
