@@ -16,25 +16,21 @@ int main()
     QString line;
 
     while(line!="salir"){    //esto me sirve para seguir leyendo siempre los comandos sin salirme
-
+        printf("********************* Ingrese Comando *********************\n\n");
         line = qtin.readLine();
         if(line!="salir"){
             if(line.isEmpty()==false){
                 YY_BUFFER_STATE buffer = yy_scan_string(line.toUtf8().constData());
-
-                /*Limpiamos los contadores
- ya que son variables globales*/
                 linea = 0;
                 columna = 0;
                 yylineno = 0;
-
-                if(yyparse()==0) // Si nos da un número negativo, signifca error.
+                if(yyparse()==0)
                 {
-                    printf("\n\n********* Comando ejecutado correctamente *********\n\n");
+                    printf("\n\n************* Comando ejecutado correctamente *************\n\n");
 
                 }else {
 
-                    printf("\n\nhay errores\n\n");
+                    printf("\n\nHay errores lexicos o sintacticos \n\n");
                 }
 
             }

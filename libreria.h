@@ -13,5 +13,6 @@ string rRuta(vector<string> path);
 string quitarComillas(string ruta);
 vector<string> descomponerRuta(string ruta);
 bool extensionScriptValida(string nombreArchivo);
+void imprimirInfo(string path);
 void imprimirDisco(string path);
 #endif // LIBRERIA_H

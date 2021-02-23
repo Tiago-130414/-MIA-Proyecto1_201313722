@@ -77,21 +77,49 @@ bool extensionRutaValida(string nombreArchivo){
 
 //FUNCION QUE IMPRIME VALORES DENTRO DE DISCO (MBR)
 void imprimirDisco(string path){
-   FILE *archivo;
-   archivo = fopen(path.c_str(),"rb+");
-   if(archivo!=NULL){
-       mbr MBR;
-       fseek(archivo,0,SEEK_SET);
-       fread(&MBR,sizeof(mbr),1,archivo);
-       fclose(archivo);
-       //cout<<"Datos del disco"<<endl;
-       cout<<"-> tamano: "<<MBR.mbr_tamano<<endl;
-       cout<<"-> fecha: "<<MBR.mbr_fecha_creacion<<endl;
-       cout<<"-> fit: "<<MBR.disk_fit<<endl;
-       cout<<"-> id: "<<MBR.mbr_disk_signature<<endl;
-     }else{
-       cout<<"Problema al leer el disco"<<endl;
-     }
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  if(archivo!=NULL){
+      mbr MBR;
+      fseek(archivo,0,SEEK_SET);
+      fread(&MBR,sizeof(mbr),1,archivo);
+      fclose(archivo);
+      //cout<<"Datos del disco"<<endl;
+      cout<<"-> tamano: "<<MBR.mbr_tamano<<endl;
+      cout<<"-> fecha: "<<MBR.mbr_fecha_creacion<<endl;
+      cout<<"-> fit: "<<MBR.disk_fit<<endl;
+      cout<<"-> id: "<<MBR.mbr_disk_signature<<endl;
+    }else{
+      cout<<"Problema al leer el disco"<<endl;
+    }
+}
+
+void imprimirInfo(string path){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  if(archivo!=NULL){
+      mbr MBR;
+      fseek(archivo,0,SEEK_SET);
+      fread(&MBR,sizeof(mbr),1,archivo);
+      fclose(archivo);
+      //cout<<"Datos del disco"<<endl;
+      cout<<"-> tamano: "<<MBR.mbr_tamano<<endl;
+      cout<<"-> fecha: "<<MBR.mbr_fecha_creacion<<endl;
+      cout<<"-> fit: "<<MBR.disk_fit<<endl;
+      cout<<"-> id: "<<MBR.mbr_disk_signature<<endl;
+
+      for(int i=0;i<4;i++){
+          if(MBR.mbr_particiones[i].part_status =='1'){
+              cout<<MBR.mbr_particiones[i].part_name<<endl;
+              cout<<MBR.mbr_particiones[i].part_size<<endl;
+              cout<<MBR.mbr_particiones[i].part_fit<<endl;
+              cout<<MBR.mbr_particiones[i].part_start<<endl;
+              cout<<MBR.mbr_particiones[i].part_type<<endl;
+            }
+        }
+    }else{
+      cout<<"Problema al leer el disco"<<endl;
+    }
 }
 
 bool extensionScriptValida(string nombreArchivo){

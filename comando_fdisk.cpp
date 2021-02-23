@@ -155,70 +155,94 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
             }else if(type == "l"){
               typeT = 'L';
             }
-          //verificando la cantidad de particiones de cada tipo que hay
-          int pPrimarias = 0;
-          int pExtendidas = 0;
-          int existeNombre = 0;
-          int particionesActivas = 0;
-          for(int i=0;i<4;i++){
-              int aux = validarNombre(mbrTemp.mbr_particiones[i].part_name,name);
-              if(aux == 1){
-                  existeNombre = 1;
-                  break;
+
+
+          //primero obtengo el tamano del disco
+          int tamanoDisco = mbrTemp.mbr_tamano;
+          if(tamanioParticion<tamanoDisco){
+              //obtengo el espacio ocupado
+              int espacioOcupado = 0;
+              for(int i=0;i<4;i++){
+                  if(mbrTemp.mbr_particiones[i].part_status == '1'){
+                      espacioOcupado += mbrTemp.mbr_particiones[i].part_size;
+                    }
                 }
-              if(mbrTemp.mbr_particiones[i].part_type == 'P' && mbrTemp.mbr_particiones[i].part_status == '1'){
-                  pPrimarias +=1;
-                  particionesActivas+=1;
-                }else if(mbrTemp.mbr_particiones[i].part_type == 'E' && mbrTemp.mbr_particiones[i].part_status == '1'){
-                  pExtendidas +=1;
-                  particionesActivas+=1;
+              //sumo el tamano del mbr
+              espacioOcupado += sizeof(mbr);
+              //obtengo el espacio disponible
+              int espacioDisponible = tamanoDisco - espacioOcupado;
+              if(tamanioParticion<=espacioDisponible){
+                  //si se puede insertar particion
+
+                  //verificando la cantidad de particiones de cada tipo que hay
+                  int pPrimarias = 0;
+                  int pExtendidas = 0;
+                  int existeNombre = 0;
+                  int particionesActivas = 0;
+                  for(int i=0;i<4;i++){
+                      int aux = validarNombre(mbrTemp.mbr_particiones[i].part_name,name);
+                      if(aux == 1){
+                          existeNombre = 1;
+                          break;
+                        }
+                      if(mbrTemp.mbr_particiones[i].part_type == 'P' && mbrTemp.mbr_particiones[i].part_status == '1'){
+                          pPrimarias +=1;
+                          particionesActivas+=1;
+                        }else if(mbrTemp.mbr_particiones[i].part_type == 'E' && mbrTemp.mbr_particiones[i].part_status == '1'){
+                          pExtendidas +=1;
+                          particionesActivas+=1;
+                        }
+                    }
+
+                  //validando cantidad de particiones
+                  int agregoParticion = 0; //variable booleana que me sirve para saber si se agrega o no la particion al disco
+                  if(existeNombre==0){
+                      if(typeT == 'P'|| typeT == 'E'){
+                          if(typeT == 'P' && pPrimarias == 3){
+                              cout<<"*** Error no pueden haber mas de 3 particiones primarias ***"<<endl;
+                            }else if(typeT == 'E' && pExtendidas == 1){
+                              cout<<"*** Error no pueden haber mas de 1 particiones extendida ***"<<endl;
+                            }else{
+                              //si no hay error en la cantidad de particiones se procede a agregar dicha particion
+                              for(int i = 0;i<4;i++){
+                                  if(mbrTemp.mbr_particiones[i].part_status == '0'){
+                                      mbrTemp.mbr_particiones[i].part_status = '1';
+                                      mbrTemp.mbr_particiones[i].part_fit = fitT;
+                                      mbrTemp.mbr_particiones[i].part_size = tamanioParticion;
+                                      //mbrTemp.mbr_particiones[i].part_start = sizeof(mbr) +1 ;
+                                      int part_start = 0;
+                                      if(particionesActivas == 0){
+                                          part_start = sizeof(mbr)+1;
+                                        }else{
+                                          part_start = mbrTemp.mbr_particiones[i-1].part_start + 1;
+                                          part_start = part_start + mbrTemp.mbr_particiones[i-1].part_size;
+                                        }
+                                      mbrTemp.mbr_particiones[i].part_start = part_start ;
+                                      strcpy(mbrTemp.mbr_particiones[i].part_name,name.c_str());
+                                      mbrTemp.mbr_particiones[i].part_type = typeT;
+                                      agregoParticion = 1;
+                                      break;
+                                    }
+                                }
+                            }
+                        }else if(typeT == 'L' && pExtendidas == 1){
+                          //falta agregar particiones logicas
+                        }
+                    }else{
+                      cout<<"*** El nombre de particion que ingreso ya existe ***"<<endl;
+                    }
+                  //si se pudo crear la particion se escribe en el archivo
+                  if(agregoParticion==1){
+                      fseek(archivo, 0, SEEK_SET);//QUEREMOS modificar en donde estaba el MBR original
+                      fwrite(&mbrTemp, sizeof(mbr), 1, archivo);
+                      fclose(archivo);
+                      imprimirInfo(rTemporal);
+                    }
+                }else{
+                  cout<<"*** El espacio disponible es menor al tamano de la particion ***"<<endl;
                 }
-            }
-
-
-
-          //validando cantidad de particiones
-          int agregoParticion = 0; //variable booleana que me sirve para saber si se agrega o no la particion al disco
-         if(existeNombre==0){
-             if(typeT == 'P'|| typeT == 'E'){
-                 if(typeT == 'P' && pPrimarias == 3){
-                     cout<<"*** Error no pueden haber mas de 3 particiones primarias ***"<<endl;
-                   }else if(typeT == 'E' && pExtendidas == 1){
-                     cout<<"*** Error no pueden haber mas de 1 particiones extendida ***"<<endl;
-                   }else{
-                     //si no hay error en la cantidad de particiones se procede a agregar dicha particion
-                     for(int i = 0;i<4;i++){
-                         if(mbrTemp.mbr_particiones[i].part_status == '0'){
-                             mbrTemp.mbr_particiones[i].part_status = '1';
-                             mbrTemp.mbr_particiones[i].part_fit = fitT;
-                             mbrTemp.mbr_particiones[i].part_size = tamanioParticion;
-                             //mbrTemp.mbr_particiones[i].part_start = sizeof(mbr) +1 ;
-                             int part_start = 0;
-                             if(particionesActivas == 0){
-                                 part_start = sizeof(mbr)+1;
-                               }else{
-                                 part_start = mbrTemp.mbr_particiones[i-1].part_start + 1;
-                                 part_start = part_start + mbrTemp.mbr_particiones[i-1].part_size;
-                               }
-                             mbrTemp.mbr_particiones[i].part_start = part_start ;
-                             strcpy(mbrTemp.mbr_particiones[i].part_name,name.c_str());
-                             mbrTemp.mbr_particiones[i].part_type = typeT;
-                             agregoParticion = 1;
-                             break;
-                           }
-                       }
-                   }
-               }else if(typeT == 'L' && pExtendidas == 1){
-                 //falta agregar particiones logicas
-               }
-           }else{
-             cout<<"*** El nombre de particion que ingreso ya existe ***"<<endl;
-           }
-          //si se pudo crear la particion se escribe en el archivo
-          if(agregoParticion==1){
-              fseek(archivo, 0, SEEK_SET);//QUEREMOS modificar en donde estaba el MBR original
-              fwrite(&mbrTemp, sizeof(mbr), 1, archivo);
-              fclose(archivo);
+            }else{
+              cout<<"*** El tamano de la particion que desea ingresar es mayor que el disco ***"<<endl;
             }
 
         }else{

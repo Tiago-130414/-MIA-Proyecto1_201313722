@@ -20,13 +20,13 @@
 
 
 /*EXPRESIONES REGULARES*/
-identificador ({letra}|{entero}|"_")+
+comentario #.*
 entero [0-9]+
 negativo -[0-9]+
 letra [a-zA-Z]+
+identificador ({letra}|{entero}|"_")+
 cadena [\"][^\"\n]*[\"\n]
 ruta ([/]([^\n' '])*)
-comentario #.*
 /*caracter "\'"("\\")?({letra}|{entero})"\'"*/
 
 
@@ -34,6 +34,7 @@ comentario #.*
 
 
 %%
+
 "MKDISK"    {columna=columna+ anterior;  anterior = strlen(yytext); strcpy(yylval.TEXT, yytext);return c_mkdisk;}
 "RMDISK"    {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext);return c_rmdisk;}
 "FDISK"     {columna=columna+ anterior;  anterior = strlen(yytext); strcpy(yylval.TEXT, yytext);return c_fdisk;}
@@ -93,7 +94,6 @@ comentario #.*
 {identificador}   {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return identificador;}
 {ruta}            {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return ruta;}
 {comentario}      {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext); return comentario;}
-
 
 "."         {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext);return punto;}
 "-"         {columna=columna+ anterior;  anterior = strlen(yytext);strcpy(yylval.TEXT, yytext);return menos;}
