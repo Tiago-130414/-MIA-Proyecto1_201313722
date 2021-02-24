@@ -10,6 +10,7 @@ string aMayuscula(string cadena);
 string aMinuscula(string cadena);
 bool extensionRutaValida(string nombreArchivo);
 string rRuta(vector<string> path);
+string rRutaDeArchivo(string rutaCarpetas,string nombreArchivoCExtension);
 string quitarComillas(string ruta);
 vector<string> descomponerRuta(string ruta);
 bool extensionScriptValida(string nombreArchivo);

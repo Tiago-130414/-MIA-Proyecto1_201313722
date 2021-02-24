@@ -10,12 +10,18 @@ string aMinuscula(string cadena) {
   return cadena;
 }
 
-//FUNCION QUE RETORNA LA RUTA COMO STRING
+//FUNCION QUE RETORNA LA RUTA COMO STRING SIN EXTENSION DE ARCHIVO
 string rRuta(vector<string> path){
   string ruta="";
   for(int i =0;i<path.size()-1;i++){
       ruta +="/" + path[i];
     }
+  return ruta;
+}
+
+//FUNCION QUE RETORNA LA RUTA COMO STRING CON EXTENSION DE ARCHIVO
+string rRutaDeArchivo(string rutaCarpetas,string nombreArchivoCExtension){
+  string ruta= rutaCarpetas+"/"+nombreArchivoCExtension;
   return ruta;
 }
 

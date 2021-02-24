@@ -26,7 +26,8 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
   int posicionAdd =0;
   int posicionDelete=0;
   //RECOLECTANDO DATO
-  for(int i=0;i<fdisk.size();i++){
+  int tamVector = fdisk.size();
+  for(int i=0;i<tamVector;i++){
       if(aMinuscula(fdisk[i])=="path"){
           path = fdisk[i+1];
           existPath =1;
@@ -56,7 +57,7 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
   //verificando si vienen los parametros obligatorios
   if(existName && existPath){
       //falta agregar el caso de que no vengan ninguno de los 2
-      if(existAdd==0 && existDelete==1||existAdd==1 && existDelete==0 || existAdd==0 && existDelete ==0){
+      if((existAdd==0 && existDelete==1)||(existAdd==1 && existDelete==0) || (existAdd==0 && existDelete ==0)){
           //si existe el size es por que se creara una particion
           if(existSize){
               //si existe agregar/disminuir espacio
@@ -112,145 +113,154 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
   vector<string> rutaD (descomponerRuta(path));
   string nombreArchivo = rutaD[rutaD.size()-1];
   if(extensionRutaValida(nombreArchivo)){
-      string rTemporal = rRuta(rutaD) + "/"+nombreArchivo;
-      cout<<rTemporal<<endl;
+      string rTemporal = rRutaDeArchivo(rRuta(rutaD),nombreArchivo);
       archivo = fopen(rTemporal.c_str(),"rb+");
+      //si el archivo se abrio correctamente
       if(archivo!=NULL){
-          fseek(archivo,0,SEEK_SET);//este es el inicion del archivo
-          mbr mbrTemp; //mbr temporal donde se guardaran los datos que se lean del archivo
-          fread(&mbrTemp,sizeof(mbr),1,archivo);//mbrTemp donde se guarda, size el tamano del mbr que se lee, 1 es la cantidad de elementos que se leen y archivo es el disco
-          //verificando el tipo de unidad dato en el que se creara la unidad
-          if(unit == "-1"){
-              unit = "k";
-            }
-          //calculando el tamanio de la particion
-          if(unit == "b"){
-              tamanioParticion = size;
-            }else if(unit == "k"){
-              tamanioParticion = size *1024;
-            }else if(unit == "m"){
-              tamanioParticion = size*1024*1024;
-            }
-          //aqui va lo del fit - tipo de ajuste
-          char fitT;
-          if(fit == "-1"){
-              fit = "wf";
-            }
-          if(fit == "bf"){
-              fitT = 'B';
-            }else if(fit == "ff"){
-              fitT = 'F';
-            }else if(fit == "wf"){
-              fitT = 'W';
-            }
-          //verificando valor del type
-          char typeT;
-          if(type == "-1"){
-              type= "p";
-            }
-          if(type == "p" ){
-              typeT = 'P';
-            }else if(type == "e"){
-              typeT = 'E';
-            }else if(type == "l"){
-              typeT = 'L';
-            }
+          //numero de particiones libres
+          int pVacias = particionesVacias(rTemporal);
+          //si hay particiones vacias por agregar
+          if(pVacias>0){
+              char typeT = validarTipoParticion(type);
+              //tipo de particion primaria
+              if(typeT == 'P'){
+                  int partPrimaria = numeroPartPrimarias(rTemporal);
+                  //si el numero de particiones primarias es menor que el limite de las mismas
+                  if(partPrimaria<3){
+                      //se valida el ajuste
+                      char fitT = validarAjuste(fit);
+                      //segun el tipo de ajuste se obtiene el inicio de la particion
+                      if(fitT == 'B'){
+                          //Mejor ajuste
+                        }else if(fitT == 'F'){
+                          //Primer ajuste
 
-
-          //primero obtengo el tamano del disco
-          int tamanoDisco = mbrTemp.mbr_tamano;
-          if(tamanioParticion<tamanoDisco){
-              //obtengo el espacio ocupado
-              int espacioOcupado = 0;
-              for(int i=0;i<4;i++){
-                  if(mbrTemp.mbr_particiones[i].part_status == '1'){
-                      espacioOcupado += mbrTemp.mbr_particiones[i].part_size;
-                    }
-                }
-              //sumo el tamano del mbr
-              espacioOcupado += sizeof(mbr);
-              //obtengo el espacio disponible
-              int espacioDisponible = tamanoDisco - espacioOcupado;
-              if(tamanioParticion<=espacioDisponible){
-                  //si se puede insertar particion
-
-                  //verificando la cantidad de particiones de cada tipo que hay
-                  int pPrimarias = 0;
-                  int pExtendidas = 0;
-                  int existeNombre = 0;
-                  int particionesActivas = 0;
-                  for(int i=0;i<4;i++){
-                      int aux = validarNombre(mbrTemp.mbr_particiones[i].part_name,name);
-                      if(aux == 1){
-                          existeNombre = 1;
-                          break;
+                        }else if(fitT == 'W'){
+                          //Peor ajuste
                         }
-                      if(mbrTemp.mbr_particiones[i].part_type == 'P' && mbrTemp.mbr_particiones[i].part_status == '1'){
-                          pPrimarias +=1;
-                          particionesActivas+=1;
-                        }else if(mbrTemp.mbr_particiones[i].part_type == 'E' && mbrTemp.mbr_particiones[i].part_status == '1'){
-                          pExtendidas +=1;
-                          particionesActivas+=1;
-                        }
-                    }
-
-                  //validando cantidad de particiones
-                  int agregoParticion = 0; //variable booleana que me sirve para saber si se agrega o no la particion al disco
-                  if(existeNombre==0){
-                      if(typeT == 'P'|| typeT == 'E'){
-                          if(typeT == 'P' && pPrimarias == 3){
-                              cout<<"*** Error no pueden haber mas de 3 particiones primarias ***"<<endl;
-                            }else if(typeT == 'E' && pExtendidas == 1){
-                              cout<<"*** Error no pueden haber mas de 1 particiones extendida ***"<<endl;
-                            }else{
-                              //si no hay error en la cantidad de particiones se procede a agregar dicha particion
-                              for(int i = 0;i<4;i++){
-                                  if(mbrTemp.mbr_particiones[i].part_status == '0'){
-                                      mbrTemp.mbr_particiones[i].part_status = '1';
-                                      mbrTemp.mbr_particiones[i].part_fit = fitT;
-                                      mbrTemp.mbr_particiones[i].part_size = tamanioParticion;
-                                      //mbrTemp.mbr_particiones[i].part_start = sizeof(mbr) +1 ;
-                                      int part_start = 0;
-                                      if(particionesActivas == 0){
-                                          part_start = sizeof(mbr)+1;
-                                        }else{
-                                          part_start = mbrTemp.mbr_particiones[i-1].part_start + 1;
-                                          part_start = part_start + mbrTemp.mbr_particiones[i-1].part_size;
-                                        }
-                                      mbrTemp.mbr_particiones[i].part_start = part_start ;
-                                      strcpy(mbrTemp.mbr_particiones[i].part_name,name.c_str());
-                                      mbrTemp.mbr_particiones[i].part_type = typeT;
-                                      agregoParticion = 1;
-                                      break;
-                                    }
-                                }
-                            }
-                        }else if(typeT == 'L' && pExtendidas == 1){
-                          //falta agregar particiones logicas
-                        }
+                      //aqui se procede a crear la particion
+                      tamanioParticion = tamanoParticionNueva(unit,size);
+                      //aqui se tendrian que agregar todos los datos
                     }else{
-                      cout<<"*** El nombre de particion que ingreso ya existe ***"<<endl;
+                      cout<<"*** El limite de particiones primarias se ha alcanzado ***"<<endl;
                     }
-                  //si se pudo crear la particion se escribe en el archivo
-                  if(agregoParticion==1){
-                      fseek(archivo, 0, SEEK_SET);//QUEREMOS modificar en donde estaba el MBR original
-                      fwrite(&mbrTemp, sizeof(mbr), 1, archivo);
-                      fclose(archivo);
-                      imprimirInfo(rTemporal);
-                    }
-                }else{
-                  cout<<"*** El espacio disponible es menor al tamano de la particion ***"<<endl;
+
+                }else if(typeT == 'E'){
+                  //tipo de particion extendida
+
+                }else if(typeT == 'L'){
+                  //tipo de particion logica
                 }
             }else{
-              cout<<"*** El tamano de la particion que desea ingresar es mayor que el disco ***"<<endl;
+              cout<< "*** Limite de particiones alcanzado ***"<<endl;
             }
-
         }else{
           cout<<"*** Error el disco a particionar no existe! ***"<<endl;
         }
+      fclose(archivo);
     }else{
       cout<<"*** La extension del archivo proporcionado no es valida ***"<<endl;
     }
+}
+//funcion que retorna si hay particiones libres
+int comando_fdisk::particionesVacias(string path){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
+  mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
+  fread(&MBR,sizeof(mbr),1,archivo);
+  int nPartitionEmpty = 0;//numero de particiones vacias
+  for(int i=0;i<4;i++){
+      if(MBR.mbr_particiones[i].part_status == '0'){
+          nPartitionEmpty +=1;
+        }
+    }
+  fclose(archivo);
+  return nPartitionEmpty;
+}
+
+//funcion que retorna cuantas particiones primarias hay
+int comando_fdisk::numeroPartPrimarias(string path){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
+  mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
+  fread(&MBR,sizeof(mbr),1,archivo);
+  int nPrimaryPartition = 0;//numero de particiones vacias
+  for(int i=0;i<4;i++){
+      if(MBR.mbr_particiones[i].part_status == '1' && MBR.mbr_particiones[i].part_type == 'P'){
+          nPrimaryPartition +=1;
+        }
+    }
+  fclose(archivo);
+  return nPrimaryPartition;
+}
+
+//funcion que retorna cuantas particiones extendidas hay
+int comando_fdisk::numeroPartExtendidas(string path){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
+  mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
+  fread(&MBR,sizeof(mbr),1,archivo);
+  int nExtendedPartition = 0;//numero de particiones vacias
+  for(int i=0;i<4;i++){
+      if(MBR.mbr_particiones[i].part_status == '1' && MBR.mbr_particiones[i].part_type == 'E'){
+          nExtendedPartition +=1;
+        }
+    }
+  fclose(archivo);
+  return nExtendedPartition;
+}
+
+//funcion que valida el unit y retorna el tamano de la particion
+int comando_fdisk::tamanoParticionNueva(string unit,int size){
+  int tamanioParticion= 0;
+  if(unit == "-1"){
+      unit = "k";
+    }
+  //calculando el tamanio de la particion
+  if(unit == "b"){
+      tamanioParticion = size;
+    }else if(unit == "k"){
+      tamanioParticion = size *1024;
+    }else if(unit == "m"){
+      tamanioParticion = size*1024*1024;
+    }
+  return tamanioParticion;
+}
+
+//funcion que valida el tipo de ajuste y retorna la letra que representa el ajuste de la particion
+char comando_fdisk::validarAjuste(string fit){
+  char fitT;
+  if(fit == "-1"){
+      fit = "wf";
+    }
+  if(fit == "bf"){
+      fitT = 'B';
+    }else if(fit == "ff"){
+      fitT = 'F';
+    }else if(fit == "wf"){
+      fitT = 'W';
+    }
+  return fitT;
+}
+
+//funcion que valida el tipo de partcion y retorna la letra que representa el tipo de particon que es
+char comando_fdisk::validarTipoParticion(string type){
+  //verificando valor del type
+  char typeT;
+  if(type == "-1"){
+      type= "p";
+    }
+  if(type == "p" ){
+      typeT = 'P';
+    }else if(type == "e"){
+      typeT = 'E';
+    }else if(type == "l"){
+      typeT = 'L';
+    }
+  return typeT;
 }
 
 //funcion que verifica el nombre contenido en el mbr y el nombre nuevo de la particion
