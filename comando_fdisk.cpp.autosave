@@ -141,7 +141,6 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
                       char fitT = validarAjuste(fit);
                       //aqui se procede a crear la particion
                       tamanioParticion = tamanoParticionNueva(unit,size);
-                      cout<<tamanioParticion<<endl;
                       //segun el tipo de ajuste se obtiene el inicio de la particion
                       if(fitT == 'B'){
                           //Mejor ajuste
@@ -149,7 +148,6 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
                           //Primer ajuste
                           vector<vacios> infoEspacios(particionesOcupadas(rTemporal,fitT));
                           int inicio = posicionPrimerAjuste(infoEspacios,tamanioParticion);
-                          cout<<inicio<<endl;
                           escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
                         }else if(fitT == 'W'){
                           //Peor ajuste
@@ -205,9 +203,7 @@ void comando_fdisk::escribirParticion(int size,int start,string path,char type,s
       MBR.mbr_particiones[indice].part_size = size;
       MBR.mbr_particiones[indice].part_type = type;
       MBR.mbr_particiones[indice].part_fit = fit;
-      //MBR.mbr_particiones[indice].part_name = name.c_str();
       strcpy(MBR.mbr_particiones[indice].part_name,name.c_str());
-      cout<<"*** particion creada ***"<<endl;
       fseek(archivo, 0, SEEK_SET);//QUEREMOS modificar en donde estaba el MBR original
       fwrite(&MBR, sizeof(mbr), 1, archivo);
     }else{
@@ -468,12 +464,11 @@ int comando_fdisk::posicionPrimerAjuste(vector<vacios> espaciosLib, int tamano){
     }
   return posStart;
 }
-/*
 //mejor ajuste
 int comando_fdisk::posicionMejorAjuste(vector<vacios> espaciosLib, int tam){
 
 }
-
+/*
 //peor ajuste
 int comando_fdisk::posicionPeorAjuste(vector<vacios> espaciosLib, int tam){
 

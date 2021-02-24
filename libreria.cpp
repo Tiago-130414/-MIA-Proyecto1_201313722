@@ -116,11 +116,11 @@ void imprimirInfo(string path){
 
       for(int i=0;i<4;i++){
           if(MBR.mbr_particiones[i].part_status =='1'){
-              cout<<MBR.mbr_particiones[i].part_name<<endl;
-              cout<<MBR.mbr_particiones[i].part_size<<endl;
-              cout<<MBR.mbr_particiones[i].part_fit<<endl;
-              cout<<MBR.mbr_particiones[i].part_start<<endl;
-              cout<<MBR.mbr_particiones[i].part_type<<endl;
+              cout<<"->Nombre de particion: "<<MBR.mbr_particiones[i].part_name<<endl;
+              cout<<"->Size de particion: "<<MBR.mbr_particiones[i].part_size<<endl;
+              cout<<"->Ajuste de particion: "<<MBR.mbr_particiones[i].part_fit<<endl;
+              cout<<"->Start de particion: "<<MBR.mbr_particiones[i].part_start<<endl;
+              cout<<"->Type de particion: "<<MBR.mbr_particiones[i].part_type<<endl;
             }
         }
     }else{

@@ -26,10 +26,16 @@ public:
   int particionesVacias(string path);
   int numeroPartPrimarias(string path);
   int numeroPartExtendidas(string path);
-
+  //primer ajuste
+  int posicionPrimerAjuste(vector<vacios> espaciosLib, int tam);
+  //mejor ajuste
+  int posicionMejorAjuste(vector<vacios> espaciosLib, int tam);
+  //peor ajuste
+  int posicionPeorAjuste(vector<vacios> espaciosLib, int tam);
   ///////////////////////////////
-  vector<espacio>particionesOcupadas(string path);
-  void buscarEspacios(vector<espacio> particionesActivas,string fit);
+  vector<vacios>particionesOcupadas(string path,char ajuste);
+  //////////////
+  void escribirParticion(int size,int start,string path,char type,string name,char fit);
 };
 
 #endif // COMANDO_FDISK_H
