@@ -5,6 +5,8 @@
 #include <vector>
 #include "libreria.h"
 #include <cstring>
+#include <estructuras.h>
+#include <bits/stdc++.h>
 using namespace std;
 class comando_fdisk
 {
@@ -24,6 +26,10 @@ public:
   int particionesVacias(string path);
   int numeroPartPrimarias(string path);
   int numeroPartExtendidas(string path);
+
+  ///////////////////////////////
+  vector<espacio>particionesOcupadas(string path);
+  void buscarEspacios(vector<espacio> particionesActivas,string fit);
 };
 
 #endif // COMANDO_FDISK_H

@@ -81,7 +81,9 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
                 }else{
                   //si no viene delete ni add
                   if(validarParametrosOpcionales(unit,type,fit)==1){
-                      crearParticion(size,unit,path,type,name,fit);
+                      //crearParticion(size,unit,path,type,name,fit);
+                      vector<espacio> pOcupadas(particionesOcupadas(path));
+                      buscarEspacios(pOcupadas,fit);
                     }
                 }
               //si no esta solo se puede eliminar y agregar espacio o disminuir
@@ -162,6 +164,7 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
       cout<<"*** La extension del archivo proporcionado no es valida ***"<<endl;
     }
 }
+
 //funcion que retorna si hay particiones libres
 int comando_fdisk::particionesVacias(string path){
   FILE *archivo;
@@ -293,4 +296,111 @@ int comando_fdisk::validarParametrosOpcionales(string unit,string type,string fi
       cout<<"*** El valor ingresado en unit no corresponde con ninguno de los permitidos ***"<<endl;
     }
   return valido;
+}
+
+//primero obtener particiones activa(me va a servir para el espacio libre)
+vector<espacio> comando_fdisk::particionesOcupadas(string path){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
+  mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
+  fread(&MBR,sizeof(mbr),1,archivo);
+  //vector de datos
+  vector<espacio> particionesOcupadas;
+  //vector de sizes
+  vector<int> tamanosP;
+  //CON ESTE FOR RECOLECTO LOS DATOS
+  for(int i=0;i<4;i++){
+      if(MBR.mbr_particiones[i].part_status == '1'){
+          espacio part;
+          part.inicioParticion = MBR.mbr_particiones[i].part_start;
+          part.tamanoParticion = MBR.mbr_particiones[i].part_size;
+          particionesOcupadas.insert(particionesOcupadas.begin() + i,part);
+        }
+    }
+  //ESTE FOR ME SIRVE DE PIVOTE PARA ORDENAR LAS PARTICIONES RECOLECTADAS POR EL INICIO
+  int tam = particionesOcupadas.size();
+  for(int i =0;i<tam;i++){
+      int temp = particionesOcupadas[i].inicioParticion;
+      tamanosP.insert(tamanosP.begin()+ i,temp);
+    }
+  //ORDENO DE MENOR A MAYOR
+  sort(tamanosP.begin(),tamanosP.end());
+
+  //CREO UN VECTOR TEMPORAL PARA RETORNAR ORDENADO EL VECTOR
+  vector<espacio> temporal;
+  for(int i = 0;i<tamanosP.size();i++){
+      int tamTemp = tamanosP[i];
+      for(int j =0;j<particionesOcupadas.size();j++){
+          int pOcTemp = particionesOcupadas[j].inicioParticion;
+          if(tamTemp == pOcTemp){
+              temporal.push_back(particionesOcupadas[j]);
+            }
+        }
+    }
+
+  //VECTOR DE ESPACIOS LIBRES
+  vector<vacios> freeSpaces;
+  //VARIABLES PARA CALCULOS
+  int espaciosLibres = 0;//variable de espacios libres
+  int inicio = 0;
+  int inicioParticion = 0;
+
+  //CON ESTE FOR CALCULO LOS ESPACIOS LIBRES
+  for(int i = 0;i<temporal.size();i++){
+      if(i == 0){
+          inicio = sizeof(mbr);
+          inicioParticion = temporal[i].inicioParticion;
+          espaciosLibres = inicioParticion - inicio;
+        }else{
+          inicio = temporal[i-1].inicioParticion + temporal[i-1].tamanoParticion;
+          inicioParticion = temporal[i].inicioParticion;
+          espaciosLibres = inicioParticion - inicio;
+        }
+      if(espaciosLibres>0){
+          vacios ajustes;
+          ajustes.inicio = inicio;
+          ajustes.espacioLibre = espaciosLibres;
+          freeSpaces.insert(freeSpaces.begin()+i,ajustes);
+        }
+    }
+  //falta iteracion del final la que es a mano
+  if(!temporal.empty()){
+      inicio = temporal[temporal.size()-1].inicioParticion + temporal[temporal.size()-1].tamanoParticion;
+      inicioParticion = MBR.mbr_tamano;
+      espaciosLibres = inicioParticion-inicio;
+      if(espaciosLibres>0){
+          vacios ajustes;
+          ajustes.inicio = inicio;
+          ajustes.espacioLibre = espaciosLibres;
+          freeSpaces.push_back(ajustes);
+        }
+    }
+
+  for(int i=0;i<freeSpaces.size();i++){
+      //cout<<i<<"---"<<temporal[i].inicioParticion<<"---"<<temporal[i].tamanoParticion<<endl;//
+      cout<<i<<"---"<<freeSpaces[i].inicio<<"---"<<freeSpaces[i].espacioLibre<<endl;
+    }
+
+  fclose(archivo);
+  return temporal;
+}
+
+void comando_fdisk:: buscarEspacios(vector<espacio> particionesActivas , string fit){
+  //validando que el vector retornado no este vacio
+  if(!particionesActivas.empty()){
+      int inicioParticion;
+      int tamPart;
+      int sizePA = particionesActivas.size();
+      for(int i=0;i<sizePA;i++){
+          inicioParticion = particionesActivas[i].inicioParticion;
+          tamPart = particionesActivas[i].tamanoParticion;
+          cout<<"#"<<i<<endl;
+          cout<< inicioParticion<<endl;
+          cout<< tamPart<<endl;
+        }
+    }else{
+      //si esta vacio hay que retornar la posicion de inicio del mbr y demas informacion
+      cout<<"no hay particiones"<<endl;
+    }
 }

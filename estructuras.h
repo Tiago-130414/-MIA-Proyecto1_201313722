@@ -26,14 +26,25 @@ typedef struct{
   char mbr_fecha_creacion[16];
   int  mbr_disk_signature;//numero random que identifica al disco
   char disk_fit [1];
-  /*
-  particion mbr_partition_1;
-  particion mbr_partition_2;
-  particion mbr_partition_3;
-  particion mbr_partition_4;
-  */
   particion mbr_particiones[4];
 }mbr;
+
+/*
+particion mbr_partition_1;
+particion mbr_partition_2;
+particion mbr_partition_3;
+particion mbr_partition_4;
+*/
+
+typedef struct{
+  int inicioParticion;
+  int tamanoParticion;
+}espacio;
+
+typedef struct{
+  int inicio;
+  int espacioLibre;
+}vacios;
 
 class estructuras
 {
