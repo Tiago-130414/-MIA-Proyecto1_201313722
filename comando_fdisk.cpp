@@ -80,6 +80,11 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
                   //si el size llego antes que el delete
                   if(posicionSize<posicionDelete){
                       //se crea particion
+                      if(size>0){
+                          crearParticion(size,unit,path,type,name,fit);
+                        }else{
+                          cout<<"*** Las particiones unicamente se pueden crear mayores que 0 ***"<<endl;
+                        }
                     }else{
                       //se elimina particion
                     }
@@ -141,18 +146,22 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
                       char fitT = validarAjuste(fit);
                       //aqui se procede a crear la particion
                       tamanioParticion = tamanoParticionNueva(unit,size);
-                      cout<<tamanioParticion<<endl;
                       //segun el tipo de ajuste se obtiene el inicio de la particion
                       if(fitT == 'B'){
                           //Mejor ajuste
+                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,fitT));
+                          int inicio = posicionMejorAjuste(infoEspacios,tamanioParticion);
+                          escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
                         }else if(fitT == 'F'){
                           //Primer ajuste
                           vector<vacios> infoEspacios(particionesOcupadas(rTemporal,fitT));
                           int inicio = posicionPrimerAjuste(infoEspacios,tamanioParticion);
-                          cout<<inicio<<endl;
                           escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
                         }else if(fitT == 'W'){
                           //Peor ajuste
+                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,fitT));
+                          int inicio = posicionPeorAjuste(infoEspacios,tamanioParticion);
+                          escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
                         }
 
                       //aqui se tendrian que agregar todos los datos
@@ -205,9 +214,7 @@ void comando_fdisk::escribirParticion(int size,int start,string path,char type,s
       MBR.mbr_particiones[indice].part_size = size;
       MBR.mbr_particiones[indice].part_type = type;
       MBR.mbr_particiones[indice].part_fit = fit;
-      //MBR.mbr_particiones[indice].part_name = name.c_str();
       strcpy(MBR.mbr_particiones[indice].part_name,name.c_str());
-      cout<<"*** particion creada ***"<<endl;
       fseek(archivo, 0, SEEK_SET);//QUEREMOS modificar en donde estaba el MBR original
       fwrite(&MBR, sizeof(mbr), 1, archivo);
     }else{
@@ -415,7 +422,7 @@ vector<vacios> comando_fdisk::particionesOcupadas(string path,char ajuste){
       cout<<"aqui en el iniciio"<<inicio<<endl;
       cout<<"aqui en el inicio particion"<<inicioParticion<<endl;
       cout<<"aqui en el inicio tamano particion"<<temporal[i].tamanoParticion<<endl;
-     }
+    }
 
   espaciosLibres = MBR.mbr_tamano - inicio;
   if(espaciosLibres>0){
@@ -468,14 +475,34 @@ int comando_fdisk::posicionPrimerAjuste(vector<vacios> espaciosLib, int tamano){
     }
   return posStart;
 }
-/*
-//mejor ajuste
-int comando_fdisk::posicionMejorAjuste(vector<vacios> espaciosLib, int tam){
 
+//mejor ajuste
+int comando_fdisk::posicionMejorAjuste(vector<vacios> espaciosLib, int tamano){
+  int posStart = 0;
+  if(!espaciosLib.empty()){
+      int tam = espaciosLib.size();
+      for(int i = 0;i<tam;i++){
+          if(tamano<=espaciosLib[i].espacioLibre){
+              posStart = espaciosLib[i].inicio;
+              break;
+            }
+        }
+    }
+  return posStart;
 }
 
 //peor ajuste
-int comando_fdisk::posicionPeorAjuste(vector<vacios> espaciosLib, int tam){
-
+int comando_fdisk::posicionPeorAjuste(vector<vacios> espaciosLib, int tamano){
+  int posStart = 0;
+  if(!espaciosLib.empty()){
+      int tam = espaciosLib.size();
+      for(int i = 0;i<tam;i++){
+          if(tamano<espaciosLib[i].espacioLibre){
+              posStart = espaciosLib[i].inicio;
+              break;
+            }
+        }
+    }
+  return posStart;
 }
-*/
+
