@@ -42,7 +42,8 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
         }else if(aMinuscula(fdisk[i])=="f"){
           fit = aMinuscula(fdisk[i+1]);
         }else if(aMinuscula(fdisk[i])=="name"){
-          name = aMinuscula(fdisk[i+1]);
+          name = quitarComillas(fdisk[i+1]);
+          name = aMinuscula(name);
           existName=1;
         }else if(aMinuscula(fdisk[i])=="delete"){
           p_delete = aMinuscula(fdisk[i+1]);
@@ -385,14 +386,14 @@ vector<vacios> comando_fdisk::particionesOcupadas(string path,char ajuste){
           espacio part;
           part.inicioParticion = MBR.mbr_particiones[i].part_start;
           part.tamanoParticion = MBR.mbr_particiones[i].part_size;
-          particionesOcupadas.insert(particionesOcupadas.begin() + i,part);
+          particionesOcupadas.push_back(part);
         }
     }
   //ESTE FOR ME SIRVE DE PIVOTE PARA ORDENAR LAS PARTICIONES RECOLECTADAS POR EL INICIO
   int tam = particionesOcupadas.size();
   for(int i =0;i<tam;i++){
       int temp = particionesOcupadas[i].inicioParticion;
-      tamanosP.insert(tamanosP.begin()+ i,temp);
+      tamanosP.push_back(temp);
     }
   int tamanosPsize= tamanosP.size();
   //ORDENO DE MENOR A MAYOR
@@ -559,7 +560,6 @@ void comando_fdisk::eliminacionFast(string path,string name){
           nombParticion = rNombreParticion(MBR.mbr_particiones[i].part_name);
           if(nombParticion == name){
               existeParticion = 1;
-              cout<<i<<endl;
               break;
             }
         }
@@ -606,8 +606,6 @@ void comando_fdisk::eliminacionFull(string path,string name){
       int initPart = MBR.mbr_particiones[i].part_start;
       int tamPart = MBR.mbr_particiones[i].part_size;
       char ceros = '\0';
-      cout<<initPart<<endl;
-      cout<<tamPart<<endl;
       fseek(archivo, initPart, SEEK_SET);
       for(int j = 0;j<tamPart;j++){
           fwrite(&ceros,sizeof(ceros),1,archivo);

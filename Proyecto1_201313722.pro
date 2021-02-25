@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     comando_rmdisk.cpp \
     libreria.cpp \
     comando_fdisk.cpp \
-    comando_exec.cpp
+    comando_exec.cpp \
+    comando_mount.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -42,4 +43,5 @@ HEADERS += \
     comando_rmdisk.h \
     libreria.h \
     comando_fdisk.h \
-    comando_exec.h
+    comando_exec.h \
+    comando_mount.h

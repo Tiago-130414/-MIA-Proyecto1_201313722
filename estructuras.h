@@ -29,12 +29,6 @@ typedef struct{
   particion mbr_particiones[4];
 }mbr;
 
-/*
-particion mbr_partition_1;
-particion mbr_partition_2;
-particion mbr_partition_3;
-particion mbr_partition_4;
-*/
 
 typedef struct{
   int inicioParticion;
