@@ -4,7 +4,7 @@ comando_fdisk::comando_fdisk()
 {
 
 }
-
+//fdisk -size=50 -u=m -path=/home/santi/discos/archivo17.dk -f=ff -name=prueba4
 void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
   string path;
   string unit = "-1";
@@ -105,6 +105,7 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
                   //se agrega/disminuye tamano de particion
                 }else if(existDelete){
                   //se elimina particion
+                  eliminarParticion(path,name,p_delete);
                 }else{
                   cout<<"*** Falta parametro -size para crear un disco ***"<<endl;
                 }
@@ -120,7 +121,15 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
         }
     }
 }
-
+////////////////////////////////////////////////////////////////////
+/// \brief comando_fdisk::crearParticion
+/// \param size
+/// \param unit
+/// \param path
+/// \param type
+/// \param name         METODOS QUE CREAN LAS PARTICIONES
+/// \param fit
+/////////////////////////////////////////////////////////////////////
 void comando_fdisk::crearParticion(int size,string unit,string path,string type,string name,string fit){
   //obligatorio size, path, name
   FILE *archivo;
@@ -132,6 +141,11 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
       archivo = fopen(rTemporal.c_str(),"rb+");
       //si el archivo se abrio correctamente
       if(archivo!=NULL){
+          ///buscando el tipo de ajuste de la particion para realizar la insercion de la particion
+          fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
+          mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
+          fread(&MBR,sizeof(mbr),1,archivo);
+          char ajusteDisco = MBR.disk_fit[0];
           //numero de particiones libres
           int pVacias = particionesVacias(rTemporal);
           //si hay particiones vacias por agregar
@@ -147,24 +161,22 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
                       //aqui se procede a crear la particion
                       tamanioParticion = tamanoParticionNueva(unit,size);
                       //segun el tipo de ajuste se obtiene el inicio de la particion
-                      if(fitT == 'B'){
+                      if(ajusteDisco == 'B'){
                           //Mejor ajuste
-                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,fitT));
+                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,ajusteDisco));
                           int inicio = posicionMejorAjuste(infoEspacios,tamanioParticion);
                           escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
-                        }else if(fitT == 'F'){
+                        }else if(ajusteDisco == 'F'){
                           //Primer ajuste
-                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,fitT));
+                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,ajusteDisco));
                           int inicio = posicionPrimerAjuste(infoEspacios,tamanioParticion);
                           escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
-                        }else if(fitT == 'W'){
+                        }else if(ajusteDisco == 'W'){
                           //Peor ajuste
-                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,fitT));
+                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,ajusteDisco));
                           int inicio = posicionPeorAjuste(infoEspacios,tamanioParticion);
                           escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
                         }
-
-                      //aqui se tendrian que agregar todos los datos
                     }else{
                       cout<<"*** El limite de particiones primarias se ha alcanzado ***"<<endl;
                     }
@@ -208,7 +220,6 @@ void comando_fdisk::escribirParticion(int size,int start,string path,char type,s
               break;
             }
         }
-      cout<<indice<<endl;
       MBR.mbr_particiones[indice].part_status = '1';
       MBR.mbr_particiones[indice].part_start = start;
       MBR.mbr_particiones[indice].part_size = size;
@@ -288,7 +299,6 @@ int comando_fdisk::tamanoParticionNueva(string unit,int size){
       tamanioParticion = size *1024;
     }else if(unit == "m"){
       tamanioParticion = size*1024*1024;
-
     }
   return tamanioParticion;
 }
@@ -369,7 +379,6 @@ vector<vacios> comando_fdisk::particionesOcupadas(string path,char ajuste){
   vector<espacio> particionesOcupadas;
   //vector de sizes
   vector<int> tamanosP;
-
   //CON ESTE FOR RECOLECTO LOS DATOS
   for(int i=0;i<4;i++){
       if(MBR.mbr_particiones[i].part_status == '1'){
@@ -388,7 +397,6 @@ vector<vacios> comando_fdisk::particionesOcupadas(string path,char ajuste){
   int tamanosPsize= tamanosP.size();
   //ORDENO DE MENOR A MAYOR
   sort(tamanosP.begin(),tamanosP.end());
-
   //CREO UN VECTOR TEMPORAL PARA RETORNAR ORDENADO EL VECTOR
   vector<espacio> temporal;
   for(int i = 0;i<tamanosPsize;i++){
@@ -416,14 +424,10 @@ vector<vacios> comando_fdisk::particionesOcupadas(string path,char ajuste){
           vacios ajustes;
           ajustes.inicio = inicio;
           ajustes.espacioLibre = espaciosLibres;
-          freeSpaces.insert(freeSpaces.begin()+i,ajustes);
+          freeSpaces.push_back(ajustes);
         }
       inicio = inicioParticion + temporal[i].tamanoParticion;
-      cout<<"aqui en el iniciio"<<inicio<<endl;
-      cout<<"aqui en el inicio particion"<<inicioParticion<<endl;
-      cout<<"aqui en el inicio tamano particion"<<temporal[i].tamanoParticion<<endl;
     }
-
   espaciosLibres = MBR.mbr_tamano - inicio;
   if(espaciosLibres>0){
       vacios ajustes;
@@ -446,6 +450,7 @@ vector<vacios> comando_fdisk::particionesOcupadas(string path,char ajuste){
                 }
             }
         }
+
     }else if(ajuste == 'W'){
       for(int i=0;i<fSpSize-1;i++){
           for(int j=i+1;j<fSpSize;j++){
@@ -457,7 +462,6 @@ vector<vacios> comando_fdisk::particionesOcupadas(string path,char ajuste){
             }
         }
     }
-
   return freeSpaces;
 }
 
@@ -506,3 +510,128 @@ int comando_fdisk::posicionPeorAjuste(vector<vacios> espaciosLib, int tamano){
   return posStart;
 }
 
+////////////////////////////////////////////////////////////////////
+/// \brief comando_fdisk::crearParticion
+/// \param size
+/// \param unit
+/// \param path
+/// \param type
+/// \param name    METODOS QUE SIRVEN PARA ELIMINACION DE PARTICIONES
+/// \param fit
+/////////////////////////////////////////////////////////////////////
+
+void comando_fdisk::eliminarParticion(string path,string name,string tipoEliminacion){
+  FILE *archivo;
+  vector<string> rutaD (descomponerRuta(path));
+  string nombreArchivo = rutaD[rutaD.size()-1];
+  if(extensionRutaValida(nombreArchivo)){
+      string rTemporal = rRutaDeArchivo(rRuta(rutaD),nombreArchivo);
+      archivo = fopen(rTemporal.c_str(),"rb+");
+      //si el archivo se abrio correctamente
+      if(archivo!=NULL){
+          if(tipoEliminacion == "fast"){
+              eliminacionFast(rTemporal,name);
+            }else if(tipoEliminacion == "full"){
+              eliminacionFull(rTemporal,name);
+            }else{
+              cout<<"*** El tipo de eliminacion elegida no es aplicable ***"<<endl;
+            }
+        }else{
+          cout<<"*** Error el disco a particionar no existe! ***"<<endl;
+        }
+      fclose(archivo);
+    }else{
+      cout<<"*** La extension del archivo proporcionado no es valida ***"<<endl;
+    }
+}
+
+void comando_fdisk::eliminacionFast(string path,string name){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
+  mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
+  fread(&MBR,sizeof(mbr),1,archivo);
+  string nombParticion ="";
+  int existeParticion = 0;
+  int i = 0;
+  for(i;i<4;i++){
+      if(MBR.mbr_particiones[i].part_status=='1'){
+          nombParticion = rNombreParticion(MBR.mbr_particiones[i].part_name);
+          if(nombParticion == name){
+              existeParticion = 1;
+              cout<<i<<endl;
+              break;
+            }
+        }
+    }
+  if(existeParticion==1){
+      MBR.mbr_particiones[i].part_status = '0';
+      for(int j=0;j<15;j++){
+          MBR.mbr_particiones[i].part_name[j] = '\0';
+        }
+      MBR.mbr_particiones[i].part_fit = '-1';
+      MBR.mbr_particiones[i].part_type = '-1';
+      MBR.mbr_particiones[i].part_start = -1;
+      MBR.mbr_particiones[i].part_size = -1;
+      fseek(archivo, 0, SEEK_SET);
+      fwrite(&MBR, sizeof(mbr), 1, archivo);
+    }else{
+      cout<<"*** La particion buscada no se encuentra ***"<<endl;
+    }
+  fclose(archivo);
+  imprimirInfo(path);
+}
+
+void comando_fdisk::eliminacionFull(string path,string name){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
+  mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
+  fread(&MBR,sizeof(mbr),1,archivo);
+  string nombParticion ="";
+  int existeParticion = 0;
+  int i = 0;
+  for(i;i<4;i++){
+      if(MBR.mbr_particiones[i].part_status=='1'){
+          nombParticion = rNombreParticion(MBR.mbr_particiones[i].part_name);
+          if(nombParticion == name){
+              existeParticion = 1;
+              cout<<i<<endl;
+              break;
+            }
+        }
+    }
+
+  if(existeParticion==1){
+      int initPart = MBR.mbr_particiones[i].part_start;
+      int tamPart = MBR.mbr_particiones[i].part_size;
+      char ceros = '\0';
+      cout<<initPart<<endl;
+      cout<<tamPart<<endl;
+      fseek(archivo, initPart, SEEK_SET);
+      for(int j = 0;j<tamPart;j++){
+          fwrite(&ceros,sizeof(ceros),1,archivo);
+        }
+
+      MBR.mbr_particiones[i].part_status = '0';
+      for(int j=0;j<15;j++){
+          MBR.mbr_particiones[i].part_name[j] = '\0';
+        }
+      MBR.mbr_particiones[i].part_fit = '-1';
+      MBR.mbr_particiones[i].part_type = '-1';
+      MBR.mbr_particiones[i].part_start = -1;
+      MBR.mbr_particiones[i].part_size = -1;
+      fseek(archivo, 0, SEEK_SET);
+      fwrite(&MBR, sizeof(mbr), 1, archivo);
+    }else{
+      cout<<"*** La particion buscada no se encuentra ***"<<endl;
+    }
+
+  fclose(archivo);
+  imprimirInfo(path);
+}
+//funcion que retorna el nombre obtenido de un char de 16 posiciones
+string comando_fdisk::rNombreParticion(char nomb[16]){
+  string nombre(nomb);
+  return nombre;
+}

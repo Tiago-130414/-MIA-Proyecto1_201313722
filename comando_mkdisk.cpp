@@ -79,7 +79,7 @@ void comando_mkdisk::generarDisco(int size,string path, string unit, string fit)
       if(aMinuscula(unit)=="k"){
           //CREANDO ARCHIVOS EN KILOBYTES
           //cout<<"size: "<<size<<endl;
-          disco.mbr_tamano = size;
+          disco.mbr_tamano = size *1024;
           for(int i =0;i<1024;i++){
               buffer[i]='\0';
             }
@@ -108,7 +108,7 @@ void comando_mkdisk::generarDisco(int size,string path, string unit, string fit)
       timeinfo = localtime (&rawtime);
       strftime(fC,16,"%d/%m/%y %H:%M",timeinfo);
       strcpy (disco.mbr_fecha_creacion, fC);
-      disco.mbr_disk_signature = (rand()% 100);
+      disco.mbr_disk_signature = rand();
 
       //VALIDANDO EL AJUSTE DEL DISCO
       if(fit=="-1"){

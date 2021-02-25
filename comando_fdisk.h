@@ -36,6 +36,14 @@ public:
   vector<vacios>particionesOcupadas(string path,char ajuste);
   //////////////
   void escribirParticion(int size,int start,string path,char type,string name,char fit);
+  ///////////////////////ELIMINACION
+  void eliminarParticion(string path,string name,string tipoEliminacion);
+
+  void eliminacionFast(string path,string name);
+  void eliminacionFull(string path,string name);
+
+  string rNombreParticion(char nomb[16]);
+
 };
 
 #endif // COMANDO_FDISK_H
