@@ -4,6 +4,7 @@
 #include "libreria.h"
 #include <iostream>
 #include <vector>
+using namespace std;
 class comando_unmount
 {
 public:

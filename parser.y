@@ -196,7 +196,7 @@ PARAMETRO_MOUNT:  menos p_path igual ruta              {valores_mount.push_back(
 ;
 
 
-UNMOUNT: c_unmount menos p_id igual identificador      {valores_unmount.push_back($3);valores_unmount.push_back($5); comando_unmount objunmount; objunmount.ejecutarUnmount(valores_unmount);}
+UNMOUNT: c_unmount menos p_id igual identificador      {valores_unmount.push_back($3);valores_unmount.push_back($5); comando_unmount objunmount; objunmount.ejecutarUnmount(valores_unmount); valores_unmount.clear();}
 ;
 
 

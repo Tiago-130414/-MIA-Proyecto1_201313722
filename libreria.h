@@ -16,4 +16,5 @@ vector<string> descomponerRuta(string ruta);
 bool extensionScriptValida(string nombreArchivo);
 void imprimirInfo(string path);
 void imprimirDisco(string path);
+void mostrarRegistro();//metodo que muestra las particiones montadas en memoria
 #endif // LIBRERIA_H

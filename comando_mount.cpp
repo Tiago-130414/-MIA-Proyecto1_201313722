@@ -88,7 +88,6 @@ void comando_mount::ejecutarMount(vector <string> parametrosMount){
                 }else{
                   cout<<"*** El disco buscado no se encuentra ***"<<endl;
                 }
-
             }else{
               cout<<"*** La extension del disco no es valida ***"<<endl;
             }
@@ -148,19 +147,3 @@ int comando_mount::existeDisco(string ruta){
   return existe;
 }
 
-void comando_mount::mostrarRegistro(){
-  extern vector <disco> registro;
-  int tamanioRegistro = registro.size();
-  for(int i =0;i<tamanioRegistro;i++){
-      int tamanioParticiones = registro[i].particiones.size();
-      cout<<"\n*** DISCO ***"<<endl;
-      cout<<"ID disco: "<<registro[i].id<<endl;
-      cout<<"Ruta disco: "<<registro[i].path<<endl;
-      for(int j=0;j<tamanioParticiones;j++){
-          cout<<endl;
-          cout<<"*** PARTICION "<<j<<" ***"<<endl;
-          cout<<"ID particion: "<<registro[i].particiones[j].id<<endl;
-          cout<<"Nombre particion: "<<registro[i].particiones[j].nombre<<endl;
-        }
-    }
-}

@@ -1750,7 +1750,7 @@ yyreduce:
 
   case 46:
 #line 199 "parser.y"
-                                                       {valores_unmount.push_back((yyvsp[-2].TEXT));valores_unmount.push_back((yyvsp[0].TEXT)); comando_unmount objunmount; objunmount.ejecutarUnmount(valores_unmount);}
+                                                       {valores_unmount.push_back((yyvsp[-2].TEXT));valores_unmount.push_back((yyvsp[0].TEXT)); comando_unmount objunmount; objunmount.ejecutarUnmount(valores_unmount); valores_unmount.clear();}
 #line 1755 "parser.cpp"
     break;
 

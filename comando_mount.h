@@ -13,7 +13,6 @@ public:
   string generarID(int,int);
   int existeParticion(string,string);
   int existeDisco(string);
-  void mostrarRegistro();
 };
 
 #endif // COMANDO_MOUNT_H
