@@ -1,6 +1,7 @@
 #ifndef ESTRUCTURAS_H
 #define ESTRUCTURAS_H
 #include <string>
+#include <vector>
 using namespace std;
 
 typedef struct{
@@ -29,7 +30,8 @@ typedef struct{
   particion mbr_particiones[4];
 }mbr;
 
-
+/////////////////////////////////////
+/////PARA PARTICIONES
 typedef struct{
   int inicioParticion;
   int tamanoParticion;
@@ -39,6 +41,19 @@ typedef struct{
   int inicio;
   int espacioLibre;
 }vacios;
+
+////////////////////////////////////
+//////PARA MOUNT
+typedef struct{
+  string id;
+  string nombre;
+}particionMontada;
+
+typedef struct{
+  int id;
+  string path;
+  vector<particionMontada> particiones;
+}disco;
 
 class estructuras
 {

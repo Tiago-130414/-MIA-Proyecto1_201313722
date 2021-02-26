@@ -54,16 +54,16 @@ extern int yydebug;
     c_fdisk = 260,
     c_mount = 261,
     c_unmount = 262,
-    c_mkfs = 263,
-    c_login = 264,
-    c_mkgrp = 265,
-    c_rmgrp = 266,
-    c_mkusr = 267,
-    c_rmusr = 268,
-    c_chmod = 269,
-    c_mkfile = 270,
-    c_cat = 271,
-    c_rem = 272,
+    c_mkfile = 263,
+    c_cat = 264,
+    c_rem = 265,
+    c_mkfs = 266,
+    c_login = 267,
+    c_mkgrp = 268,
+    c_rmgrp = 269,
+    c_mkusr = 270,
+    c_rmusr = 271,
+    c_chmod = 272,
     c_edit = 273,
     c_ren = 274,
     c_mkdir = 275,
@@ -116,7 +116,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 37 "parser.y"
+#line 44 "parser.y"
 
 //se especifican los tipo de valores para los no terminales y lo terminales
 //char TEXT [256];

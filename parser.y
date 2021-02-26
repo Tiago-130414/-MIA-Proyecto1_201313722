@@ -10,6 +10,8 @@
 #include <comando_rmdisk.h>
 #include <comando_fdisk.h>
 #include <comando_exec.h>
+#include <comando_mount.h>
+#include <comando_unmount.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -20,12 +22,17 @@ vector <string> valores_mkdisk;//titulos en posiciones pares, valores en posicio
 vector <string> valores_rmdisk;
 vector <string> valores_fdisk;
 vector <string> valores_exec;
+vector <string> valores_mount;
+vector <string> valores_unmount;
 int yyerror(const char* mens)
 {
 std::cout << mens <<" "<<yytext<< std::endl;
 valores_fdisk.clear();
 valores_rmdisk.clear();
 valores_mkdisk.clear();
+valores_exec.clear();
+valores_mount.clear();
+valores_unmount.clear();
 return 0;
 }
 %}
@@ -47,6 +54,9 @@ char TEXT[256];
 %token<TEXT> c_fdisk;
 %token<TEXT> c_mount;
 %token<TEXT> c_unmount;
+%token<TEXT> c_mkfile;
+%token<TEXT> c_cat;
+%token<TEXT> c_rem;
 %token<TEXT> c_mkfs;
 %token<TEXT> c_login;
 %token<TEXT> c_mkgrp;
@@ -54,9 +64,6 @@ char TEXT[256];
 %token<TEXT> c_mkusr;
 %token<TEXT> c_rmusr;
 %token<TEXT> c_chmod;
-%token<TEXT> c_mkfile;
-%token<TEXT> c_cat;
-%token<TEXT> c_rem;
 %token<TEXT> c_edit;
 %token<TEXT> c_ren;
 %token<TEXT> c_mkdir;
@@ -121,10 +128,12 @@ LISTA_COMANDOS : LISTA_COMANDOS COMANDOS
                | COMANDOS
 ;
 
-COMANDOS : MKDISK
+COMANDOS :  MKDISK
           | RMDISK
           | FDISK
           | EXEC
+          | MOUNT
+          | UNMOUNT
           | comentario
 ; 
 
@@ -173,6 +182,21 @@ EXEC: c_exec menos p_path igual ruta                   {valores_exec.push_back($
     | c_exec menos p_path igual cadena                 {valores_exec.push_back($3); valores_exec.push_back($5); comando_exec execute; execute.leerScript(valores_exec); valores_exec.clear();}
 ;
 
+MOUNT: c_mount LS_MOUNT                                {comando_mount objmount; objmount.ejecutarMount(valores_mount);valores_mount.clear();}
+;
 
+LS_MOUNT: LS_MOUNT PARAMETRO_MOUNT
+        | PARAMETRO_MOUNT
+;
+
+PARAMETRO_MOUNT:  menos p_path igual ruta              {valores_mount.push_back($2);valores_mount.push_back($4);}
+               |  menos p_path igual cadena            {valores_mount.push_back($2);valores_mount.push_back($4);}
+               |  menos p_name igual cadena            {valores_mount.push_back($2);valores_mount.push_back($4);}
+               |  menos p_name igual identificador     {valores_mount.push_back($2);valores_mount.push_back($4);}
+;
+
+
+UNMOUNT: c_unmount menos p_id igual identificador      {valores_unmount.push_back($3);valores_unmount.push_back($5); comando_unmount objunmount; objunmount.ejecutarUnmount(valores_unmount);}
+;
 
 

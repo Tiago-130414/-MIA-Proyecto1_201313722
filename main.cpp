@@ -4,11 +4,13 @@
 #include <parser.h>  // Nuestro parser
 #include <scanner.h>  // Nuestro scanner
 #include <QTextStream>
+#include <estructuras.h>
 extern int yyparse(); //
 //static QList<discosmontados> discosenmemoria;
 extern int linea; // Linea del token
 extern int columna; // Columna de los tokens
 extern int yylineno;
+vector <disco> registro;
 using namespace std;
 int main()
 {
