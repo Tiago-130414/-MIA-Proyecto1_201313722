@@ -164,3 +164,82 @@ void mostrarRegistro(){
         }
     }
 }
+
+//////metodo que retorna el indice del disco
+string retornarIndiceDisco(string id){
+  string temp;
+  temp = id.substr(2,id.length()-3);
+  return temp;
+}
+
+/////metodo que retorna el MBR de un disco
+mbr retornarMBRdisco(string path){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
+  mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
+  fread(&MBR,sizeof(mbr),1,archivo);
+  fclose(archivo);
+  return MBR;
+}
+
+/////metodo que busca el path del disco
+string retornarPathDisco(int id){
+  extern vector <disco> registro;
+  string path = "-1";
+  int tamanioRegistro = registro.size();
+  for(int i = 0;i<tamanioRegistro;i++){
+      if(registro[i].id==id){
+          path = registro[i].path;
+          break;
+        }
+    }
+  return path;
+}
+
+string retornarNombreParticion(int idDisco,string id){
+  extern vector <disco> registro;
+  string nombParticion = "-1";
+  int tamanioRegistro = registro.size();
+  for(int i = 0;i<tamanioRegistro;i++){
+      if(registro[i].id==idDisco){
+          int tamanioParticiones = registro[i].particiones.size();
+          for(int j=0;j<tamanioParticiones;j++){
+              //cout<<registro[i].particiones[j].id<<endl;
+              if(registro[i].particiones[j].id==aMayuscula(id)){
+                  nombParticion = registro[i].particiones[j].nombre;
+                  break;
+                }
+            }
+          break;
+        }
+    }
+  return nombParticion;
+}
+
+particion retornarParticion(string path,string nombParticion){
+  FILE *archivo;
+  particion part;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
+  mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
+  fread(&MBR,sizeof(mbr),1,archivo);
+  for(int i=0;i<4;i++){
+      if(MBR.mbr_particiones[i].part_status=='1'){
+          if(MBR.mbr_particiones[i].part_name == nombParticion){
+              part = MBR.mbr_particiones[i];
+              break;
+            }
+        }
+    }
+  return part;
+}
+
+string retornarFecha(){
+  char fecha[16];
+  time_t fechaActual;
+  time(&fechaActual);
+  struct tm* informacion = localtime(&fechaActual);
+  strftime(fecha,sizeof(fecha),"%d/%m/%y %H:%M",informacion);
+  return fecha;
+}

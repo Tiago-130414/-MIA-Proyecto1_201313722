@@ -17,4 +17,10 @@ bool extensionScriptValida(string nombreArchivo);
 void imprimirInfo(string path);
 void imprimirDisco(string path);
 void mostrarRegistro();//metodo que muestra las particiones montadas en memoria
+string retornarIndiceDisco(string);
+mbr retornarMBRdisco(string);
+string retornarPathDisco(int);
+string retornarNombreParticion(int,string);
+particion retornarParticion(string path,string nombParticion);
+string retornarFecha();
 #endif // LIBRERIA_H

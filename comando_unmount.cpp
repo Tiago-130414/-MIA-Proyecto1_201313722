@@ -34,6 +34,9 @@ void comando_unmount::ejecutarUnmount(vector<string> parametrosUnmount){
                   break;
                 }
             }
+          if(existeParticion==1){
+              break;
+            }
         }
       if(existeParticion==0){
           cout<<"*** La particion que desea eliminar no existe ***"<<endl;
