@@ -155,6 +155,7 @@ void mostrarRegistro(){
       cout<<"\n*** DISCO ***"<<endl;
       cout<<"ID disco: "<<registro[i].id<<endl;
       cout<<"Ruta disco: "<<registro[i].path<<endl;
+      cout<<"Numero de particiones que se insertaron: "<<registro[i].nParticiones<<endl;
       for(int j=0;j<tamanioParticiones;j++){
           cout<<endl;
           cout<<"*** PARTICION "<<j<<" ***"<<endl;

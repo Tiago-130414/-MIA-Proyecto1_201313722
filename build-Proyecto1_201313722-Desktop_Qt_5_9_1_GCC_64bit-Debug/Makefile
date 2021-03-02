@@ -60,7 +60,8 @@ SOURCES       = ../main.cpp \
 		../comando_fdisk.cpp \
 		../comando_exec.cpp \
 		../comando_mount.cpp \
-		../comando_unmount.cpp 
+		../comando_unmount.cpp \
+		../comando_mkfs.cpp 
 OBJECTS       = main.o \
 		scanner.o \
 		parser.o \
@@ -71,7 +72,8 @@ OBJECTS       = main.o \
 		comando_fdisk.o \
 		comando_exec.o \
 		comando_mount.o \
-		comando_unmount.o
+		comando_unmount.o \
+		comando_mkfs.o
 DIST          = ../lexico.l \
 		../parser.y \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -260,7 +262,8 @@ DIST          = ../lexico.l \
 		../comando_fdisk.h \
 		../comando_exec.h \
 		../comando_mount.h \
-		../comando_unmount.h ../main.cpp \
+		../comando_unmount.h \
+		../comando_mkfs.h ../main.cpp \
 		../scanner.cpp \
 		../parser.cpp \
 		../comando_mkdisk.cpp \
@@ -270,7 +273,8 @@ DIST          = ../lexico.l \
 		../comando_fdisk.cpp \
 		../comando_exec.cpp \
 		../comando_mount.cpp \
-		../comando_unmount.cpp
+		../comando_unmount.cpp \
+		../comando_mkfs.cpp
 QMAKE_TARGET  = Proyecto1_201313722
 DESTDIR       = 
 TARGET        = Proyecto1_201313722
@@ -656,8 +660,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h ../estructuras.h ../comando_rmdisk.h ../libreria.h ../comando_fdisk.h ../comando_exec.h ../comando_mount.h ../comando_unmount.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp ../estructuras.cpp ../comando_rmdisk.cpp ../libreria.cpp ../comando_fdisk.cpp ../comando_exec.cpp ../comando_mount.cpp ../comando_unmount.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h ../estructuras.h ../comando_rmdisk.h ../libreria.h ../comando_fdisk.h ../comando_exec.h ../comando_mount.h ../comando_unmount.h ../comando_mkfs.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp ../estructuras.cpp ../comando_rmdisk.cpp ../libreria.cpp ../comando_fdisk.cpp ../comando_exec.cpp ../comando_mount.cpp ../comando_unmount.cpp ../comando_mkfs.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -769,7 +773,8 @@ main.o: ../main.cpp ../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/QCoreApplicatio
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qcontiguouscache.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer.h \
 		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qshareddata.h \
-		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h
+		../../../Qt5.9.1/5.9.1/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		../estructuras.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../main.cpp
 
 scanner.o: ../scanner.cpp ../parser.h
@@ -846,7 +851,8 @@ parser.o: ../parser.cpp ../scanner.h \
 		../comando_exec.h \
 		../parser.h \
 		../comando_mount.h \
-		../comando_unmount.h
+		../comando_unmount.h \
+		../comando_mkfs.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o parser.o ../parser.cpp
 
 comando_mkdisk.o: ../comando_mkdisk.cpp ../comando_mkdisk.h \
@@ -887,6 +893,11 @@ comando_unmount.o: ../comando_unmount.cpp ../comando_unmount.h \
 		../libreria.h \
 		../estructuras.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o comando_unmount.o ../comando_unmount.cpp
+
+comando_mkfs.o: ../comando_mkfs.cpp ../comando_mkfs.h \
+		../estructuras.h \
+		../libreria.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o comando_mkfs.o ../comando_mkfs.cpp
 
 ####### Install
 

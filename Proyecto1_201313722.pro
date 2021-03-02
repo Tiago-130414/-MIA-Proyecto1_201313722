@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     comando_fdisk.cpp \
     comando_exec.cpp \
     comando_mount.cpp \
-    comando_unmount.cpp
+    comando_unmount.cpp \
+    comando_mkfs.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -46,4 +47,5 @@ HEADERS += \
     comando_fdisk.h \
     comando_exec.h \
     comando_mount.h \
-    comando_unmount.h
+    comando_unmount.h \
+    comando_mkfs.h

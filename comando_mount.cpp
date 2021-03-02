@@ -54,8 +54,9 @@ void comando_mount::ejecutarMount(vector <string> parametrosMount){
                                   if(encontreParticion == 0){
                                       //aqui va la nueva particion
                                       particionMontada nuevaParticion;
-                                      int numeroDisco = registro.size() +1;
-                                      nuevaParticion.id = generarID(registro[i].id,numeroParticiones);
+                                      int actualizarParticiones = registro[i].nParticiones + 1;
+                                      registro[i].nParticiones = actualizarParticiones;
+                                      nuevaParticion.id = generarID(registro[i].id,actualizarParticiones);
                                       nuevaParticion.nombre = name;
                                       registro[i].particiones.push_back(nuevaParticion);
                                       mostrarRegistro();
@@ -77,6 +78,7 @@ void comando_mount::ejecutarMount(vector <string> parametrosMount){
                           //creando disco nuevo
                           nuevoDisco.id =numeroDisco;
                           nuevoDisco.path = path;
+                          nuevoDisco.nParticiones = 0;
                           //insertando
                           nuevoDisco.particiones.push_back(nuevaParticion);
                           registro.push_back(nuevoDisco);

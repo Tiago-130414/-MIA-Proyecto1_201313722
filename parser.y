@@ -12,6 +12,7 @@
 #include <comando_exec.h>
 #include <comando_mount.h>
 #include <comando_unmount.h>
+#include <comando_mkfs.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -24,6 +25,7 @@ vector <string> valores_fdisk;
 vector <string> valores_exec;
 vector <string> valores_mount;
 vector <string> valores_unmount;
+vector <string> valores_mkfs;
 int yyerror(const char* mens)
 {
 std::cout << mens <<" "<<yytext<< std::endl;
@@ -33,6 +35,7 @@ valores_mkdisk.clear();
 valores_exec.clear();
 valores_mount.clear();
 valores_unmount.clear();
+valores_mkfs.clear();
 return 0;
 }
 %}
@@ -134,6 +137,7 @@ COMANDOS :  MKDISK
           | EXEC
           | MOUNT
           | UNMOUNT
+          | MKFS
           | comentario
 ; 
 
@@ -199,4 +203,14 @@ PARAMETRO_MOUNT:  menos p_path igual ruta              {valores_mount.push_back(
 UNMOUNT: c_unmount menos p_id igual identificador      {valores_unmount.push_back($3);valores_unmount.push_back($5); comando_unmount objunmount; objunmount.ejecutarUnmount(valores_unmount); valores_unmount.clear();}
 ;
 
+MKFS: c_mkfs LS_MKFS                                    {comando_mkfs objmkfs;objmkfs.ejecutarMkfs(valores_mkfs);valores_mkfs.clear();}
+;
 
+LS_MKFS: LS_MKFS PARAMETROS_MKFS
+       | PARAMETROS_MKFS
+;
+
+PARAMETROS_MKFS:  menos p_type igual identificador      {valores_mkfs.push_back($2);valores_mkfs.push_back($4);}
+                | menos p_id igual identificador        {valores_mkfs.push_back($2);valores_mkfs.push_back($4);}
+                | menos p_fs igual identificador        {valores_mkfs.push_back($2);valores_mkfs.push_back($4);}
+;

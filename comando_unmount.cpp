@@ -20,22 +20,19 @@ void comando_unmount::ejecutarUnmount(vector<string> parametrosUnmount){
     }
   //verifico si el parametro obligatorio esta en el comando enviado
   if(existeID == 1){
-      cout<<"id->"<<identificador<<endl;
+      //cout<<"id->"<<identificador<<endl;
       //buscar en el registro el id proporcionado
       int tamanioRegistro = registro.size();
       int existeParticion = 0;
       for(int i=0;i<tamanioRegistro;i++){
           int tamanioParticiones = registro[i].particiones.size();
           for(int j=0;j<tamanioParticiones;j++){
-              if(registro[i].particiones[j].id == identificador){
+              if(aMinuscula(registro[i].particiones[j].id) == aMinuscula(identificador)){
                   registro[i].particiones.erase(registro[i].particiones.begin() + j);
                   existeParticion = 1;
                   mostrarRegistro();
                   break;
                 }
-            }
-          if(existeParticion==1){
-              break;
             }
         }
       if(existeParticion==0){
