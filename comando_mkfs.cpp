@@ -136,6 +136,7 @@ superBloque comando_mkfs::llenarSuperBloque(int numeroInodos, int numeroBloques 
   nuevoSuperBloque.s_bm_block_start = sizeof(superBloque) + numeroInodos;
   nuevoSuperBloque.s_inode_start = sizeof(superBloque) + numeroInodos + numeroBloques;
   nuevoSuperBloque.s_block_start = sizeof(superBloque) + numeroInodos + numeroBloques + numeroInodos * sizeof(inodo);
+  imprimirsize();
   return nuevoSuperBloque;
 }
 
@@ -164,4 +165,5 @@ void comando_mkfs::imprimirsize(){
   cout<<"Block: "<< sizeof(carpeta)<<endl;
   cout<<"Carpetas: "<< sizeof(bloqueCarpetas)<<endl;
   cout<<"Bloque apuntadores: "<<sizeof(bloqueApuntadores)<<endl;
+  cout<<"Journal: "<<sizeof(journal)<<endl;
 }

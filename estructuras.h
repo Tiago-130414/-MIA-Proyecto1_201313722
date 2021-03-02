@@ -91,6 +91,16 @@ typedef struct{
 }inodo;
 
 typedef struct{
+  char Journal_Tipo_Operacion[10];
+  char Journal_tipo;
+  char Journal_nombre[200];
+  char Journal_contenido[200];
+  char Journal_fecha[16];
+  char Journal_propietario[10];
+  int Journal_permisos;
+}journal;
+
+typedef struct{
   char b_name[12];
   int b_inodo;
 }carpeta;
