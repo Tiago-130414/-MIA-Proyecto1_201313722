@@ -221,17 +221,20 @@ particion retornarParticion(string path,string nombParticion){
   FILE *archivo;
   particion part;
   archivo = fopen(path.c_str(),"rb+");
-  fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
-  mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
-  fread(&MBR,sizeof(mbr),1,archivo);
-  for(int i=0;i<4;i++){
-      if(MBR.mbr_particiones[i].part_status=='1'){
-          if(MBR.mbr_particiones[i].part_name == nombParticion){
-              part = MBR.mbr_particiones[i];
-              break;
+  if(archivo!= NULL){
+      fseek(archivo, 0, SEEK_SET); //me posiciono en el inicio del archivo
+      mbr MBR;//mbr temporal que agarra el mbr que ya esta en el disco
+      fread(&MBR,sizeof(mbr),1,archivo);
+      for(int i=0;i<4;i++){
+          if(MBR.mbr_particiones[i].part_status=='1'){
+              if(MBR.mbr_particiones[i].part_name == nombParticion){
+                  part = MBR.mbr_particiones[i];
+                  break;
+                }
             }
         }
     }
+  fclose(archivo);
   return part;
 }
 

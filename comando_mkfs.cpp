@@ -86,12 +86,6 @@ string comando_mkfs::reasignarFS(string fs){
 
 //metodo que crea el sistema de archivos
 void comando_mkfs::crearFileSystem(string id,string fs,string type){
-  /*
-  1.- formatear dependiendo del type
-  2.- arreglar ecuaciones para ext3
-  3.- arreglar el superbloque para que sirva para ext2 y ext3
-  4.- escribir el superbloque
-  */
   int idDisco = stoi(retornarIndiceDisco(id));
   string pathDisco = retornarPathDisco(idDisco);
   string nombreParticion = retornarNombreParticion(idDisco,id);
@@ -100,15 +94,44 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
           //se puede buscar particion
           particion particionTemp = retornarParticion(pathDisco,nombreParticion);
           int tamanioParticion = particionTemp.part_size;
-          superBloque nSB;
-          if(fs == "2fs"){
-              int numeroInodos = calcularNumeroBloquesEXT2(tamanioParticion);
-              int numeroBloques = calcularNumeroBloquesEXT2(numeroInodos);
-              nSB = llenarSuperBloque(numeroInodos,numeroBloques,2);
-            }else if(fs == "3fs"){
-
+          int initPart = particionTemp.part_start;
+          //se crea un archivo en caso que haya que formatear y para escribir el superbloque
+          FILE *archivo;
+          archivo = fopen(pathDisco.c_str(),"rb+");
+          /*Se formatea la particion si es full*/
+          if(type == "full"){
+              char ceros = '1';
+              fseek(archivo, initPart, SEEK_SET);
+              for(int j = 0;j<tamanioParticion;j++){
+                  fwrite(&ceros,sizeof(ceros),1,archivo);
+                }
             }
-          cout<<nSB.s_filesystem_type<<endl;
+          /* se crea el super bloque*/
+          superBloque nSB;
+          int numeroInodos;
+          int numeroBloques;
+          int nFileSystem;
+          int tamanioJournal = 0;
+          if(fs == "2fs"){
+              numeroInodos = calcularNumeroInodosEXT2_3(tamanioParticion,tamanioJournal);
+              numeroBloques = calcularNumeroBloquesEXT2_3(numeroInodos);
+              nFileSystem = 2;
+            }else if(fs == "3fs"){
+              tamanioJournal = sizeof(journal);
+              numeroInodos = calcularNumeroInodosEXT2_3(tamanioParticion,tamanioJournal);
+              numeroBloques = calcularNumeroBloquesEXT2_3(numeroInodos);
+              nFileSystem = 3;
+            }
+          nSB = llenarSuperBloque(numeroInodos,numeroBloques,nFileSystem,tamanioJournal);
+          cout<<nSB.s_bm_inode_start<<endl;
+          cout<<nSB.s_bm_block_start<<endl;
+          cout<<nSB.s_inode_start<<endl;
+          cout<<nSB.s_block_start<<endl;
+          /*escribir el super bloque en la particion*/
+          fseek(archivo,initPart,SEEK_SET);
+          fwrite(&nSB,sizeof(superBloque),1,archivo);
+          //cerrar el archivo
+          fclose(archivo);
         }else{
           cout<<"*** La particiones no esta montada ***"<<endl;
         }
@@ -118,7 +141,7 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
 }
 
 //metodo que llena el superbloque
-superBloque comando_mkfs::llenarSuperBloque(int numeroInodos, int numeroBloques ,int fsType){
+superBloque comando_mkfs::llenarSuperBloque(int numeroInodos, int numeroBloques ,int fsType, int journalSize){
   superBloque nuevoSuperBloque;
   nuevoSuperBloque.s_filesystem_type = fsType;
   nuevoSuperBloque.s_inodes_count = numeroInodos;
@@ -132,15 +155,16 @@ superBloque comando_mkfs::llenarSuperBloque(int numeroInodos, int numeroBloques 
   nuevoSuperBloque.s_block_size = sizeof(bloqueCarpetas);
   nuevoSuperBloque.s_first_ino = 0;
   nuevoSuperBloque.s_first_blo = 0;
-  nuevoSuperBloque.s_bm_inode_start = sizeof(superBloque);
-  nuevoSuperBloque.s_bm_block_start = sizeof(superBloque) + numeroInodos;
-  nuevoSuperBloque.s_inode_start = sizeof(superBloque) + numeroInodos + numeroBloques;
-  nuevoSuperBloque.s_block_start = sizeof(superBloque) + numeroInodos + numeroBloques + numeroInodos * sizeof(inodo);
-  imprimirsize();
+  int tamJournal = numeroInodos * journalSize;
+  nuevoSuperBloque.s_bm_inode_start = sizeof(superBloque)+tamJournal;
+  nuevoSuperBloque.s_bm_block_start = sizeof(superBloque) +tamJournal + numeroInodos;
+  nuevoSuperBloque.s_inode_start = sizeof(superBloque) +tamJournal + numeroInodos + numeroBloques;
+  nuevoSuperBloque.s_block_start = sizeof(superBloque)+ tamJournal + numeroInodos + numeroBloques + numeroInodos * sizeof(inodo);
+  imprimirsize();/*n * tamanio journal*/
   return nuevoSuperBloque;
 }
 
-int comando_mkfs::calcularNumeroInodosEXT2(int tamanioParticion){
+int comando_mkfs::calcularNumeroInodosEXT2_3(int tamanioParticion,int tamanioJounal){
   int n;
   int aux;
   int aux2;
@@ -149,12 +173,12 @@ int comando_mkfs::calcularNumeroInodosEXT2(int tamanioParticion){
   int tamanioBlock = sizeof(bloqueCarpetas);
   n = tamanioParticion - tamanioSuperBloque;
   aux2 = 3 * tamanioBlock;
-  aux = 4 + tamanioInodos + aux2;
+  aux = 4 + tamanioJounal + tamanioInodos + aux2;
   n = floor(n/aux);
   return n;
 }
 
-int comando_mkfs::calcularNumeroBloquesEXT2(int numeroInodos){
+int comando_mkfs::calcularNumeroBloquesEXT2_3(int numeroInodos){
   return 3*numeroInodos;
 }
 

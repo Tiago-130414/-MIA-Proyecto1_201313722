@@ -19,9 +19,9 @@ public:
   string reasignarFS(string);
   void imprimirsize();
   void crearFileSystem(string,string,string);
-  int calcularNumeroInodosEXT2(int);
-  int calcularNumeroBloquesEXT2(int);
-  superBloque llenarSuperBloque(int, int,int);
+  int calcularNumeroInodosEXT2_3(int,int);
+  int calcularNumeroBloquesEXT2_3(int);
+  superBloque llenarSuperBloque(int, int,int,int);
 
 };
 
