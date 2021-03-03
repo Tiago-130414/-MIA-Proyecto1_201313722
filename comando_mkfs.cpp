@@ -118,11 +118,14 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
               nFileSystem = 2;
             }else if(fs == "3fs"){
               tamanioJournal = sizeof(journal);
+              cout<<tamanioJournal<<endl;
               numeroInodos = calcularNumeroInodosEXT2_3(tamanioParticion,tamanioJournal);
               numeroBloques = calcularNumeroBloquesEXT2_3(numeroInodos);
               nFileSystem = 3;
             }
-          nSB = llenarSuperBloque(numeroInodos,numeroBloques,nFileSystem,tamanioJournal);
+          cout<< numeroInodos<<endl;
+          cout<< numeroBloques<<endl;
+          nSB = llenarSuperBloque(numeroInodos,numeroBloques,nFileSystem,tamanioJournal,initPart);
           cout<<nSB.s_bm_inode_start<<endl;
           cout<<nSB.s_bm_block_start<<endl;
           cout<<nSB.s_inode_start<<endl;
@@ -131,7 +134,9 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
           fseek(archivo,initPart,SEEK_SET);
           fwrite(&nSB,sizeof(superBloque),1,archivo);
           //cerrar el archivo
+
           fclose(archivo);
+
         }else{
           cout<<"*** La particiones no esta montada ***"<<endl;
         }
@@ -141,7 +146,7 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
 }
 
 //metodo que llena el superbloque
-superBloque comando_mkfs::llenarSuperBloque(int numeroInodos, int numeroBloques ,int fsType, int journalSize){
+superBloque comando_mkfs::llenarSuperBloque(int numeroInodos, int numeroBloques ,int fsType, int journalSize, int initPart){
   superBloque nuevoSuperBloque;
   nuevoSuperBloque.s_filesystem_type = fsType;
   nuevoSuperBloque.s_inodes_count = numeroInodos;
@@ -156,11 +161,10 @@ superBloque comando_mkfs::llenarSuperBloque(int numeroInodos, int numeroBloques 
   nuevoSuperBloque.s_first_ino = 0;
   nuevoSuperBloque.s_first_blo = 0;
   int tamJournal = numeroInodos * journalSize;
-  nuevoSuperBloque.s_bm_inode_start = sizeof(superBloque)+tamJournal;
-  nuevoSuperBloque.s_bm_block_start = sizeof(superBloque) +tamJournal + numeroInodos;
-  nuevoSuperBloque.s_inode_start = sizeof(superBloque) +tamJournal + numeroInodos + numeroBloques;
-  nuevoSuperBloque.s_block_start = sizeof(superBloque)+ tamJournal + numeroInodos + numeroBloques + numeroInodos * sizeof(inodo);
-  imprimirsize();/*n * tamanio journal*/
+  nuevoSuperBloque.s_bm_inode_start = initPart + sizeof(superBloque)+ tamJournal;
+  nuevoSuperBloque.s_bm_block_start = initPart + sizeof(superBloque) + tamJournal + numeroInodos;
+  nuevoSuperBloque.s_inode_start = initPart + sizeof(superBloque) + tamJournal + numeroInodos + numeroBloques;
+  nuevoSuperBloque.s_block_start = initPart + sizeof(superBloque) + tamJournal + numeroInodos + numeroBloques + numeroInodos * sizeof(inodo);
   return nuevoSuperBloque;
 }
 

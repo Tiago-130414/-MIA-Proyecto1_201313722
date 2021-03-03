@@ -23,4 +23,5 @@ string retornarPathDisco(int);
 string retornarNombreParticion(int,string);
 particion retornarParticion(string path,string nombParticion);
 string retornarFecha();
+superBloque retornarSuperBloque(string,int);
 #endif // LIBRERIA_H

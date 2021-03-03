@@ -246,3 +246,24 @@ string retornarFecha(){
   strftime(fecha,sizeof(fecha),"%d/%m/%y %H:%M",informacion);
   return fecha;
 }
+
+/////retornar superbloque
+superBloque retornarSuperBloque(string path,int partInit){
+ FILE *archivo;
+ archivo = fopen(path.c_str(),"rb+");
+ fseek(archivo, partInit, SEEK_SET); //me posiciono en el inicio del archivo
+ superBloque sbTemp;//superbloque temporal que agarra el superbloque que ya esta en el disco
+ fread(&sbTemp,sizeof(superBloque),1,archivo);
+ fclose(archivo);
+ return sbTemp;
+}
+
+void escribirSuperBloque(string path, int partInit , superBloque sbTemp){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo, partInit, SEEK_SET); //me posiciono en el inicio del archivo
+  fwrite(&archivo,sizeof(superBloque),1,archivo);
+  fclose(archivo);
+}
+
+

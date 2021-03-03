@@ -116,6 +116,12 @@ typedef struct{
 typedef struct{
   int b_pointers [16];
 }bloqueApuntadores;
+/////////////////////////////////////
+/////PARA ESPACIOS EN PARTICIONES
+typedef struct{
+  int inicio;
+  int tamano;
+}bm_espacio;
 
 class estructuras
 {
