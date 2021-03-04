@@ -136,7 +136,7 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
           fclose(archivo);
           //string prueba = leerBitmapI(pathDisco,initPart);
           //vector <bm_espacio> espaciosI(retornarEspaciosVacios("1000010000001011111111101111111111111"));
-          inicializarFileSystem(pathDisco,initPart);
+          inicializarFileSystem(pathDisco,initPart,type);
         }else{
           cout<<"*** La particiones no esta montada ***"<<endl;
         }
@@ -198,7 +198,7 @@ void comando_mkfs::imprimirsize(){
 
 ///////////CREAR RAIZ Y USUARIOS POR DEFECTO
 
-void comando_mkfs::inicializarFileSystem(string path , int initPart){
+void comando_mkfs::inicializarFileSystem(string path , int initPart,string type){
 
   ////inodo de raiz
   inodo inodoNuevo;
@@ -263,8 +263,27 @@ void comando_mkfs::inicializarFileSystem(string path , int initPart){
   escribirSuperBloque(path,initPart,sb);
   FILE *archivo;
   archivo = fopen(path.c_str(),"rb+");
+
   fseek(archivo,initPart,SEEK_SET);
   fwrite(&sb,sizeof(superBloque),1,archivo);
+  //antes de escribir el bitmap de inodos y de bloques lleno de ceros
+  if(type == "fast"){
+      char ceros = '0';
+      fseek(archivo, sb.s_bm_block_start, SEEK_SET);
+      //formateando bitmap de inodos por si el tipo de formateo es fast
+      fseek(archivo, sb.s_bm_inode_start, SEEK_SET);
+      int bm = sb.s_inodes_count;
+      for(int j = 0;j<bm;j++){
+          fwrite(&ceros,sizeof(ceros),1,archivo);
+        }
+
+      //formateando bitmap de bloques por si el tipo de formateo es fast
+      bm = sb.s_blocks_count;
+      for(int j = 0;j<bm;j++){
+          fwrite(&ceros,sizeof(ceros),1,archivo);
+        }
+
+    }
   //marco los inodos y bloques usados en el bitmap
   char bm_usado = '1';
 
