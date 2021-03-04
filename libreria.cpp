@@ -354,3 +354,14 @@ vector<bm_espacio> retornarEspaciosVacios(string bm){
   return espaciosVacios;
 }
 
+/////retornar posicion donde va colocado el inodo
+int retornarPosicionInodo(int inodeStart , int indiceInodo){
+  int calculo = inodeStart + indiceInodo * sizeof(inodo);
+  return calculo;
+}
+
+/////retornar posicion donde va colocado el bloque
+int retornarPosicionBloque(int blockStart , int indiceBloque){
+  int calculo = blockStart + indiceBloque* sizeof(bloqueCarpetas);
+  return calculo;
+}

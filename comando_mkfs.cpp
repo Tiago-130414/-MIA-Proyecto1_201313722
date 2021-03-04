@@ -251,6 +251,7 @@ void comando_mkfs::inicializarFileSystem(string path , int initPart){
   contenidoArchivoUsr += "1,U,root,123\n";
   strcpy(nuevoArchivo.b_content,contenidoArchivoUsr.c_str());
 
+  //reasignando valores del superbloque
   superBloque sb (retornarSuperBloque(path,initPart));
   cout<<"inicio de particion "<<initPart<<endl;
   sb.s_free_blocks_count = sb.s_free_blocks_count - 2;
@@ -259,35 +260,40 @@ void comando_mkfs::inicializarFileSystem(string path , int initPart){
   sb.s_first_ino = 2;
 
   //escribo el superbloque
-  //escribirSuperBloque(path,initPart,sb);
+  escribirSuperBloque(path,initPart,sb);
   FILE *archivo;
   archivo = fopen(path.c_str(),"rb+");
   fseek(archivo,initPart,SEEK_SET);
   fwrite(&sb,sizeof(superBloque),1,archivo);
-  //fclose(archivo);
   //marco los inodos y bloques usados en el bitmap
-
   char bm_usado = '1';
-  //marco el bitmap de inodos
-  fseek(archivo, sb.s_bm_inode_start, SEEK_SET);
-  fwrite(&bm_usado,sizeof(char),1,archivo);
-  //marco el bitmap de bloques
-  fseek(archivo, sb.s_bm_block_start, SEEK_SET);
-  fwrite(&bm_usado,sizeof(char),1,archivo);
-  //escribir los inodos
-  fseek(archivo, sb.s_bm_inode_start, SEEK_SET);
+
+  //marcando el bitmap de inodos
+  fseek(archivo,sb.s_bm_inode_start, SEEK_SET);
+  fwrite(&bm_usado,sizeof(bm_usado),1,archivo);
+  fwrite(&bm_usado,sizeof(bm_usado),1,archivo);
+
+  //marcando el bitmap de bloques
+  fseek(archivo,sb.s_bm_block_start, SEEK_SET);
+  fwrite(&bm_usado,sizeof(bm_usado),1,archivo);
+  fwrite(&bm_usado,sizeof(bm_usado),1,archivo);
+
+  //escribir los inodos en tabla de inodos de la raiz
+  fseek(archivo, retornarPosicionInodo(sb.s_inode_start,0), SEEK_SET);
   fwrite(&inodoNuevo,sizeof(inodo),1,archivo);
-  //escribir el inodo del archivo
-  int nextIno = sb.s_bm_inode_start + sizeof(inodo);
-  fseek(archivo,nextIno, SEEK_SET);
+
+  //escribir los inodos en tabla de inodos de archivos
+  fseek(archivo, retornarPosicionInodo(sb.s_inode_start,1), SEEK_SET);
   fwrite(&inodoArchivo,sizeof(inodo),1,archivo);
-  //escribir el bloque raiz
-  fseek(archivo, sb.s_bm_block_start, SEEK_SET);
+
+  //escribir los bloques en la tabla de bloques de carpetas
+  fseek(archivo, retornarPosicionBloque(sb.s_block_start,0), SEEK_SET);
   fwrite(&nuevoBloqueCarpetas,sizeof(bloqueCarpetas),1,archivo);
-  //escribir el bloque de archivo
-  int nextBlo = sb.s_bm_block_start + sizeof(bloqueCarpetas);
-  fseek(archivo, nextBlo, SEEK_SET);
-  fwrite(&nuevoArchivo,sizeof(bloqueCarpetas),1,archivo);
+
+  //escribir los bloques en la tabla de bloques de archivos
+  fseek(archivo, retornarPosicionBloque(sb.s_block_start,1), SEEK_SET);
+  fwrite(&nuevoArchivo,sizeof(bloqueArchivos),1,archivo);
+
   fclose(archivo);
 }
 

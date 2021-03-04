@@ -28,4 +28,6 @@ string leerBitmapI(string,int);
 string leerBitmapB(string,int);
 vector<bm_espacio> retornarEspaciosVacios(string);
 void escribirSuperBloque(string, int, superBloque);
+int retornarPosicionInodo(int, int);
+int retornarPosicionBloque(int, int);
 #endif // LIBRERIA_H
