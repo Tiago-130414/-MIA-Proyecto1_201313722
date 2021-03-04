@@ -96,8 +96,9 @@ typedef struct{
   char Journal_nombre[200];
   char Journal_contenido[200];
   char Journal_fecha[16];
-  char Journal_propietario[10];
+  int Journal_propietario;
   int Journal_permisos;
+  int Journal_GID;//group id
 }journal;
 
 typedef struct{

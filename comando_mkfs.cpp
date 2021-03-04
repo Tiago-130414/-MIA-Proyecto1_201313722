@@ -282,8 +282,35 @@ void comando_mkfs::inicializarFileSystem(string path , int initPart,string type)
       for(int j = 0;j<bm;j++){
           fwrite(&ceros,sizeof(ceros),1,archivo);
         }
-
     }
+
+  //si el sistema de archivos es de tipo EXT3
+  if(sb.s_filesystem_type == 3){
+      journal pivote;
+      pivote.Journal_permisos = 1;
+      //escribiendo el pivote
+      fseek(archivo,retornarPosicionJournal(initPart,0),SEEK_SET);
+      fwrite(&pivote,sizeof(journal),1,archivo);
+
+      journal raiz;
+      string tpOperacion = "mkfs";
+      char tipo ='0';
+      string nombre = "/";
+      string fecha = retornarFecha();
+      int prop = 1;
+      int permisos = 664;
+
+      strcpy(raiz.Journal_Tipo_Operacion,tpOperacion.c_str());
+      raiz.Journal_tipo = tipo;
+      strcpy(raiz.Journal_nombre,nombre.c_str());
+      strcpy(raiz.Journal_fecha,fecha.c_str());
+      raiz.Journal_propietario = prop;
+      raiz.Journal_permisos = permisos;
+
+      fseek(archivo,retornarPosicionJournal(initPart,1),SEEK_SET);
+      fwrite(&raiz,sizeof(journal),1,archivo);
+    }
+
   //marco los inodos y bloques usados en el bitmap
   char bm_usado = '1';
 

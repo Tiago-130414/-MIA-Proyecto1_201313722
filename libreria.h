@@ -30,4 +30,7 @@ vector<bm_espacio> retornarEspaciosVacios(string);
 void escribirSuperBloque(string, int, superBloque);
 int retornarPosicionInodo(int, int);
 int retornarPosicionBloque(int, int);
+journal retornarJournal(string, int);
+int retornarPosicionJournal(int,int);
+
 #endif // LIBRERIA_H

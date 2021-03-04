@@ -365,3 +365,23 @@ int retornarPosicionBloque(int blockStart , int indiceBloque){
   int calculo = blockStart + indiceBloque* sizeof(bloqueCarpetas);
   return calculo;
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// JOURNAL ///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
+journal retornarJournal(string path, int partInit){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo,partInit,SEEK_SET);
+  journal journalPivote;
+  fread(&journalPivote,sizeof(journal),1,archivo);
+  fclose(archivo);
+  return journalPivote;
+}
+
+int retornarPosicionJournal(int partStart,int indice){
+  int aux = indice * sizeof(journal);
+  int calculo = partStart + sizeof(superBloque) + aux;
+  return calculo;
+}
