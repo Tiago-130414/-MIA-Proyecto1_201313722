@@ -24,4 +24,8 @@ string retornarNombreParticion(int,string);
 particion retornarParticion(string path,string nombParticion);
 string retornarFecha();
 superBloque retornarSuperBloque(string,int);
+string leerBitmapI(string,int);
+string leerBitmapB(string,int);
+vector<bm_espacio> retornarEspaciosVacios(string);
+void escribirSuperBloque(string, int, superBloque);
 #endif // LIBRERIA_H

@@ -22,7 +22,8 @@ public:
   int calcularNumeroInodosEXT2_3(int,int);
   int calcularNumeroBloquesEXT2_3(int);
   superBloque llenarSuperBloque(int, int,int,int,int);
-
+  void inicializarFileSystem(string,int);
+  string retornarNombreApuntador(int);
 };
 
 #endif // COMANDO_MKFS_H

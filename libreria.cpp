@@ -165,6 +165,10 @@ void mostrarRegistro(){
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// DISCO ////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
 //////metodo que retorna el indice del disco
 string retornarIndiceDisco(string id){
   string temp;
@@ -196,6 +200,10 @@ string retornarPathDisco(int id){
     }
   return path;
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// PARTICION //////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 
 string retornarNombreParticion(int idDisco,string id){
   extern vector <disco> registro;
@@ -247,23 +255,102 @@ string retornarFecha(){
   return fecha;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// SUPER BLOQUE /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 /////retornar superbloque
 superBloque retornarSuperBloque(string path,int partInit){
- FILE *archivo;
- archivo = fopen(path.c_str(),"rb+");
- fseek(archivo, partInit, SEEK_SET); //me posiciono en el inicio del archivo
- superBloque sbTemp;//superbloque temporal que agarra el superbloque que ya esta en el disco
- fread(&sbTemp,sizeof(superBloque),1,archivo);
- fclose(archivo);
- return sbTemp;
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo, partInit, SEEK_SET); //me posiciono en el inicio del archivo
+  superBloque sbTemp;//superbloque temporal que agarra el superbloque que ya esta en el disco
+  fread(&sbTemp,sizeof(superBloque),1,archivo);
+  fclose(archivo);
+  return sbTemp;
 }
 
+/////sobreescribir el superbloque
 void escribirSuperBloque(string path, int partInit , superBloque sbTemp){
   FILE *archivo;
   archivo = fopen(path.c_str(),"rb+");
   fseek(archivo, partInit, SEEK_SET); //me posiciono en el inicio del archivo
-  fwrite(&archivo,sizeof(superBloque),1,archivo);
+  fwrite(&sbTemp,sizeof(superBloque),1,archivo);
   fclose(archivo);
 }
 
+/////leer el bitmap de inodos
+string leerBitmapI(string path,int partInit){
+  string bitmap="";
+  superBloque sb = retornarSuperBloque(path,partInit);
+  int initBMI = sb.s_bm_inode_start;
+  int tamanioBMI = sb.s_inodes_count;
+  char temp[tamanioBMI];
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo,initBMI,SEEK_SET);
+  fread(&temp,tamanioBMI,1,archivo);
+  for(int i=0;i<tamanioBMI;i++){
+      bitmap += temp[i];
+    }
+  fclose(archivo);
+  return bitmap;
+}
+
+/////leer el bitmap de bloques
+string leerBitmapB(string path,int partInit){
+  string bitmap="";
+  superBloque sb = retornarSuperBloque(path,partInit);
+  int initBMB = sb.s_bm_block_start;
+  int tamanioBMB = sb.s_blocks_count;
+  char temp[tamanioBMB];
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo,initBMB,SEEK_SET);
+  fread(&temp,tamanioBMB,1,archivo);
+  for(int i=0;i<tamanioBMB;i++){
+      bitmap += temp[i];
+    }
+  fclose(archivo);
+  return bitmap;
+}
+
+vector<bm_espacio> retornarEspaciosVacios(string bm){
+  vector<bm_espacio> espaciosVacios;
+  //obteniendo tamano de cadena para crear un arreglo de char de este tamanio
+  int bmSize = bm.length();
+  //creando un arreglo para guardar el bitmap
+  char bitmap[bmSize];
+  //guardando cadena que trae bitmap en el vector de chars
+  strcpy(bitmap,bm.c_str());
+  //llenando el vector de bm_espacios
+  for(int i=0;i<bmSize;i++){
+      int bandera = 0;
+      int inicio;
+      int fin;
+      if(bitmap[i] == '0'){
+          inicio = i;
+          for(int j = i;j<bmSize;j++){
+              if(bitmap[j]!='0'){
+                  fin = j-1;
+                  i = j;
+                  bandera = 1;
+                  break;
+                }else{
+                  int temp = j + 1;
+                  if(temp==bmSize){
+                      fin = bmSize-1;
+                      i = j;
+                      bandera = 1;
+                    }
+                }
+            }
+        }
+      if(bandera == 1){
+          int tam = fin - inicio + 1;
+          cout<<"inicio: "<<inicio<<" fin: "<<fin<<" tamanio: "<<tam<<endl;
+          //aqui deberia de ingresar al vector de espacios el bm_espacios
+        }
+    }
+  return espaciosVacios;
+}
 

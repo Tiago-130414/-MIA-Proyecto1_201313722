@@ -100,7 +100,7 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
           archivo = fopen(pathDisco.c_str(),"rb+");
           /*Se formatea la particion si es full*/
           if(type == "full"){
-              char ceros = '1';
+              char ceros = '0';
               fseek(archivo, initPart, SEEK_SET);
               for(int j = 0;j<tamanioParticion;j++){
                   fwrite(&ceros,sizeof(ceros),1,archivo);
@@ -118,7 +118,6 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
               nFileSystem = 2;
             }else if(fs == "3fs"){
               tamanioJournal = sizeof(journal);
-              cout<<tamanioJournal<<endl;
               numeroInodos = calcularNumeroInodosEXT2_3(tamanioParticion,tamanioJournal);
               numeroBloques = calcularNumeroBloquesEXT2_3(numeroInodos);
               nFileSystem = 3;
@@ -134,9 +133,10 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
           fseek(archivo,initPart,SEEK_SET);
           fwrite(&nSB,sizeof(superBloque),1,archivo);
           //cerrar el archivo
-
           fclose(archivo);
-
+          //string prueba = leerBitmapI(pathDisco,initPart);
+          //vector <bm_espacio> espaciosI(retornarEspaciosVacios("1000010000001011111111101111111111111"));
+          inicializarFileSystem(pathDisco,initPart);
         }else{
           cout<<"*** La particiones no esta montada ***"<<endl;
         }
@@ -194,4 +194,103 @@ void comando_mkfs::imprimirsize(){
   cout<<"Carpetas: "<< sizeof(bloqueCarpetas)<<endl;
   cout<<"Bloque apuntadores: "<<sizeof(bloqueApuntadores)<<endl;
   cout<<"Journal: "<<sizeof(journal)<<endl;
+}
+
+///////////CREAR RAIZ Y USUARIOS POR DEFECTO
+
+void comando_mkfs::inicializarFileSystem(string path , int initPart){
+
+  ////inodo de raiz
+  inodo inodoNuevo;
+  inodoNuevo.i_uid = 1;
+  inodoNuevo.i_gid = 1;
+  inodoNuevo.i_size = 0;
+  strcpy(inodoNuevo.i_atime,retornarFecha().c_str()); //ultima fecha de lectura
+  strcpy(inodoNuevo.i_ctime,retornarFecha().c_str()); //fecha de creacion
+  strcpy(inodoNuevo.i_mtime,retornarFecha().c_str()); //ultima fecha en que se modifico el inodo
+  for(int i=0;i<15;i++){
+      inodoNuevo.i_block[i] = -1; //inicializando el vector de apuntadores
+    }
+  inodoNuevo.i_block[0] = 0;
+  inodoNuevo.i_type = 0; //es cero si es una carpeta
+  inodoNuevo.i_perm  = 664;
+
+  ////bloque de carpeta para raiz
+  bloqueCarpetas nuevoBloqueCarpetas;
+  string usr = "user.txt";
+  string pad = "..";
+  string self = ".";
+  string nBloqueVacio ="-";
+  nuevoBloqueCarpetas.b_content[0].b_inodo = 0;
+  strcpy(nuevoBloqueCarpetas.b_content[2].b_name,self.c_str());
+  nuevoBloqueCarpetas.b_content[1].b_inodo = 0;
+  strcpy(nuevoBloqueCarpetas.b_content[1].b_name,pad.c_str());
+  nuevoBloqueCarpetas.b_content[2].b_inodo = 1;
+  strcpy(nuevoBloqueCarpetas.b_content[2].b_name,usr.c_str());
+  nuevoBloqueCarpetas.b_content[3].b_inodo = -1;
+  strcpy(nuevoBloqueCarpetas.b_content[3].b_name,nBloqueVacio.c_str());
+
+  ////inodo de archivo usuarios
+  inodo inodoArchivo;
+  inodoArchivo.i_uid = 1;
+  inodoArchivo.i_gid = 1;
+  inodoArchivo.i_size = 0;
+  strcpy(inodoArchivo.i_atime,retornarFecha().c_str()); //ultima fecha de lectura
+  strcpy(inodoArchivo.i_ctime,retornarFecha().c_str()); //fecha de creacion
+  strcpy(inodoArchivo.i_mtime,retornarFecha().c_str()); //ultima fecha en que se modifico el inodo
+  for(int i=0;i<15;i++){
+      inodoArchivo.i_block[i] = -1; //inicializando el vector de apuntadores
+    }
+  inodoArchivo.i_block[0] = 1;
+  inodoArchivo.i_type = 1; //es cero si es una carpeta
+  inodoArchivo.i_perm  = 664;
+
+  ////bloque de archivos de usuario
+  bloqueArchivos nuevoArchivo;
+  string contenidoArchivoUsr = "1,G,root\n";
+  contenidoArchivoUsr += "1,U,root,123\n";
+  strcpy(nuevoArchivo.b_content,contenidoArchivoUsr.c_str());
+
+  superBloque sb (retornarSuperBloque(path,initPart));
+  cout<<"inicio de particion "<<initPart<<endl;
+  sb.s_free_blocks_count = sb.s_free_blocks_count - 2;
+  sb.s_free_inodes_count = sb.s_free_inodes_count - 2;
+  sb.s_first_blo = 2;
+  sb.s_first_ino = 2;
+
+  //escribo el superbloque
+  //escribirSuperBloque(path,initPart,sb);
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo,initPart,SEEK_SET);
+  fwrite(&sb,sizeof(superBloque),1,archivo);
+  //fclose(archivo);
+  //marco los inodos y bloques usados en el bitmap
+
+  char bm_usado = '1';
+  //marco el bitmap de inodos
+  fseek(archivo, sb.s_bm_inode_start, SEEK_SET);
+  fwrite(&bm_usado,sizeof(char),1,archivo);
+  //marco el bitmap de bloques
+  fseek(archivo, sb.s_bm_block_start, SEEK_SET);
+  fwrite(&bm_usado,sizeof(char),1,archivo);
+  //escribir los inodos
+  fseek(archivo, sb.s_bm_inode_start, SEEK_SET);
+  fwrite(&inodoNuevo,sizeof(inodo),1,archivo);
+  //escribir el inodo del archivo
+  int nextIno = sb.s_bm_inode_start + sizeof(inodo);
+  fseek(archivo,nextIno, SEEK_SET);
+  fwrite(&inodoArchivo,sizeof(inodo),1,archivo);
+  //escribir el bloque raiz
+  fseek(archivo, sb.s_bm_block_start, SEEK_SET);
+  fwrite(&nuevoBloqueCarpetas,sizeof(bloqueCarpetas),1,archivo);
+  //escribir el bloque de archivo
+  int nextBlo = sb.s_bm_block_start + sizeof(bloqueCarpetas);
+  fseek(archivo, nextBlo, SEEK_SET);
+  fwrite(&nuevoArchivo,sizeof(bloqueCarpetas),1,archivo);
+  fclose(archivo);
+}
+
+string comando_mkfs::retornarNombreApuntador(int id){
+  return "AP"+id;
 }
