@@ -249,7 +249,7 @@ void comando_mkfs::inicializarFileSystem(string path , int initPart,string type)
   ////bloque de archivos de usuario
   bloqueArchivos nuevoArchivo;
   string contenidoArchivoUsr = "1,G,root\n";
-  contenidoArchivoUsr += "1,U,root,123\n";
+  contenidoArchivoUsr += "1,U,root,root,123\n";
   strcpy(nuevoArchivo.b_content,contenidoArchivoUsr.c_str());
 
   //reasignando valores del superbloque

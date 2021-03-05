@@ -123,7 +123,12 @@ typedef struct{
   int inicio;
   int tamano;
 }bm_espacio;
-
+/////////////////////////////////////
+/////PARA USUARIOS
+typedef struct{
+  string usuario;
+  string id;
+}datosUSR;
 class estructuras
 {
 public:

@@ -13,6 +13,7 @@
 #include <comando_mount.h>
 #include <comando_unmount.h>
 #include <comando_mkfs.h>
+#include <comando_login.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -26,6 +27,7 @@ vector <string> valores_exec;
 vector <string> valores_mount;
 vector <string> valores_unmount;
 vector <string> valores_mkfs;
+vector <string> valores_login;
 int yyerror(const char* mens)
 {
 std::cout << mens <<" "<<yytext<< std::endl;
@@ -36,6 +38,7 @@ valores_exec.clear();
 valores_mount.clear();
 valores_unmount.clear();
 valores_mkfs.clear();
+valores_login.clear();
 return 0;
 }
 %}
@@ -139,6 +142,8 @@ COMANDOS :  MKDISK
           | UNMOUNT
           | MKFS
           | comentario
+          | LOGIN
+          | c_logout
 ; 
 
 MKDISK : c_mkdisk LS_PAR_MKDISK {
@@ -214,3 +219,17 @@ PARAMETROS_MKFS:  menos p_type igual identificador      {valores_mkfs.push_back(
                 | menos p_id igual identificador        {valores_mkfs.push_back($2);valores_mkfs.push_back($4);}
                 | menos p_fs igual identificador        {valores_mkfs.push_back($2);valores_mkfs.push_back($4);}
  ;
+
+LOGIN: c_login LS_LOGIN                                 {comando_login objlogin;objlogin.ejecutarLogin(valores_login);valores_login.clear();}
+;
+
+LS_LOGIN: LS_LOGIN PARAMETROS_LOGIN
+        | PARAMETROS_LOGIN
+;
+
+PARAMETROS_LOGIN: menos p_usr igual identificador      {valores_login.push_back($2);valores_login.push_back($4);}
+                | menos p_usr igual cadena             {valores_login.push_back($2);valores_login.push_back($4);}
+                | menos p_pwd igual entero             {valores_login.push_back($2);valores_login.push_back($4);}
+                | menos p_pwd igual cadena             {valores_login.push_back($2);valores_login.push_back($4);}
+                | menos p_id igual identificador       {valores_login.push_back($2);valores_login.push_back($4);}
+;
