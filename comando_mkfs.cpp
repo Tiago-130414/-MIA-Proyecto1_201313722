@@ -100,7 +100,7 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
           archivo = fopen(pathDisco.c_str(),"rb+");
           /*Se formatea la particion si es full*/
           if(type == "full"){
-              char ceros = '0';
+              char ceros = '\0';
               fseek(archivo, initPart, SEEK_SET);
               for(int j = 0;j<tamanioParticion;j++){
                   fwrite(&ceros,sizeof(ceros),1,archivo);
@@ -122,18 +122,19 @@ void comando_mkfs::crearFileSystem(string id,string fs,string type){
               numeroBloques = calcularNumeroBloquesEXT2_3(numeroInodos);
               nFileSystem = 3;
             }
-          cout<< numeroInodos<<endl;
-          cout<< numeroBloques<<endl;
+          cout<<"n: "<< numeroInodos<<endl;
+          cout<<"3n: "<< numeroBloques<<endl;
           nSB = llenarSuperBloque(numeroInodos,numeroBloques,nFileSystem,tamanioJournal,initPart);
-          cout<<nSB.s_bm_inode_start<<endl;
+          /*cout<<nSB.s_bm_inode_start<<endl;
           cout<<nSB.s_bm_block_start<<endl;
           cout<<nSB.s_inode_start<<endl;
-          cout<<nSB.s_block_start<<endl;
+          cout<<nSB.s_block_start<<endl;*/
           /*escribir el super bloque en la particion*/
           fseek(archivo,initPart,SEEK_SET);
           fwrite(&nSB,sizeof(superBloque),1,archivo);
           //cerrar el archivo
           fclose(archivo);
+          //imprimirsize();
           //string prueba = leerBitmapI(pathDisco,initPart);
           //vector <bm_espacio> espaciosI(retornarEspaciosVacios("1000010000001011111111101111111111111"));
           inicializarFileSystem(pathDisco,initPart,type);
@@ -264,21 +265,20 @@ void comando_mkfs::inicializarFileSystem(string path , int initPart,string type)
   FILE *archivo;
   archivo = fopen(path.c_str(),"rb+");
 
-  fseek(archivo,initPart,SEEK_SET);
-  fwrite(&sb,sizeof(superBloque),1,archivo);
   //antes de escribir el bitmap de inodos y de bloques lleno de ceros
-  if(type == "fast"){
+  if(type == "fast" || type=="full"){
       char ceros = '0';
-      fseek(archivo, sb.s_bm_block_start, SEEK_SET);
+
       //formateando bitmap de inodos por si el tipo de formateo es fast
-      fseek(archivo, sb.s_bm_inode_start, SEEK_SET);
       int bm = sb.s_inodes_count;
+      fseek(archivo, sb.s_bm_inode_start, SEEK_SET);
       for(int j = 0;j<bm;j++){
           fwrite(&ceros,sizeof(ceros),1,archivo);
         }
 
       //formateando bitmap de bloques por si el tipo de formateo es fast
       bm = sb.s_blocks_count;
+      fseek(archivo, sb.s_bm_block_start, SEEK_SET);
       for(int j = 0;j<bm;j++){
           fwrite(&ceros,sizeof(ceros),1,archivo);
         }
@@ -286,29 +286,53 @@ void comando_mkfs::inicializarFileSystem(string path , int initPart,string type)
 
   //si el sistema de archivos es de tipo EXT3
   if(sb.s_filesystem_type == 3){
+      //Escribiendo journal pivote
       journal pivote;
-      pivote.Journal_permisos = 1;
+      string t = "pivote";
+      strcpy(pivote.Journal_nombre,t.c_str());
+      pivote.Journal_permisos = 3;
       //escribiendo el pivote
       fseek(archivo,retornarPosicionJournal(initPart,0),SEEK_SET);
       fwrite(&pivote,sizeof(journal),1,archivo);
 
+      //escribiendo journal de carpeta raiz
       journal raiz;
       string tpOperacion = "mkfs";
       char tipo ='0';
       string nombre = "/";
       string fecha = retornarFecha();
-      int prop = 1;
-      int permisos = 664;
 
       strcpy(raiz.Journal_Tipo_Operacion,tpOperacion.c_str());
       raiz.Journal_tipo = tipo;
       strcpy(raiz.Journal_nombre,nombre.c_str());
       strcpy(raiz.Journal_fecha,fecha.c_str());
-      raiz.Journal_propietario = prop;
-      raiz.Journal_permisos = permisos;
+      raiz.Journal_propietario = 1;
+      raiz.Journal_GID =1;
+      raiz.Journal_permisos = 664;
 
       fseek(archivo,retornarPosicionJournal(initPart,1),SEEK_SET);
       fwrite(&raiz,sizeof(journal),1,archivo);
+
+      //escribiendo journal de archivo usuarios.txt
+      journal archTXT;
+      tipo = '1';
+      nombre = "/users.txt";
+      fecha = retornarFecha();
+      strcpy(archTXT.Journal_Tipo_Operacion,tpOperacion.c_str());
+      archTXT.Journal_tipo = tipo;
+      strcpy(archTXT.Journal_nombre,nombre.c_str());
+      strcpy(archTXT.Journal_contenido,contenidoArchivoUsr.c_str());
+      strcpy(archTXT.Journal_fecha,fecha.c_str());
+      archTXT.Journal_propietario = 1;
+      archTXT.Journal_GID = 1;
+      archTXT.Journal_permisos = 664;
+
+      fseek(archivo,retornarPosicionJournal(initPart,2),SEEK_SET);
+      fwrite(&archTXT,sizeof(journal),1,archivo);
+
+
+      //escribirJournal
+
     }
 
   //marco los inodos y bloques usados en el bitmap
@@ -341,6 +365,8 @@ void comando_mkfs::inicializarFileSystem(string path , int initPart,string type)
   fwrite(&nuevoArchivo,sizeof(bloqueArchivos),1,archivo);
 
   fclose(archivo);
+
+  recorrerJournal(path,initPart);
 }
 
 string comando_mkfs::retornarNombreApuntador(int id){

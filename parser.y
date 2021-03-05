@@ -213,4 +213,4 @@ LS_MKFS: LS_MKFS PARAMETROS_MKFS
 PARAMETROS_MKFS:  menos p_type igual identificador      {valores_mkfs.push_back($2);valores_mkfs.push_back($4);}
                 | menos p_id igual identificador        {valores_mkfs.push_back($2);valores_mkfs.push_back($4);}
                 | menos p_fs igual identificador        {valores_mkfs.push_back($2);valores_mkfs.push_back($4);}
-;
+ ;

@@ -32,5 +32,6 @@ int retornarPosicionInodo(int, int);
 int retornarPosicionBloque(int, int);
 journal retornarJournal(string, int);
 int retornarPosicionJournal(int,int);
-
+void recorrerJournal(string, int);
+void escribirJournal(string, int,journal);
 #endif // LIBRERIA_H

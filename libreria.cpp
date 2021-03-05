@@ -369,19 +369,58 @@ int retornarPosicionBloque(int blockStart , int indiceBloque){
 ////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// JOURNAL ///////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
-
+//retorna el journal pivote
 journal retornarJournal(string path, int partInit){
   FILE *archivo;
   archivo = fopen(path.c_str(),"rb+");
-  fseek(archivo,partInit,SEEK_SET);
+  fseek(archivo,retornarPosicionJournal(partInit,0),SEEK_SET);
   journal journalPivote;
   fread(&journalPivote,sizeof(journal),1,archivo);
   fclose(archivo);
   return journalPivote;
 }
 
+//retorna la posicion del journal segun el indice
 int retornarPosicionJournal(int partStart,int indice){
   int aux = indice * sizeof(journal);
   int calculo = partStart + sizeof(superBloque) + aux;
   return calculo;
+}
+
+//muestra los journal
+void recorrerJournal(string path, int partInit){
+  journal jorTemp (retornarJournal(path,partInit));
+  int ind = jorTemp.Journal_permisos;
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  journal t;
+  for(int i = 1;i<ind;i++){
+      fseek(archivo,retornarPosicionJournal(partInit,i),SEEK_SET);
+      fread(&t,sizeof(journal),1,archivo);
+      printf(t.Journal_nombre);
+      cout<<t.Journal_permisos<<endl;
+      cout<<"\n"<<endl;
+    }
+  fclose(archivo);
+}
+
+//escribir journal
+void escribirJournal(string path, int partInit,journal nuevoJournal){
+  //obtengo el journal pivote
+  journal pivote(retornarJournal(path,partInit));
+  //capturo el indice que me servira para el nuevo journal
+  int ind = pivote.Journal_permisos;
+  //genero un aux que contiene la posicion siguiente que iria otro nuevo journal
+  int aux = ind+1;
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  //asigno el aux al pivote
+  pivote.Journal_permisos = aux;
+  //escribo el posicion para otro nuevo journal en el journal pivote
+  fseek(archivo,retornarPosicionJournal(partInit,0),SEEK_SET);
+  fwrite(&pivote,sizeof(journal),1,archivo);
+  //escribo el nuevo journal
+  fseek(archivo,retornarPosicionJournal(partInit,ind),SEEK_SET);
+  fwrite(&nuevoJournal,sizeof(journal),1,archivo);
+  fclose(archivo);
 }
