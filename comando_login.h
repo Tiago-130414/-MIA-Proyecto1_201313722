@@ -12,9 +12,10 @@ public:
   comando_login();
   void ejecutarLogin(vector<string>);
   void validarDatos(string, string,string);
-  vector<string>obtenerDatos(string);
-  vector<string>splitPorComasUSR(string);
-  void analizarUsuarios(vector<string>);
+  vector<datosUSR>obtenerDatos(string);
+  vector<datosUSR>splitPorComasUSR(string);
+  datosUSR analizarUsuarios(vector<string>);
+  void realizarLogin(vector<datosUSR>,string,string);
 };
 
 #endif // COMANDO_LOGIN_H

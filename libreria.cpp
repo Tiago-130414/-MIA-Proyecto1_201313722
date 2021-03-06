@@ -366,6 +366,43 @@ int retornarPosicionBloque(int blockStart , int indiceBloque){
   return calculo;
 }
 
+inodo retornarInodo(string path,int partInit,int indice){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  superBloque sbTemp (retornarSuperBloque(path,partInit));
+  int posIno = retornarPosicionInodo(sbTemp.s_inode_start,indice);
+  inodo inoTemp;
+  fseek(archivo, posIno, SEEK_SET);
+  fread(&inoTemp,sizeof(inodo),1,archivo);
+  fclose(archivo);
+  return inoTemp;
+}
+
+bloqueArchivos retornarBloqueArchivos(string path,int partInit,int indice){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  superBloque sbTemp (retornarSuperBloque(path,partInit));
+  int posBlo = retornarPosicionBloque(sbTemp.s_block_start,indice);
+  bloqueArchivos bloTemp;
+  fseek(archivo, posBlo, SEEK_SET);
+  fread(&bloTemp,sizeof(bloqueArchivos),1,archivo);
+  fclose(archivo);
+  return bloTemp;
+}
+
+bloqueCarpetas retornarBloqueCarpetas(string path,int partInit,int indice){
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  superBloque sbTemp (retornarSuperBloque(path,partInit));
+  int posBlo = retornarPosicionBloque(sbTemp.s_block_start,indice);
+  bloqueCarpetas bloTemp;
+  fseek(archivo, posBlo, SEEK_SET);
+  fread(&bloTemp,sizeof(bloqueCarpetas),1,archivo);
+  fclose(archivo);
+  return bloTemp;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// JOURNAL ///////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
@@ -423,4 +460,55 @@ void escribirJournal(string path, int partInit,journal nuevoJournal){
   fseek(archivo,retornarPosicionJournal(partInit,ind),SEEK_SET);
   fwrite(&nuevoJournal,sizeof(journal),1,archivo);
   fclose(archivo);
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// LEER INODOS /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
+
+int recorrerSistemaArchivos(vector<string> ruta, inodo pivote,string path,int initPart){
+  int tamR = ruta.size();
+  int ind = -1;
+  int encontre = 0;
+  //recorre el vector de ruta
+  for(int i = 0;i<tamR;i++){
+      //recorre los punteros del inodo pivote
+      ind = -1;
+      string direccion =ruta[i];
+      for(int j =0;j<12;j++){
+          if(pivote.i_block[j]!=-1){
+              //buscando el bloque de carpeta
+              bloqueCarpetas carpetas (retornarBloqueCarpetas(path,initPart,pivote.i_block[j]));
+              for(int k = 0;k<4;k++){
+                  //cout<<direccion<<"---"<<carpetas.b_content[k].b_name<<endl;
+                  if(direccion == carpetas.b_content[k].b_name){
+                      pivote = retornarInodo(path,initPart,carpetas.b_content[k].b_inodo);
+                      ind = carpetas.b_content[k].b_inodo;
+                    }
+                }
+
+            }
+        }
+      if(ind == -1){
+        break;
+      }
+    }
+  return ind;
+}
+
+string recorrerBloqueArchivos(int ind,string path,int initPart){
+  string texto;
+  inodo nodoArchivo = retornarInodo(path,initPart,ind);
+  int limiteCaracteres = nodoArchivo.i_size;
+  for(int i = 0;i<12;i++){
+    if(nodoArchivo.i_block[i]!=-1){
+      bloqueArchivos archivo = retornarBloqueArchivos(path,initPart,nodoArchivo.i_block[i]);
+      for (int j = 0; j < limiteCaracteres && j<64; j++)
+      {
+        texto += archivo.b_content[j];
+      }
+    }
+  }
+  return texto;
 }

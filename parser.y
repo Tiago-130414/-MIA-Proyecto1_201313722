@@ -231,5 +231,6 @@ PARAMETROS_LOGIN: menos p_usr igual identificador      {valores_login.push_back(
                 | menos p_usr igual cadena             {valores_login.push_back($2);valores_login.push_back($4);}
                 | menos p_pwd igual entero             {valores_login.push_back($2);valores_login.push_back($4);}
                 | menos p_pwd igual cadena             {valores_login.push_back($2);valores_login.push_back($4);}
+                | menos p_pwd igual identificador      {valores_login.push_back($2);valores_login.push_back($4);}
                 | menos p_id igual identificador       {valores_login.push_back($2);valores_login.push_back($4);}
 ;

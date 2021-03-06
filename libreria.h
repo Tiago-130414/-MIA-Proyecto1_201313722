@@ -34,4 +34,10 @@ journal retornarJournal(string, int);
 int retornarPosicionJournal(int,int);
 void recorrerJournal(string, int);
 void escribirJournal(string, int,journal);
+inodo retornarInodo(string,int,int);
+int recorrerSistemaArchivos(vector<string>,inodo,string,int);
+bloqueArchivos retornarBloqueArchivos(string,int,int);
+bloqueCarpetas retornarBloqueCarpetas(string,int,int);
+int recorrerBloqueCarpetas(int,string,string,int);
+string recorrerBloqueArchivos(int,string,int);
 #endif // LIBRERIA_H

@@ -127,7 +127,7 @@ typedef struct{
 /////PARA USUARIOS
 typedef struct{
   string usuario;
-  string id;
+  string contrasena;
 }datosUSR;
 class estructuras
 {

@@ -48,9 +48,20 @@ void comando_login::validarDatos(string usuario, string password,string id){
   if(pathDisco != "-1"){
       if(nombreParticion != "-1"){
           particion particionTemp = retornarParticion(pathDisco,nombreParticion);
-          string contenidoArchivoUsr = "1,G,root\n";
-          contenidoArchivoUsr += "1,U,root,root,123\n";
-          vector<string> temp(obtenerDatos(contenidoArchivoUsr));
+          int initPart = particionTemp.part_start;
+          superBloque sb (retornarSuperBloque(pathDisco,particionTemp.part_start));
+          if(sb.s_filesystem_type != 2 ||sb.s_filesystem_type != 3){
+              inodo primerInodo(retornarInodo(pathDisco,initPart,0));
+              vector<string> ruta (descomponerRuta("/users.txt"));
+              int temp = recorrerSistemaArchivos(ruta, primerInodo,pathDisco,initPart);
+              string usuariosArchivo = recorrerBloqueArchivos(temp,pathDisco,initPart);
+              if(!usuariosArchivo.empty()){
+                vector<datosUSR> temp(obtenerDatos(usuariosArchivo));
+                realizarLogin(temp,usuario,password);
+              }
+            }else{
+              cout<<"*** No existe un sistema de archivos ***"<<endl;
+            }
         }else{
           cout<<"*** La particion que se busco para iniciar sesion no se encuentra montada ***"<<endl;
         }
@@ -59,25 +70,23 @@ void comando_login::validarDatos(string usuario, string password,string id){
     }
 }
 
-
-vector<string> comando_login::obtenerDatos(string usuarios){
-  vector<string> datos;
+vector<datosUSR> comando_login::obtenerDatos(string usuarios){
+  vector<datosUSR> datos;
   int posInit = 0;
   int posFound = 0;
   string splitted;
   string pattern = "\n";
-  //cout<<rTemp<<endl;
-  vector<string> usuario;
   while(posFound >= 0){
       posFound = usuarios.find(pattern, posInit);
       splitted = usuarios.substr(posInit, posFound - posInit);
       posInit = posFound + 1;
-      usuario = splitPorComasUSR(splitted);
+      vector <datosUSR> temp(splitPorComasUSR(splitted));
+      copy(temp.begin(),temp.end(),back_inserter(datos));
     }
   return datos;
 }
 
-vector<string> comando_login::splitPorComasUSR(string usuario){
+vector<datosUSR> comando_login::splitPorComasUSR(string usuario){
   vector<string> datos;
   int posInit = 0;
   int posFound = 0;
@@ -89,18 +98,49 @@ vector<string> comando_login::splitPorComasUSR(string usuario){
       posInit = posFound + 1;
       datos.push_back(splitted);
     }
-  analizarUsuarios(datos);
-  return datos;
+  vector<datosUSR> usuariosEnInodos;
+  datosUSR usr (analizarUsuarios(datos));
+  if(!usr.usuario.empty() && usr.usuario!="-1"){
+      usuariosEnInodos.push_back(usr);
+    }
+  return usuariosEnInodos;
 }
 
-void comando_login::analizarUsuarios(vector<string> usuario){
+datosUSR comando_login::analizarUsuarios(vector<string> usuario){
   datosUSR nuevoUsr;
   if(usuario.size()==5){
-      cout<<usuario[3]<<endl;
-      cout<<usuario[4]<<endl;
+      nuevoUsr.usuario = usuario[3];
+      nuevoUsr.contrasena = usuario[4];
+    }else{
+      nuevoUsr.usuario == "-1";
+      nuevoUsr.contrasena == "-1";
     }
+  return nuevoUsr;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////// VALIDAR USUARIOS ///////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
+void comando_login::realizarLogin(vector<datosUSR>usuariosSistema,string nombre,string contra){
+  extern string usuario;
+  int encontreUS = 0;
+  for(int i = 0;i<usuariosSistema.size();i++){
+      if(usuariosSistema[i].usuario == nombre){
+          if(usuariosSistema[i].contrasena == contra){
+              usuario = nombre;
+              encontreUS = 1;
+              break;
+            }
+        }
+    }
+  if(encontreUS == 0){
+      cout<<"*** Problema con nombre de usuario o contrasena ***"<<endl;
+    }else{
+      cout<<"->>> Inicio sesion correctamente "<< nombre<<" <<<-"<<endl;
+    }
+}
 
 
 
