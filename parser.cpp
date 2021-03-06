@@ -83,6 +83,7 @@
 #include <comando_unmount.h>
 #include <comando_mkfs.h>
 #include <comando_login.h>
+#include <comando_logout.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -111,7 +112,7 @@ valores_login.clear();
 return 0;
 }
 
-#line 115 "parser.cpp"
+#line 116 "parser.cpp"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -226,14 +227,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 50 "parser.y"
+#line 51 "parser.y"
 
 //se especifican los tipo de valores para los no terminales y lo terminales
 //char TEXT [256];
 //QString TEXT;
 char TEXT[256];
 
-#line 237 "parser.cpp"
+#line 238 "parser.cpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -631,13 +632,13 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   131,   131,   133,   134,   137,   138,   139,   140,   141,
-     142,   143,   144,   145,   146,   149,   154,   155,   158,   159,
-     160,   161,   162,   165,   166,   169,   172,   173,   176,   177,
-     178,   179,   180,   181,   182,   183,   184,   185,   186,   187,
-     190,   191,   194,   197,   198,   201,   202,   203,   204,   208,
-     211,   214,   215,   218,   219,   220,   223,   226,   227,   230,
-     231,   232,   233,   234,   235
+       0,   132,   132,   134,   135,   138,   139,   140,   141,   142,
+     143,   144,   145,   146,   147,   150,   155,   156,   159,   160,
+     161,   162,   163,   166,   167,   170,   173,   174,   177,   178,
+     179,   180,   181,   182,   183,   184,   185,   186,   187,   188,
+     191,   192,   195,   198,   199,   202,   203,   204,   205,   209,
+     212,   215,   216,   219,   220,   221,   224,   227,   228,   231,
+     232,   233,   234,   235,   236
 };
 #endif
 
@@ -1607,251 +1608,257 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
+  case 14:
+#line 147 "parser.y"
+                                                       {comando_logout objlogout;objlogout.ejecutarLogout();}
+#line 1615 "parser.cpp"
+    break;
+
   case 15:
-#line 149 "parser.y"
+#line 150 "parser.y"
                                 {
      comando_mkdisk objmkdisk;
      objmkdisk.ejecutarMkdisk(valores_mkdisk); valores_mkdisk.clear();
 }
-#line 1617 "parser.cpp"
+#line 1624 "parser.cpp"
     break;
 
   case 18:
-#line 158 "parser.y"
+#line 159 "parser.y"
                                                        {valores_mkdisk.push_back((yyvsp[-2].TEXT));valores_mkdisk.push_back((yyvsp[0].TEXT));}
-#line 1623 "parser.cpp"
+#line 1630 "parser.cpp"
     break;
 
   case 19:
-#line 159 "parser.y"
+#line 160 "parser.y"
                                                        {valores_mkdisk.push_back((yyvsp[-2].TEXT));valores_mkdisk.push_back((yyvsp[0].TEXT));}
-#line 1629 "parser.cpp"
+#line 1636 "parser.cpp"
     break;
 
   case 20:
-#line 160 "parser.y"
+#line 161 "parser.y"
                                                        {valores_mkdisk.push_back((yyvsp[-2].TEXT));valores_mkdisk.push_back((yyvsp[0].TEXT));}
-#line 1635 "parser.cpp"
+#line 1642 "parser.cpp"
     break;
 
   case 21:
-#line 161 "parser.y"
+#line 162 "parser.y"
                                                        {valores_mkdisk.push_back((yyvsp[-2].TEXT));valores_mkdisk.push_back((yyvsp[0].TEXT));}
-#line 1641 "parser.cpp"
+#line 1648 "parser.cpp"
     break;
 
   case 22:
-#line 162 "parser.y"
+#line 163 "parser.y"
                                                        {valores_mkdisk.push_back((yyvsp[-2].TEXT));valores_mkdisk.push_back((yyvsp[0].TEXT));}
-#line 1647 "parser.cpp"
+#line 1654 "parser.cpp"
     break;
 
   case 23:
-#line 165 "parser.y"
+#line 166 "parser.y"
                                                        {valores_rmdisk.push_back((yyvsp[0].TEXT)); comando_rmdisk objrmdisk; objrmdisk.eliminarDisco(valores_rmdisk); valores_rmdisk.clear();}
-#line 1653 "parser.cpp"
+#line 1660 "parser.cpp"
     break;
 
   case 24:
-#line 166 "parser.y"
+#line 167 "parser.y"
                                                        {valores_rmdisk.push_back((yyvsp[0].TEXT)); comando_rmdisk objrmdisk; objrmdisk.eliminarDisco(valores_rmdisk); valores_rmdisk.clear();}
-#line 1659 "parser.cpp"
+#line 1666 "parser.cpp"
     break;
 
   case 25:
-#line 169 "parser.y"
+#line 170 "parser.y"
                                                        {comando_fdisk objfdisk;objfdisk.ejecutarFdisk(valores_fdisk);valores_fdisk.clear();}
-#line 1665 "parser.cpp"
+#line 1672 "parser.cpp"
     break;
 
   case 28:
-#line 176 "parser.y"
+#line 177 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1671 "parser.cpp"
+#line 1678 "parser.cpp"
     break;
 
   case 29:
-#line 177 "parser.y"
+#line 178 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1677 "parser.cpp"
+#line 1684 "parser.cpp"
     break;
 
   case 30:
-#line 178 "parser.y"
+#line 179 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1683 "parser.cpp"
+#line 1690 "parser.cpp"
     break;
 
   case 31:
-#line 179 "parser.y"
+#line 180 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1689 "parser.cpp"
+#line 1696 "parser.cpp"
     break;
 
   case 32:
-#line 180 "parser.y"
+#line 181 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1695 "parser.cpp"
+#line 1702 "parser.cpp"
     break;
 
   case 33:
-#line 181 "parser.y"
+#line 182 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1701 "parser.cpp"
+#line 1708 "parser.cpp"
     break;
 
   case 34:
-#line 182 "parser.y"
+#line 183 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1707 "parser.cpp"
+#line 1714 "parser.cpp"
     break;
 
   case 35:
-#line 183 "parser.y"
+#line 184 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1713 "parser.cpp"
+#line 1720 "parser.cpp"
     break;
 
   case 36:
-#line 184 "parser.y"
+#line 185 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1719 "parser.cpp"
+#line 1726 "parser.cpp"
     break;
 
   case 37:
-#line 185 "parser.y"
+#line 186 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1725 "parser.cpp"
+#line 1732 "parser.cpp"
     break;
 
   case 38:
-#line 186 "parser.y"
+#line 187 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1731 "parser.cpp"
+#line 1738 "parser.cpp"
     break;
 
   case 39:
-#line 187 "parser.y"
+#line 188 "parser.y"
                                                        {valores_fdisk.push_back((yyvsp[-2].TEXT));valores_fdisk.push_back((yyvsp[0].TEXT));}
-#line 1737 "parser.cpp"
+#line 1744 "parser.cpp"
     break;
 
   case 40:
-#line 190 "parser.y"
+#line 191 "parser.y"
                                                        {valores_exec.push_back((yyvsp[-2].TEXT)); valores_exec.push_back((yyvsp[0].TEXT)); comando_exec execute; execute.leerScript(valores_exec); valores_exec.clear();}
-#line 1743 "parser.cpp"
+#line 1750 "parser.cpp"
     break;
 
   case 41:
-#line 191 "parser.y"
+#line 192 "parser.y"
                                                        {valores_exec.push_back((yyvsp[-2].TEXT)); valores_exec.push_back((yyvsp[0].TEXT)); comando_exec execute; execute.leerScript(valores_exec); valores_exec.clear();}
-#line 1749 "parser.cpp"
+#line 1756 "parser.cpp"
     break;
 
   case 42:
-#line 194 "parser.y"
+#line 195 "parser.y"
                                                        {comando_mount objmount; objmount.ejecutarMount(valores_mount);valores_mount.clear();}
-#line 1755 "parser.cpp"
+#line 1762 "parser.cpp"
     break;
 
   case 45:
-#line 201 "parser.y"
+#line 202 "parser.y"
                                                        {valores_mount.push_back((yyvsp[-2].TEXT));valores_mount.push_back((yyvsp[0].TEXT));}
-#line 1761 "parser.cpp"
+#line 1768 "parser.cpp"
     break;
 
   case 46:
-#line 202 "parser.y"
+#line 203 "parser.y"
                                                        {valores_mount.push_back((yyvsp[-2].TEXT));valores_mount.push_back((yyvsp[0].TEXT));}
-#line 1767 "parser.cpp"
+#line 1774 "parser.cpp"
     break;
 
   case 47:
-#line 203 "parser.y"
+#line 204 "parser.y"
                                                        {valores_mount.push_back((yyvsp[-2].TEXT));valores_mount.push_back((yyvsp[0].TEXT));}
-#line 1773 "parser.cpp"
+#line 1780 "parser.cpp"
     break;
 
   case 48:
-#line 204 "parser.y"
+#line 205 "parser.y"
                                                        {valores_mount.push_back((yyvsp[-2].TEXT));valores_mount.push_back((yyvsp[0].TEXT));}
-#line 1779 "parser.cpp"
+#line 1786 "parser.cpp"
     break;
 
   case 49:
-#line 208 "parser.y"
+#line 209 "parser.y"
                                                        {valores_unmount.push_back((yyvsp[-2].TEXT));valores_unmount.push_back((yyvsp[0].TEXT)); comando_unmount objunmount; objunmount.ejecutarUnmount(valores_unmount); valores_unmount.clear();}
-#line 1785 "parser.cpp"
+#line 1792 "parser.cpp"
     break;
 
   case 50:
-#line 211 "parser.y"
+#line 212 "parser.y"
                                                         {comando_mkfs objmkfs;objmkfs.ejecutarMkfs(valores_mkfs);valores_mkfs.clear();}
-#line 1791 "parser.cpp"
+#line 1798 "parser.cpp"
     break;
 
   case 53:
-#line 218 "parser.y"
+#line 219 "parser.y"
                                                         {valores_mkfs.push_back((yyvsp[-2].TEXT));valores_mkfs.push_back((yyvsp[0].TEXT));}
-#line 1797 "parser.cpp"
+#line 1804 "parser.cpp"
     break;
 
   case 54:
-#line 219 "parser.y"
+#line 220 "parser.y"
                                                         {valores_mkfs.push_back((yyvsp[-2].TEXT));valores_mkfs.push_back((yyvsp[0].TEXT));}
-#line 1803 "parser.cpp"
+#line 1810 "parser.cpp"
     break;
 
   case 55:
-#line 220 "parser.y"
+#line 221 "parser.y"
                                                         {valores_mkfs.push_back((yyvsp[-2].TEXT));valores_mkfs.push_back((yyvsp[0].TEXT));}
-#line 1809 "parser.cpp"
+#line 1816 "parser.cpp"
     break;
 
   case 56:
-#line 223 "parser.y"
+#line 224 "parser.y"
                                                         {comando_login objlogin;objlogin.ejecutarLogin(valores_login);valores_login.clear();}
-#line 1815 "parser.cpp"
+#line 1822 "parser.cpp"
     break;
 
   case 59:
-#line 230 "parser.y"
+#line 231 "parser.y"
                                                        {valores_login.push_back((yyvsp[-2].TEXT));valores_login.push_back((yyvsp[0].TEXT));}
-#line 1821 "parser.cpp"
+#line 1828 "parser.cpp"
     break;
 
   case 60:
-#line 231 "parser.y"
+#line 232 "parser.y"
                                                        {valores_login.push_back((yyvsp[-2].TEXT));valores_login.push_back((yyvsp[0].TEXT));}
-#line 1827 "parser.cpp"
+#line 1834 "parser.cpp"
     break;
 
   case 61:
-#line 232 "parser.y"
+#line 233 "parser.y"
                                                        {valores_login.push_back((yyvsp[-2].TEXT));valores_login.push_back((yyvsp[0].TEXT));}
-#line 1833 "parser.cpp"
+#line 1840 "parser.cpp"
     break;
 
   case 62:
-#line 233 "parser.y"
+#line 234 "parser.y"
                                                        {valores_login.push_back((yyvsp[-2].TEXT));valores_login.push_back((yyvsp[0].TEXT));}
-#line 1839 "parser.cpp"
+#line 1846 "parser.cpp"
     break;
 
   case 63:
-#line 234 "parser.y"
+#line 235 "parser.y"
                                                        {valores_login.push_back((yyvsp[-2].TEXT));valores_login.push_back((yyvsp[0].TEXT));}
-#line 1845 "parser.cpp"
+#line 1852 "parser.cpp"
     break;
 
   case 64:
-#line 235 "parser.y"
+#line 236 "parser.y"
                                                        {valores_login.push_back((yyvsp[-2].TEXT));valores_login.push_back((yyvsp[0].TEXT));}
-#line 1851 "parser.cpp"
+#line 1858 "parser.cpp"
     break;
 
 
-#line 1855 "parser.cpp"
+#line 1862 "parser.cpp"
 
       default: break;
     }

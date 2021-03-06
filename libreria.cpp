@@ -402,6 +402,16 @@ bloqueCarpetas retornarBloqueCarpetas(string path,int partInit,int indice){
   return bloTemp;
 }
 
+void actualizarFechaInodo(string path,int initPart,int ind){
+  inodo in = retornarInodo(path,initPart,ind);
+  strcpy(in.i_atime,retornarFecha().c_str());
+  superBloque sb = retornarSuperBloque(path,initPart);
+  FILE *archivo;
+  archivo = fopen(path.c_str(),"rb+");
+  fseek(archivo,retornarPosicionInodo(sb.s_inode_start,ind),SEEK_SET);
+  fwrite(&in,sizeof(inodo),1,archivo);
+  fclose(archivo);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// JOURNAL ///////////////////////////////////////////
@@ -471,6 +481,8 @@ int recorrerSistemaArchivos(vector<string> ruta, inodo pivote,string path,int in
   int tamR = ruta.size();
   int ind = -1;
   int encontre = 0;
+  //actualizando fecha de la raiz
+  actualizarFechaInodo(path,initPart,0);
   //recorre el vector de ruta
   for(int i = 0;i<tamR;i++){
       //recorre los punteros del inodo pivote
@@ -484,6 +496,7 @@ int recorrerSistemaArchivos(vector<string> ruta, inodo pivote,string path,int in
                   //cout<<direccion<<"---"<<carpetas.b_content[k].b_name<<endl;
                   if(direccion == carpetas.b_content[k].b_name){
                       pivote = retornarInodo(path,initPart,carpetas.b_content[k].b_inodo);
+                      actualizarFechaInodo(path,initPart,carpetas.b_content[k].b_inodo);
                       ind = carpetas.b_content[k].b_inodo;
                     }
                 }

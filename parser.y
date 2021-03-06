@@ -14,6 +14,7 @@
 #include <comando_unmount.h>
 #include <comando_mkfs.h>
 #include <comando_login.h>
+#include <comando_logout.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -143,7 +144,7 @@ COMANDOS :  MKDISK
           | MKFS
           | comentario
           | LOGIN
-          | c_logout
+          | c_logout                                   {comando_logout objlogout;objlogout.ejecutarLogout();}
 ; 
 
 MKDISK : c_mkdisk LS_PAR_MKDISK {

@@ -56,9 +56,9 @@ void comando_login::validarDatos(string usuario, string password,string id){
               int temp = recorrerSistemaArchivos(ruta, primerInodo,pathDisco,initPart);
               string usuariosArchivo = recorrerBloqueArchivos(temp,pathDisco,initPart);
               if(!usuariosArchivo.empty()){
-                vector<datosUSR> temp(obtenerDatos(usuariosArchivo));
-                realizarLogin(temp,usuario,password);
-              }
+                  vector<datosUSR> temp(obtenerDatos(usuariosArchivo));
+                  realizarLogin(temp,usuario,password);
+                }
             }else{
               cout<<"*** No existe un sistema de archivos ***"<<endl;
             }
@@ -126,21 +126,28 @@ datosUSR comando_login::analizarUsuarios(vector<string> usuario){
 void comando_login::realizarLogin(vector<datosUSR>usuariosSistema,string nombre,string contra){
   extern string usuario;
   int encontreUS = 0;
-  for(int i = 0;i<usuariosSistema.size();i++){
-      if(usuariosSistema[i].usuario == nombre){
-          if(usuariosSistema[i].contrasena == contra){
-              usuario = nombre;
-              encontreUS = 1;
-              break;
+  if(usuario.empty()){
+      for(int i = 0;i<usuariosSistema.size();i++){
+          if(usuariosSistema[i].usuario == nombre){
+              if(usuariosSistema[i].contrasena == contra){
+                  usuario = nombre;
+                  encontreUS = 1;
+                  break;
+                }
             }
         }
+    }else{
+      cout<<"*** Ya hay un usuario logueado, es necesario cerrar sesion antes de iniciar una nueva ***"<<endl;
+      encontreUS = 2;
     }
+
   if(encontreUS == 0){
       cout<<"*** Problema con nombre de usuario o contrasena ***"<<endl;
-    }else{
+    }else if(encontreUS == 1){
       cout<<"->>> Inicio sesion correctamente "<< nombre<<" <<<-"<<endl;
     }
 }
 
-
-
+////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////// VALIDAR USUARIOS ///////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////

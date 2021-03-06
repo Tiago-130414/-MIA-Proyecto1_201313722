@@ -62,7 +62,8 @@ SOURCES       = ../main.cpp \
 		../comando_mount.cpp \
 		../comando_unmount.cpp \
 		../comando_mkfs.cpp \
-		../comando_login.cpp 
+		../comando_login.cpp \
+		../comando_logout.cpp 
 OBJECTS       = main.o \
 		scanner.o \
 		parser.o \
@@ -75,7 +76,8 @@ OBJECTS       = main.o \
 		comando_mount.o \
 		comando_unmount.o \
 		comando_mkfs.o \
-		comando_login.o
+		comando_login.o \
+		comando_logout.o
 DIST          = ../lexico.l \
 		../parser.y \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -266,7 +268,8 @@ DIST          = ../lexico.l \
 		../comando_mount.h \
 		../comando_unmount.h \
 		../comando_mkfs.h \
-		../comando_login.h ../main.cpp \
+		../comando_login.h \
+		../comando_logout.h ../main.cpp \
 		../scanner.cpp \
 		../parser.cpp \
 		../comando_mkdisk.cpp \
@@ -278,7 +281,8 @@ DIST          = ../lexico.l \
 		../comando_mount.cpp \
 		../comando_unmount.cpp \
 		../comando_mkfs.cpp \
-		../comando_login.cpp
+		../comando_login.cpp \
+		../comando_logout.cpp
 QMAKE_TARGET  = Proyecto1_201313722
 DESTDIR       = 
 TARGET        = Proyecto1_201313722
@@ -664,8 +668,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h ../estructuras.h ../comando_rmdisk.h ../libreria.h ../comando_fdisk.h ../comando_exec.h ../comando_mount.h ../comando_unmount.h ../comando_mkfs.h ../comando_login.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp ../estructuras.cpp ../comando_rmdisk.cpp ../libreria.cpp ../comando_fdisk.cpp ../comando_exec.cpp ../comando_mount.cpp ../comando_unmount.cpp ../comando_mkfs.cpp ../comando_login.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h ../estructuras.h ../comando_rmdisk.h ../libreria.h ../comando_fdisk.h ../comando_exec.h ../comando_mount.h ../comando_unmount.h ../comando_mkfs.h ../comando_login.h ../comando_logout.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp ../estructuras.cpp ../comando_rmdisk.cpp ../libreria.cpp ../comando_fdisk.cpp ../comando_exec.cpp ../comando_mount.cpp ../comando_unmount.cpp ../comando_mkfs.cpp ../comando_login.cpp ../comando_logout.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -856,7 +860,9 @@ parser.o: ../parser.cpp ../scanner.h \
 		../parser.h \
 		../comando_mount.h \
 		../comando_unmount.h \
-		../comando_mkfs.h
+		../comando_mkfs.h \
+		../comando_login.h \
+		../comando_logout.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o parser.o ../parser.cpp
 
 comando_mkdisk.o: ../comando_mkdisk.cpp ../comando_mkdisk.h \
@@ -907,6 +913,9 @@ comando_login.o: ../comando_login.cpp ../comando_login.h \
 		../libreria.h \
 		../estructuras.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o comando_login.o ../comando_login.cpp
+
+comando_logout.o: ../comando_logout.cpp ../comando_logout.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o comando_logout.o ../comando_logout.cpp
 
 ####### Install
 
