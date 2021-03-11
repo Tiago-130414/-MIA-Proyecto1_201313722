@@ -18,7 +18,8 @@ public:
   string infoParticiones(mbr);
   void reporteBitmapI(string,string);
   void reporteBitmapB(string,string);
-  void escribirBitmapTXT(string ruta,string nombre,string bitmap);
+  void escribirBitmapTXT(string,string,string);
+  void reporteSuperBloque(string,string);
 };
 
 #endif // COMANDO_REP_H

@@ -69,6 +69,7 @@ int comando_rep::validarNombreReportes(string name){
     }
   return valido;
 }
+
 //metodo que redirige al metodo que crea cada reporte
 void comando_rep::generarReporte(string name,string path,string id,string ruta){
   if(name == "mbr"){
@@ -88,7 +89,7 @@ void comando_rep::generarReporte(string name,string path,string id,string ruta){
     }else if(name == "tree"){
 
     }else if(name == "sb"){
-
+      reporteSuperBloque(path,id);
     }else if(name == "file"){
 
     }else if(name == "ls"){
@@ -111,6 +112,7 @@ void comando_rep::ReporteMBR(string path,string id){
       vector <string> temp(descomponerRuta(path));
       string nomArchivo = temp[temp.size()-1];
       string nomTemp = quitarExtension(nomArchivo);
+      string ext = aMinuscula(retornarExtension(nomArchivo));
       string carpetas = rRuta(temp);
       string fecha = MBRDISCO.mbr_fecha_creacion;
       string fit(MBRDISCO.disk_fit);
@@ -124,7 +126,7 @@ void comando_rep::ReporteMBR(string path,string id){
       reporte += "<tr><td>Disk fit</td><td>"+fit+"</td></tr>\n";
       reporte += infoParticiones(MBRDISCO);
       reporte += "</table>>];\n";
-      escribirReporte(reporte,carpetas,nomTemp);
+      escribirReporte(reporte,carpetas,nomTemp,ext);
     }else{
       cout<<"*** Ruta no encontrada, disco no esta montado o no existe ***"<<endl;
     }
@@ -165,9 +167,14 @@ void comando_rep::reporteBitmapI(string path,string id){
           string bitmap = leerBitmapI(pathDisco,initPart);
           vector <string> temp(descomponerRuta(path));
           string nomArchivo = temp[temp.size()-1];
+          string ext = retornarExtension(nomArchivo);
           string nomTemp = quitarExtension(nomArchivo);
           string carpetas = rRuta(temp);
-          escribirBitmapTXT(carpetas,nomTemp,bitmap);
+          if(aMinuscula(ext) == "txt"){
+              escribirBitmapTXT(carpetas,nomTemp,bitmap);
+            }else{
+              cout<<"*** El reporte de bitmap inodos unicamente permite generar de tipo txt ***"<<endl;
+            }
         }else{
           cout<<"*** La particion que se busco para reporte de BitMap no se encuentra montada ***"<<endl;
         }
@@ -192,9 +199,14 @@ void comando_rep::reporteBitmapB(string path,string id){
           string bitmap = leerBitmapB(pathDisco,initPart);
           vector <string> temp(descomponerRuta(path));
           string nomArchivo = temp[temp.size()-1];
+          string ext = retornarExtension(nomArchivo);
           string nomTemp = quitarExtension(nomArchivo);
           string carpetas = rRuta(temp);
-          escribirBitmapTXT(carpetas,nomTemp,bitmap);
+          if(aMinuscula(ext) == "txt"){
+              escribirBitmapTXT(carpetas,nomTemp,bitmap);
+            }else{
+              cout<<"*** El reporte de bitmap de bloques unicamente permite generar de tipo txt"<<endl;
+            }
         }else{
           cout<<"*** La particion que se busco para reporte de BitMap de bloques no se encuentra montada ***"<<endl;
         }
@@ -243,42 +255,54 @@ void  comando_rep::escribirBitmapTXT(string ruta,string nombre,string bitmap){
   archivo.close();
 }
 
-/*
- *
- *
- // assigning value to string s
-    string s = "geeksforgeeks";
+////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// SUPER_BLOQUE /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 
-    int n = s.length();
-
-    // declaring character array
-    char char_array[n + 1];
-
-    // copying the contents of the
-    // string to char array
-    strcpy(char_array, s.c_str());
- *
- *
- *if(contador<20){
-                  nuevaCadena += vector_bitmap[i] + " ";
-                  contador++;
-                }else if(contador==20){
-                  nuevaCadena +="\n";
-                  contador=0;
-                }
- *
- *
-Foo [label=<
-<table border="0" cellborder="1" cellspacing="0">
-  <tr><td><i>Input Foo</i></td><td><i>Input Foo</i></td></tr>
-  <tr><td port="1">one</td><td port="1">one</td></tr>
-  <tr><td port="2">two</td><td port="1">one</td></tr>
-  <tr><td port="3">three</td><td port="1">one</td></tr>
-  <tr><td port="4">four</td><td port="1">one</td></tr>
-  <tr><td port="5">five</td><td port="1">one</td></tr>
-  <tr><td port="6">six</td><td port="1">one</td></tr>
-</table>>];
-*/
-
-
-
+void comando_rep::reporteSuperBloque(string path,string id){
+  int idDisco = stoi(retornarIndiceDisco(id));
+  string pathDisco = retornarPathDisco(idDisco);
+  string reporte="";
+  string nombreParticion = retornarNombreParticion(idDisco,id);
+  if(pathDisco != "-1"){
+      if(nombreParticion != "-1"){
+          particion particionTemp = retornarParticion(pathDisco,nombreParticion);
+          int initPart = particionTemp.part_start;
+          superBloque sb (retornarSuperBloque(pathDisco,initPart));
+          string fecha = sb.s_mtime;
+          string fecha2 = sb.s_umtime;
+          vector <string> temp(descomponerRuta(path));
+          string nomArchivo = temp[temp.size()-1];
+          string nomTemp = quitarExtension(nomArchivo);
+          string ext = aMinuscula(retornarExtension(nomArchivo));
+          string carpetas = rRuta(temp);
+          reporte += "label=\" * REPORTE SUPER BLOQUE * \";\n" ;
+          reporte += "ReporteSB[label=<\n";
+          reporte += "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n";
+          reporte += "<tr><td><i>NOMBRE</i></td><td><i>VALOR</i></td></tr>\n";
+          reporte += "<tr><td>s_filesystem_type</td><td>"+ to_string(sb.s_filesystem_type) + "</td></tr>\n";
+          reporte += "<tr><td>s_inodes_count</td><td>"+ to_string(sb.s_inodes_count) +"</td></tr>\n";
+          reporte += "<tr><td>s_blocks_count</td><td>"+ to_string(sb.s_blocks_count) +"</td></tr>\n";
+          reporte += "<tr><td>s_free_blocks_count</td><td>"+ to_string(sb.s_free_blocks_count) +"</td></tr>\n";
+          reporte += "<tr><td>s_free_inodes_count</td><td>"+ to_string(sb.s_free_inodes_count) +"</td></tr>\n";
+          reporte += "<tr><td>s_mtime</td><td>"+ fecha +"</td></tr>\n";
+          reporte += "<tr><td>s_umtime</td><td>"+ fecha2 +"</td></tr>\n";
+          reporte += "<tr><td>s_mnt_count</td><td>"+ to_string(sb.s_mnt_count) +"</td></tr>\n";
+          reporte += "<tr><td>s_magic</td><td> 0xEF53 </td></tr>\n";
+          reporte += "<tr><td>s_inode_size</td><td>"+ to_string(sb.s_inode_size) +"</td></tr>\n";
+          reporte += "<tr><td>s_block_size</td><td>"+ to_string(sb.s_block_size) +"</td></tr>\n";
+          reporte += "<tr><td>s_first_ino</td><td>"+ to_string(sb.s_first_ino) +"</td></tr>\n";
+          reporte += "<tr><td>s_first_blo</td><td>"+ to_string(sb.s_first_blo) +"</td></tr>\n";
+          reporte += "<tr><td>s_bm_inode_start</td><td>"+ to_string(sb.s_bm_inode_start) +"</td></tr>\n";
+          reporte += "<tr><td>s_bm_block_start</td><td>"+ to_string(sb.s_bm_block_start) +"</td></tr>\n";
+          reporte += "<tr><td>s_inode_start</td><td>"+ to_string(sb.s_inode_start) +"</td></tr>\n";
+          reporte += "<tr><td>s_block_start</td><td>"+ to_string(sb.s_block_start) +"</td></tr>\n";
+          reporte += "</table>>];\n";
+          escribirReporte(reporte,carpetas,nomTemp,ext);
+        }else{
+          cout<<"*** La particion que se busco para reporte de Super bloque no se encuentra montada ***"<<endl;
+        }
+    }else{
+      cout<<"*** Ruta no encontrada, disco no esta montado o no existe ***"<<endl;
+    }
+}

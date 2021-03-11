@@ -180,6 +180,22 @@ string quitarExtension(string temp){
   splitted = split[0];
   return splitted;
 }
+
+string retornarExtension(string temp){
+  vector <string> split;
+  int posInit = 0;
+  int posFound = 0;
+  string splitted;
+  string pattern = ".";
+  while(posFound >= 0){
+      posFound = temp.find(pattern, posInit);
+      splitted = temp.substr(posInit, posFound - posInit);
+      posInit = posFound + 1;
+      split.push_back(splitted);
+    }
+  splitted = split[1];
+  return splitted;
+}
 ////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// DISCO ////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
@@ -541,7 +557,7 @@ string recorrerBloqueArchivos(int ind,string path,int initPart){
 }
 
 //metodo que genera reporte en graphviz si hay problema de ruta cambiarlo hay ruta quemada de mi home
-void escribirReporte(string contenido,string ruta,string nombre){
+void escribirReporte(string contenido,string ruta,string nombre,string extension){
   ruta = ruta+"/";
   string reporte = "digraph{\n";
   reporte += "graph [pad=\"0.5\", nodesep=\"0.5\", ranksep=\"2\"]; \n node [shape=plain]\nrankdir=LR;\n";
@@ -555,6 +571,8 @@ void escribirReporte(string contenido,string ruta,string nombre){
       cout<<"*** La carpeta para generar reporte no se encuentra, se procedera a crearla ***"<<endl;
     }
   fclose(carpeta);
+
+  cout<<"llego aca"<<endl;
   //creando el archivo para compilar del dot
   string rt = "/home/santi/RP_Archivos_DOT/"+nombre+".txt";
   ofstream archivo;
@@ -566,6 +584,21 @@ void escribirReporte(string contenido,string ruta,string nombre){
     }
   archivo.close();
   //compilando el dot en la ruta que nos enviaron
-  string comando = "dot -Tpng " + rt + " -o " + ruta + nombre+".png";
-  system(comando.c_str());
+  string tipCompilaionDot ="";
+  int extValida = 1;
+  if(extension == "png"){
+      tipCompilaionDot = "-Tpng";
+    }else if(extension == "jpg" || extension == "jpeg"){
+      tipCompilaionDot = "-Tjpg";
+    }else if(extension == "pdf"){
+      tipCompilaionDot = "-Tpdf";
+    }else{
+      extValida = 0;
+    }
+  if(extValida == 1){
+      string comando = "dot "+tipCompilaionDot+ " " + rt + " -o " + ruta + nombre + "." + extension;
+      system(comando.c_str());
+    }else{
+      cout<<"*** No se pudo generar el reporte, extension no valida -path ***"<<endl;
+    }
 }

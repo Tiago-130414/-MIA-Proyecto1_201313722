@@ -16,6 +16,7 @@
 #include <comando_login.h>
 #include <comando_logout.h>
 #include <comando_rep.h>
+#include <comando_pause.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -149,6 +150,7 @@ COMANDOS :  MKDISK
           | LOGIN
           | c_logout                                   {comando_logout objlogout;objlogout.ejecutarLogout();}
           | REP
+          | c_pause                                    {comando_pause objpause;objpause.ejecutarPause();}
 ; 
 
 MKDISK : c_mkdisk LS_PAR_MKDISK {

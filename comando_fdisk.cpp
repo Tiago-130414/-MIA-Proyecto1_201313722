@@ -69,7 +69,11 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
                       if(validarParametrosOpcionales(unit,type,fit)==1){
                           //si el tamanio de la particion es mayor que 0
                           if(size>0){
-                              crearParticion(size,unit,path,type,name,fit);
+                              if(name.length()<17){
+                                  crearParticion(size,unit,path,type,name,fit);
+                                }else{
+                                  cout<<"*** Los nombres de la particion unicamente pueden ser de 16 caracteres ***"<<endl;
+                                }
                             }else{
                               cout<<"*** Las particiones unicamente se pueden crear mayores que 0 ***"<<endl;
                             }
@@ -81,8 +85,12 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
                   //si el size llego antes que el delete
                   if(posicionSize<posicionDelete){
                       //se crea particion
-                      if(size>0){
-                          crearParticion(size,unit,path,type,name,fit);
+                      if(size>0){                      
+                          if(name.length()<17){
+                              crearParticion(size,unit,path,type,name,fit);
+                            }else{
+                              cout<<"*** Los nombres de la particion unicamente pueden ser de 16 caracteres ***"<<endl;
+                            }
                         }else{
                           cout<<"*** Las particiones unicamente se pueden crear mayores que 0 ***"<<endl;
                         }
@@ -93,8 +101,12 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
                   //si no viene delete ni add
                   if(validarParametrosOpcionales(unit,type,fit)==1){
                       //si el tamanio de la particion es mayor que 0
-                      if(size>0){
-                          crearParticion(size,unit,path,type,name,fit);
+                      if(size>0){                        
+                          if(name.length()<17){
+                              crearParticion(size,unit,path,type,name,fit);
+                            }else{
+                              cout<<"*** Los nombres de la particion unicamente pueden ser de 16 caracteres ***"<<endl;
+                            }
                         }else{
                           cout<<"*** Las particiones unicamente se pueden crear mayores que 0 ***"<<endl;
                         }
@@ -628,6 +640,7 @@ void comando_fdisk::eliminacionFull(string path,string name){
   fclose(archivo);
   imprimirInfo(path);
 }
+
 //funcion que retorna el nombre obtenido de un char de 16 posiciones
 string comando_fdisk::rNombreParticion(char nomb[16]){
   string nombre(nomb);

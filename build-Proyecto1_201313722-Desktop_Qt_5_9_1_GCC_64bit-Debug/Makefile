@@ -64,7 +64,8 @@ SOURCES       = ../main.cpp \
 		../comando_mkfs.cpp \
 		../comando_login.cpp \
 		../comando_logout.cpp \
-		../comando_rep.cpp 
+		../comando_rep.cpp \
+		../comando_pause.cpp 
 OBJECTS       = main.o \
 		scanner.o \
 		parser.o \
@@ -79,7 +80,8 @@ OBJECTS       = main.o \
 		comando_mkfs.o \
 		comando_login.o \
 		comando_logout.o \
-		comando_rep.o
+		comando_rep.o \
+		comando_pause.o
 DIST          = ../lexico.l \
 		../parser.y \
 		../../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -272,7 +274,8 @@ DIST          = ../lexico.l \
 		../comando_mkfs.h \
 		../comando_login.h \
 		../comando_logout.h \
-		../comando_rep.h ../main.cpp \
+		../comando_rep.h \
+		../comando_pause.h ../main.cpp \
 		../scanner.cpp \
 		../parser.cpp \
 		../comando_mkdisk.cpp \
@@ -286,7 +289,8 @@ DIST          = ../lexico.l \
 		../comando_mkfs.cpp \
 		../comando_login.cpp \
 		../comando_logout.cpp \
-		../comando_rep.cpp
+		../comando_rep.cpp \
+		../comando_pause.cpp
 QMAKE_TARGET  = Proyecto1_201313722
 DESTDIR       = 
 TARGET        = Proyecto1_201313722
@@ -672,8 +676,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../Qt5.9.1/5.9.1/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h ../estructuras.h ../comando_rmdisk.h ../libreria.h ../comando_fdisk.h ../comando_exec.h ../comando_mount.h ../comando_unmount.h ../comando_mkfs.h ../comando_login.h ../comando_logout.h ../comando_rep.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp ../estructuras.cpp ../comando_rmdisk.cpp ../libreria.cpp ../comando_fdisk.cpp ../comando_exec.cpp ../comando_mount.cpp ../comando_unmount.cpp ../comando_mkfs.cpp ../comando_login.cpp ../comando_logout.cpp ../comando_rep.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../scanner.h ../parser.h ../comando_mkdisk.h ../estructuras.h ../comando_rmdisk.h ../libreria.h ../comando_fdisk.h ../comando_exec.h ../comando_mount.h ../comando_unmount.h ../comando_mkfs.h ../comando_login.h ../comando_logout.h ../comando_rep.h ../comando_pause.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../main.cpp ../scanner.cpp ../parser.cpp ../comando_mkdisk.cpp ../estructuras.cpp ../comando_rmdisk.cpp ../libreria.cpp ../comando_fdisk.cpp ../comando_exec.cpp ../comando_mount.cpp ../comando_unmount.cpp ../comando_mkfs.cpp ../comando_login.cpp ../comando_logout.cpp ../comando_rep.cpp ../comando_pause.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -867,7 +871,8 @@ parser.o: ../parser.cpp ../scanner.h \
 		../comando_mkfs.h \
 		../comando_login.h \
 		../comando_logout.h \
-		../comando_rep.h
+		../comando_rep.h \
+		../comando_pause.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o parser.o ../parser.cpp
 
 comando_mkdisk.o: ../comando_mkdisk.cpp ../comando_mkdisk.h \
@@ -926,6 +931,9 @@ comando_rep.o: ../comando_rep.cpp ../comando_rep.h \
 		../estructuras.h \
 		../libreria.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o comando_rep.o ../comando_rep.cpp
+
+comando_pause.o: ../comando_pause.cpp ../comando_pause.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o comando_pause.o ../comando_pause.cpp
 
 ####### Install
 

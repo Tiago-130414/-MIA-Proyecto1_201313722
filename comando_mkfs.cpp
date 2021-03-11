@@ -146,6 +146,7 @@ superBloque comando_mkfs::llenarSuperBloque(int numeroInodos, int numeroBloques 
   nuevoSuperBloque.s_free_blocks_count = numeroBloques;
   nuevoSuperBloque.s_free_inodes_count = numeroInodos;
   strcpy(nuevoSuperBloque.s_mtime,retornarFecha().c_str());
+  strcpy(nuevoSuperBloque.s_umtime,retornarFecha().c_str());
   nuevoSuperBloque.s_mnt_count = 1;
   nuevoSuperBloque.s_magic = 61267;
   nuevoSuperBloque.s_inode_size = sizeof(inodo);

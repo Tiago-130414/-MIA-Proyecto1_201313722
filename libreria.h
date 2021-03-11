@@ -44,6 +44,7 @@ bloqueArchivos retornarBloqueArchivos(string,int,int);
 bloqueCarpetas retornarBloqueCarpetas(string,int,int);
 int recorrerBloqueCarpetas(int,string,string,int);
 string recorrerBloqueArchivos(int,string,int);
-void escribirReporte(string,string,string);
+void escribirReporte(string,string,string,string);
 string quitarExtension(string);
+string retornarExtension(string);
 #endif // LIBRERIA_H

@@ -23,7 +23,8 @@ SOURCES += main.cpp \
     comando_mkfs.cpp \
     comando_login.cpp \
     comando_logout.cpp \
-    comando_rep.cpp
+    comando_rep.cpp \
+    comando_pause.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -54,4 +55,5 @@ HEADERS += \
     comando_mkfs.h \
     comando_login.h \
     comando_logout.h \
-    comando_rep.h
+    comando_rep.h \
+    comando_pause.h
