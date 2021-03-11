@@ -165,6 +165,21 @@ void mostrarRegistro(){
     }
 }
 
+string quitarExtension(string temp){
+  vector <string> split;
+  int posInit = 0;
+  int posFound = 0;
+  string splitted;
+  string pattern = ".";
+  while(posFound >= 0){
+      posFound = temp.find(pattern, posInit);
+      splitted = temp.substr(posInit, posFound - posInit);
+      posInit = posFound + 1;
+      split.push_back(splitted);
+    }
+  splitted = split[0];
+  return splitted;
+}
 ////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// DISCO ////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
@@ -476,7 +491,6 @@ void escribirJournal(string path, int partInit,journal nuevoJournal){
 ////////////////////////////// LEER INODOS /////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
-
 int recorrerSistemaArchivos(vector<string> ruta, inodo pivote,string path,int initPart){
   int tamR = ruta.size();
   int ind = -1;
@@ -504,8 +518,8 @@ int recorrerSistemaArchivos(vector<string> ruta, inodo pivote,string path,int in
             }
         }
       if(ind == -1){
-        break;
-      }
+          break;
+        }
     }
   return ind;
 }
@@ -515,13 +529,43 @@ string recorrerBloqueArchivos(int ind,string path,int initPart){
   inodo nodoArchivo = retornarInodo(path,initPart,ind);
   int limiteCaracteres = nodoArchivo.i_size;
   for(int i = 0;i<12;i++){
-    if(nodoArchivo.i_block[i]!=-1){
-      bloqueArchivos archivo = retornarBloqueArchivos(path,initPart,nodoArchivo.i_block[i]);
-      for (int j = 0; j < limiteCaracteres && j<64; j++)
-      {
-        texto += archivo.b_content[j];
-      }
+      if(nodoArchivo.i_block[i]!=-1){
+          bloqueArchivos archivo = retornarBloqueArchivos(path,initPart,nodoArchivo.i_block[i]);
+          for (int j = 0; j < limiteCaracteres && j<64; j++)
+            {
+              texto += archivo.b_content[j];
+            }
+        }
     }
-  }
   return texto;
+}
+
+//metodo que genera reporte en graphviz si hay problema de ruta cambiarlo hay ruta quemada de mi home
+void escribirReporte(string contenido,string ruta,string nombre){
+  ruta = ruta+"/";
+  string reporte = "digraph{\n";
+  reporte += "graph [pad=\"0.5\", nodesep=\"0.5\", ranksep=\"2\"]; \n node [shape=plain]\nrankdir=LR;\n";
+  reporte += contenido +"\n";
+  reporte += "}\n";
+  //verificando si la carpeta buscada esta creada si no se crea
+  FILE *carpeta;
+  carpeta = fopen(ruta.c_str(),"rb");
+  if(carpeta==NULL){
+      mkdir(ruta.c_str(), 0777);
+      cout<<"*** La carpeta para generar reporte no se encuentra, se procedera a crearla ***"<<endl;
+    }
+  fclose(carpeta);
+  //creando el archivo para compilar del dot
+  string rt = "/home/santi/RP_Archivos_DOT/"+nombre+".txt";
+  ofstream archivo;
+  archivo.open(rt);
+  if(!archivo.fail()){
+      archivo<<reporte;
+    }else {
+      cout<<"*** Problema al crear archivo txt de reporte ***"<<endl;
+    }
+  archivo.close();
+  //compilando el dot en la ruta que nos enviaron
+  string comando = "dot -Tpng " + rt + " -o " + ruta + nombre+".png";
+  system(comando.c_str());
 }

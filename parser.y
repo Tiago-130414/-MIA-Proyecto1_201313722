@@ -15,6 +15,7 @@
 #include <comando_mkfs.h>
 #include <comando_login.h>
 #include <comando_logout.h>
+#include <comando_rep.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -29,6 +30,7 @@ vector <string> valores_mount;
 vector <string> valores_unmount;
 vector <string> valores_mkfs;
 vector <string> valores_login;
+vector <string> valores_rep;
 int yyerror(const char* mens)
 {
 std::cout << mens <<" "<<yytext<< std::endl;
@@ -40,6 +42,7 @@ valores_mount.clear();
 valores_unmount.clear();
 valores_mkfs.clear();
 valores_login.clear();
+valores_rep.clear();
 return 0;
 }
 %}
@@ -145,6 +148,7 @@ COMANDOS :  MKDISK
           | comentario
           | LOGIN
           | c_logout                                   {comando_logout objlogout;objlogout.ejecutarLogout();}
+          | REP
 ; 
 
 MKDISK : c_mkdisk LS_PAR_MKDISK {
@@ -235,3 +239,17 @@ PARAMETROS_LOGIN: menos p_usr igual identificador      {valores_login.push_back(
                 | menos p_pwd igual identificador      {valores_login.push_back($2);valores_login.push_back($4);}
                 | menos p_id igual identificador       {valores_login.push_back($2);valores_login.push_back($4);}
 ;
+
+REP: c_rep LS_REP                                      {comando_rep objrep; objrep.ejecutarReporte(valores_rep); valores_rep.clear();}
+;
+LS_REP: LS_REP PARAMETROS_REP
+        | PARAMETROS_REP
+;
+
+PARAMETROS_REP: menos p_name igual identificador       {valores_rep.push_back($2);valores_rep.push_back($4);}
+              | menos p_name igual cadena              {valores_rep.push_back($2);valores_rep.push_back($4);}
+              | menos p_path igual ruta                {valores_rep.push_back($2);valores_rep.push_back($4);}
+              | menos p_path igual cadena              {valores_rep.push_back($2);valores_rep.push_back($4);}
+              | menos p_id igual identificador         {valores_rep.push_back($2);valores_rep.push_back($4);}
+              | menos p_ruta igual identificador       {valores_rep.push_back($2);valores_rep.push_back($4);}
+;             | menos p_ruta igual cadena              {valores_rep.push_back($2);valores_rep.push_back($4);}

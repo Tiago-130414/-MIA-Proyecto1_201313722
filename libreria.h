@@ -1,9 +1,13 @@
 #ifndef LIBRERIA_H
 #define LIBRERIA_H
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <cstring>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <estructuras.h>
 using namespace std;
 string aMayuscula(string cadena);
@@ -40,4 +44,6 @@ bloqueArchivos retornarBloqueArchivos(string,int,int);
 bloqueCarpetas retornarBloqueCarpetas(string,int,int);
 int recorrerBloqueCarpetas(int,string,string,int);
 string recorrerBloqueArchivos(int,string,int);
+void escribirReporte(string,string,string);
+string quitarExtension(string);
 #endif // LIBRERIA_H
