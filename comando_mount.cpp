@@ -35,8 +35,6 @@ void comando_mount::ejecutarMount(vector <string> parametrosMount){
               if(archivo!=NULL){
                   fclose(archivo);
                   //validar si existe en el disco, la particion que enviaron
-                  cout<<name<<endl;
-                  cout<<rTemporal<<endl;
                   if(existeParticion(name,rTemporal)==1){
                       //verificando si el disco existe en el registro
                       if(existeDisco(rTemporal)==1){

@@ -77,9 +77,9 @@ void comando_rep::generarReporte(string name,string path,string id,string ruta){
     }else if(name == "disk"){
       reporteDisco(path,id);
     }else if(name == "inode"){
-
+      reporteInode(path,id);
     }else if(name == "journaling"){
-
+      reporteJournal(path,id);
     }else if(name == "block"){
 
     }else if(name == "bm_inode"){
@@ -443,14 +443,7 @@ void comando_rep::reporteDisco(string path,string id){
                 }
             }
 
-          string extendida = "<TABLE BORDER=\"0\">\n";
-          extendida += "<TR BORDER = \"1\"><TD>Extendida</TD></TR>\n";
-          extendida += "<TR><TD>\n";
-          extendida += "<TABLE BORDER=\"1\">\n";
-          extendida += "<TR><TD BORDER = \"0\">Libre</TD></TR>\n";
-          extendida += "</TABLE>\n";
-          extendida += "</TD></TR>\n";
-          extendida += "</TABLE>\n";
+
 
           string cadReporte = "label = \"*** Disco ***\";\n";
           cadReporte += "graph [ratio=fill];\n";
@@ -459,6 +452,7 @@ void comando_rep::reporteDisco(string path,string id){
           cadReporte += "disk [label=<\n";
           cadReporte += "<TABLE ALIGN=\"LEFT\">\n";
           cadReporte += "<TR>\n";
+          cadReporte += "<TD> MBR <br/> "+ to_string(retornarPorcentaje(sizeof(mbr),MBR.mbr_tamano)) +"% </TD>\n";
           //mostrando espacios libres
           for(int i=0;i<tempEspacios.size();i++){
               //cout<<"--------------------------------------------------"<<endl;
@@ -466,18 +460,27 @@ void comando_rep::reporteDisco(string path,string id){
               if(!tempEspacios[i].tipoParticion.empty()){
                   //lb = tempEspacios[i].tipoParticion;
                   if(aMinuscula(tempEspacios[i].tipoParticion) == "p"){
-                      cadReporte += "<TD> PRIMARIA <br/> "+ to_string(retornarPorcentaje(tempEspacios[i].espacioLibre,MBR.mbr_tamano)) +" </TD>\n";
+                      cadReporte += "<TD> PRIMARIA <br/> "+ to_string(retornarPorcentaje(tempEspacios[i].espacioLibre,MBR.mbr_tamano)) +"%</TD>\n";
                     }else if(aMinuscula(tempEspacios[i].tipoParticion) == "e"){
-                      cadReporte += "<TD> EXTENDIDA <br/>"+ to_string(retornarPorcentaje(tempEspacios[i].espacioLibre,MBR.mbr_tamano)) +" </TD>\n";
+                      cadReporte += "<TD>\n";
+                      cadReporte += "<TABLE BORDER = \"0\">\n";
+                      cadReporte += "<TR><TD>Extendida</TD></TR>\n";
+                      cadReporte += "<TR><TD>\n";
+                      cadReporte += "<TABLE BORDER=\"1\">\n";
+                      cadReporte += "<TR><TD BORDER = \"0\">Libre<br/>"+to_string(retornarPorcentaje(tempEspacios[i].espacioLibre,MBR.mbr_tamano))+"%</TD></TR>\n";
+                      cadReporte += "</TABLE>\n";
+                      cadReporte += "</TD></TR>\n";
+                      cadReporte += "</TABLE>\n";
+                      cadReporte +=  "</TD>\n";
                     }
                 }else{
-                  cadReporte += "<TD> LIBRE <br/> "+ to_string(retornarPorcentaje(tempEspacios[i].espacioLibre,MBR.mbr_tamano)) +"</TD>";
+                  cadReporte += "<TD> LIBRE <br/> "+ to_string(retornarPorcentaje(tempEspacios[i].espacioLibre,MBR.mbr_tamano)) +"%</TD>";
                 }
               //cout<<i<<" "<<lb<<" "<<tempEspacios[i].inicio<<" -- "<<tempEspacios[i].espacioLibre<<endl;
             }
           cadReporte += "</TR>\n";
           cadReporte += "</TABLE>\n";
-          cadReporte += ">, ];\n";
+          cadReporte += ">];\n";
 
           vector <string> temp(descomponerRuta(path));
           string nomArchivo = temp[temp.size()-1];
@@ -540,5 +543,140 @@ void comando_rep::escribirDot(string ruta,string cont,string nombre,string exten
       system(comando.c_str());
     }else{
       cout<<"*** No se pudo generar el reporte, extension no valida -path ***"<<endl;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// INODOS ////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
+void comando_rep::reporteInode(string path,string id){
+  int idDisco = stoi(retornarIndiceDisco(id));
+  string pathDisco = retornarPathDisco(idDisco);
+  string reporte="";
+  string nombreParticion = retornarNombreParticion(idDisco,id);
+  if(pathDisco != "-1"){
+      if(nombreParticion != "-1"){
+          particion particionTemp = retornarParticion(pathDisco,nombreParticion);
+          int initPart = particionTemp.part_start;
+          string bitmap = leerBitmapI(pathDisco,initPart);
+          vector <string> temp(descomponerRuta(path));
+          string nomArchivo = temp[temp.size()-1];
+          string ext = aMinuscula(retornarExtension(nomArchivo));
+          string nomTemp = quitarExtension(nomArchivo);
+          string carpetas = rRuta(temp);
+
+          int longBitmap = bitmap.length();
+          char vector_bitmap[longBitmap+1];
+          strcpy(vector_bitmap,bitmap.c_str());
+          vector<int> indicesActivos;
+
+          string reporte = "rankdir = \"LR\";\n";
+          reporte += "label=\" *** REPORTE INODO *** \";\n" ;
+          for(int i = 0; i<longBitmap;i++){
+              //si es 1 significa que hay inodo en esa posicion de indice
+              if(vector_bitmap[i]=='1'){
+                  //se obtiene el inodo
+                  inodo inodoTemp  = retornarInodo(pathDisco,initPart,i);
+                  //cout<<"Type - "<<inodoTemp.i_type<<endl;
+                  //cout<<"UID - "<<to_string(inodoTemp.i_uid)<<endl;
+                  reporte += "inodo"+to_string(i)+"[label=<\n";
+                  reporte += "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n";
+                  reporte += "<tr><td><i>NOMBRE</i></td><td><i>VALOR</i></td></tr>\n";
+                  reporte += "<tr><td>i_uid</td><td>"+ to_string(inodoTemp.i_uid) + "</td></tr>\n";
+                  reporte += "<tr><td>i_gid</td><td>"+ to_string(inodoTemp.i_gid) + "</td></tr>\n";
+                  reporte += "<tr><td>i_size</td><td>"+ to_string(inodoTemp.i_size) + "</td></tr>\n";
+                  reporte += "<tr><td>i_atime</td><td>"+ string(inodoTemp.i_atime) + "</td></tr>\n";
+                  reporte += "<tr><td>i_ctime</td><td>"+ string(inodoTemp.i_ctime) + "</td></tr>\n";
+                  reporte += "<tr><td>i_mtime</td><td>"+ string(inodoTemp.i_mtime) + "</td></tr>\n";
+                  int cont=1;
+                  for(int j = 0;j<15;j++){
+                      if(j<12){
+                          reporte += "<tr><td>AD"+to_string(cont)+"</td><td>"+ to_string(inodoTemp.i_block[j]) + "</td></tr>\n";
+                        }else{
+                          reporte += "<tr><td>AI"+to_string(cont)+"</td><td>"+ to_string(inodoTemp.i_block[j]) + "</td></tr>\n";
+                        }
+                      cont++;
+                    }
+                  reporte += "<tr><td>i_type</td><td>"+ string(1,inodoTemp.i_type) + "</td></tr>\n";
+                  reporte += "<tr><td>i_perm</td><td>"+ to_string(inodoTemp.i_perm) + "</td></tr>\n";
+                  reporte += "</table>>,shape=plaintext];\n";
+                  indicesActivos.push_back(i);
+                }
+            }
+          int tamIndicesAct = indicesActivos.size();
+          for(int i=0;i<tamIndicesAct;i++){
+              if(i < indicesActivos.size()-1){
+                  reporte += "inodo" + to_string(indicesActivos[i]) + "->inodo" + to_string(indicesActivos[i + 1]);
+                }
+            }
+
+          escribirDot(carpetas,reporte,nomTemp,ext);
+        }else{
+          cout<<"*** La particion que se busco para reporte de Inode no se encuentra montada ***"<<endl;
+        }
+    }else{
+      cout<<"*** Ruta no encontrada, disco no esta montado o no existe ***"<<endl;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// JOURNAL ///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
+void comando_rep::reporteJournal(string path,string id){
+  int idDisco = stoi(retornarIndiceDisco(id));
+  string pathDisco = retornarPathDisco(idDisco);
+  string reporte="";
+  string nombreParticion = retornarNombreParticion(idDisco,id);
+  if(pathDisco != "-1"){
+      if(nombreParticion != "-1"){
+          particion particionTemp = retornarParticion(pathDisco,nombreParticion);
+          int initPart = particionTemp.part_start;
+          superBloque sb (retornarSuperBloque(pathDisco,initPart));
+          if(sb.s_filesystem_type == 3){
+              cout<<"siuuuuu"<<endl;
+              //obteniendo el journal
+              journal jTemp = retornarJournal(pathDisco,initPart);
+              FILE *archivo;
+              archivo = fopen(pathDisco.c_str(),"rb+");
+              journal t;
+              int ind = jTemp.Journal_permisos;
+              string reporte = "label=\" * REPORTE JOURNALING * \";\n" ;
+              reporte += "ReporteJ[label=<\n";
+              reporte += "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n";
+              for (int i = 1; i < ind; i++) {
+                  fseek(archivo,retornarPosicionJournal(initPart,i),SEEK_SET);
+                  fread(&t,sizeof(journal),1,archivo);
+                  reporte += "<tr><td bgcolor=\"orange\"><i>NOMBRE</i></td><td bgcolor=\"orange\"><i>VALOR</i></td></tr>\n";
+                  reporte += "<tr><td>Journal_Tipo_Operacion</td><td>"+ string(t.Journal_Tipo_Operacion) + "</td></tr>\n";
+                  reporte += "<tr><td>Journal_tipo</td> <td>"+ string(1,t.Journal_tipo) + "</td></tr>\n";
+                  reporte += "<tr><td>Journal_nombre</td><td>"+ string(t.Journal_nombre) + "</td></tr>\n";
+                  if(t.Journal_tipo == '1'){
+                      reporte += "<tr><td>Journal_contenido</td><td>"+ string(t.Journal_contenido) + "</td></tr>\n";
+                    }
+                  reporte += "<tr><td>Journal_fecha</td><td>"+ string(t.Journal_fecha) + "</td></tr>\n";
+                  reporte += "<tr><td>Journal_propietario</td><td>"+ to_string(t.Journal_propietario) + "</td></tr>\n";
+                  reporte += "<tr><td>Journal_permisos</td><td>"+ to_string(t.Journal_permisos) + "</td></tr>\n";
+                }
+              fclose(archivo);
+              reporte += "</table>>,shape=plaintext];\n";
+
+              vector <string> temp(descomponerRuta(path));
+              string nomArchivo = temp[temp.size()-1];
+              string ext = aMinuscula(retornarExtension(nomArchivo));
+              string nomTemp = quitarExtension(nomArchivo);
+              string carpetas = rRuta(temp);
+
+              escribirDot(carpetas,reporte,nomTemp,ext);
+
+            }else{
+              cout<<"*** Reporte journaling no se puede generar por que el sistema de archivos no es EXT3 ***"<<endl;
+            }
+        }else{
+          cout<<"*** La particion que se busco para reporte de Journal no se encuentra montada ***"<<endl;
+        }
+    }else{
+      cout<<"*** Ruta no encontrada, disco no esta montado o no existe ***"<<endl;
     }
 }

@@ -205,7 +205,7 @@ void comando_mkfs::inicializarFileSystem(string path, int initPart,string type){
       inodoNuevo.i_block[i] = -1; //inicializando el vector de apuntadores
     }
   inodoNuevo.i_block[0] = 0;
-  inodoNuevo.i_type = 0; //es cero si es una carpeta
+  inodoNuevo.i_type = '0'; //es cero si es una carpeta
   inodoNuevo.i_perm  = 664;
 
   ////bloque de carpeta para raiz
@@ -238,7 +238,7 @@ void comando_mkfs::inicializarFileSystem(string path, int initPart,string type){
       inodoArchivo.i_block[i] = -1; //inicializando el vector de apuntadores
     }
   inodoArchivo.i_block[0] = 1;
-  inodoArchivo.i_type = 1; //es cero si es una carpeta
+  inodoArchivo.i_type = '1'; //es cero si es una carpeta
   inodoArchivo.i_perm  = 664;
 
   ////bloque de archivos de usuario

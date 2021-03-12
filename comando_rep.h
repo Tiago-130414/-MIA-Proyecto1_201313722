@@ -24,6 +24,8 @@ public:
   void reporteDisco(string,string);
   float retornarPorcentaje(int,int);
   void escribirDot(string,string,string,string);
+  void reporteInode(string,string);
+  void reporteJournal(string,string);
 };
 
 #endif // COMANDO_REP_H
