@@ -19,7 +19,7 @@ void comando_mount::ejecutarMount(vector <string> parametrosMount){
           existPath = 1;
         }else if(aMinuscula(parametrosMount[i])=="name"){
           name = quitarComillas(parametrosMount[i+1]);
-          name = aMinuscula(name);
+          name = name;
           existName=1;
         }
     }
@@ -30,10 +30,13 @@ void comando_mount::ejecutarMount(vector <string> parametrosMount){
           string nombreArchivo = rutaD[rutaD.size()-1];
           if(extensionRutaValida(nombreArchivo)){
               string rTemporal = rRutaDeArchivo(rRuta(rutaD),nombreArchivo); //formo nuevamente la ruta sin comillas y con la extension validada
+              cout<<rTemporal<<endl;
               archivo = fopen(rTemporal.c_str(),"rb"); //abriendo el archivo para verificar su existencia
               if(archivo!=NULL){
                   fclose(archivo);
                   //validar si existe en el disco, la particion que enviaron
+                  cout<<name<<endl;
+                  cout<<rTemporal<<endl;
                   if(existeParticion(name,rTemporal)==1){
                       //verificando si el disco existe en el registro
                       if(existeDisco(rTemporal)==1){

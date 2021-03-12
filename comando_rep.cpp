@@ -405,14 +405,6 @@ void comando_rep::reporteDisco(string path,string id){
                   tempEspacios.push_back(t);
                 }
             }
-          //mostrando espacios libres
-          /*for(int i=0;i<tempEspacios.size();i++){
-              cout<<"--------------------------------------------------"<<endl;
-              cout<<i<<" "<<tempEspacios[i].inicio<<" -- "<<tempEspacios[i].espacioLibre<<endl;
-              //cout<<i<<" "<<freeSpaces[i].inicio<<" -- "<<freeSpaces[i].espacioLibre<<endl;
-
-            }*/
-
 
           //recolectando particiones activas
           vector<particion> particionesActivas;
@@ -422,14 +414,6 @@ void comando_rep::reporteDisco(string path,string id){
                   particionesActivas.push_back(temp);
                 }
             }
-
-
-          //mostrando particiones activas
-          /*for(int i = 0; i < particionesActivas.size();i++){
-              cout<<particionesActivas[i].part_status<<endl;
-              cout<<string(particionesActivas[i].part_name)<<endl;
-            }
-          */
 
           for(int i=0;i<particionesActivas.size()-1;i++){
               for(int j=i+1;j<particionesActivas.size();j++){
@@ -459,21 +443,102 @@ void comando_rep::reporteDisco(string path,string id){
                 }
             }
 
+          string extendida = "<TABLE BORDER=\"0\">\n";
+          extendida += "<TR BORDER = \"1\"><TD>Extendida</TD></TR>\n";
+          extendida += "<TR><TD>\n";
+          extendida += "<TABLE BORDER=\"1\">\n";
+          extendida += "<TR><TD BORDER = \"0\">Libre</TD></TR>\n";
+          extendida += "</TABLE>\n";
+          extendida += "</TD></TR>\n";
+          extendida += "</TABLE>\n";
+
+          string cadReporte = "label = \"*** Disco ***\";\n";
+          cadReporte += "graph [ratio=fill];\n";
+          cadReporte += "node [label=\"\N\", fontsize=15, shape=plaintext ,fillcolor=\"mint green\"];\n";
+          cadReporte += "graph [bb=\"0,0,352,154\"];\n";
+          cadReporte += "disk [label=<\n";
+          cadReporte += "<TABLE ALIGN=\"LEFT\">\n";
+          cadReporte += "<TR>\n";
           //mostrando espacios libres
           for(int i=0;i<tempEspacios.size();i++){
-              cout<<"--------------------------------------------------"<<endl;
-              string lb = "LIBRE";
+              //cout<<"--------------------------------------------------"<<endl;
+              //string lb = "LIBRE";
               if(!tempEspacios[i].tipoParticion.empty()){
-                  lb = tempEspacios[i].tipoParticion;
+                  //lb = tempEspacios[i].tipoParticion;
+                  if(aMinuscula(tempEspacios[i].tipoParticion) == "p"){
+                      cadReporte += "<TD> PRIMARIA <br/> "+ to_string(retornarPorcentaje(tempEspacios[i].espacioLibre,MBR.mbr_tamano)) +" </TD>\n";
+                    }else if(aMinuscula(tempEspacios[i].tipoParticion) == "e"){
+                      cadReporte += "<TD> EXTENDIDA <br/>"+ to_string(retornarPorcentaje(tempEspacios[i].espacioLibre,MBR.mbr_tamano)) +" </TD>\n";
+                    }
+                }else{
+                  cadReporte += "<TD> LIBRE <br/> "+ to_string(retornarPorcentaje(tempEspacios[i].espacioLibre,MBR.mbr_tamano)) +"</TD>";
                 }
-              cout<<i<<" "<<lb<<" "<<tempEspacios[i].inicio<<" -- "<<tempEspacios[i].espacioLibre<<endl;
+              //cout<<i<<" "<<lb<<" "<<tempEspacios[i].inicio<<" -- "<<tempEspacios[i].espacioLibre<<endl;
             }
+          cadReporte += "</TR>\n";
+          cadReporte += "</TABLE>\n";
+          cadReporte += ">, ];\n";
 
-
+          vector <string> temp(descomponerRuta(path));
+          string nomArchivo = temp[temp.size()-1];
+          string nomTemp = quitarExtension(nomArchivo);
+          string ext = aMinuscula(retornarExtension(nomArchivo));
+          string carpetas = rRuta(temp);
+          escribirDot(carpetas,cadReporte,nomTemp,ext);
         }else{
           cout<<"*** La particion que se busco para reporte disk no se encuentra montada ***"<<endl;
         }
     }else{
       cout<<"*** Ruta no encontrada, disco no esta montado o no existe ***"<<endl;
+    }
+}
+
+float comando_rep::retornarPorcentaje(int tamParticion,int tamDisco){
+  float calculo = static_cast<float>(tamParticion)/static_cast<float>(tamDisco);
+  calculo = calculo * 100;
+  return calculo;
+}
+
+void comando_rep::escribirDot(string ruta,string cont,string nombre,string extension){
+  ruta = ruta+"/";
+  string reporte = "digraph{\n";
+  reporte += cont;
+  reporte += "}\n";
+  //verificando si la carpeta buscada esta creada si no se crea
+  FILE *carpeta;
+  carpeta = fopen(ruta.c_str(),"rb");
+  if(carpeta==NULL){
+      mkdir(ruta.c_str(), 0777);
+      cout<<"*** La carpeta para generar reporte no se encuentra, se procedera a crearla ***"<<endl;
+    }
+  fclose(carpeta);
+
+  //creando el archivo para compilar del dot
+  string rt = "/home/santi/RP_Archivos_DOT/"+nombre+".txt";
+  ofstream archivo;
+  archivo.open(rt);
+  if(!archivo.fail()){
+      archivo<<reporte;
+    }else {
+      cout<<"*** Problema al crear archivo txt de reporte ***"<<endl;
+    }
+  archivo.close();
+  //compilando el dot en la ruta que nos enviaron
+  string tipCompilaionDot ="";
+  int extValida = 1;
+  if(extension == "png"){
+      tipCompilaionDot = "-Tpng";
+    }else if(extension == "jpg" || extension == "jpeg"){
+      tipCompilaionDot = "-Tjpg";
+    }else if(extension == "pdf"){
+      tipCompilaionDot = "-Tpdf";
+    }else{
+      extValida = 0;
+    }
+  if(extValida == 1){
+      string comando = "dot "+tipCompilaionDot+ " " + rt + " -o " + ruta + nombre + "." + extension;
+      system(comando.c_str());
+    }else{
+      cout<<"*** No se pudo generar el reporte, extension no valida -path ***"<<endl;
     }
 }

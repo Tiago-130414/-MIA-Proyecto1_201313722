@@ -572,7 +572,6 @@ void escribirReporte(string contenido,string ruta,string nombre,string extension
     }
   fclose(carpeta);
 
-  cout<<"llego aca"<<endl;
   //creando el archivo para compilar del dot
   string rt = "/home/santi/RP_Archivos_DOT/"+nombre+".txt";
   ofstream archivo;

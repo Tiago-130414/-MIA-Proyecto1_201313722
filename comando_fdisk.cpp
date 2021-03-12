@@ -43,7 +43,7 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
           fit = aMinuscula(fdisk[i+1]);
         }else if(aMinuscula(fdisk[i])=="name"){
           name = quitarComillas(fdisk[i+1]);
-          name = aMinuscula(name);
+          name = name;
           existName=1;
         }else if(aMinuscula(fdisk[i])=="delete"){
           p_delete = aMinuscula(fdisk[i+1]);

@@ -22,6 +22,8 @@ public:
   void escribirBitmapTXT(string,string,string);
   void reporteSuperBloque(string,string);
   void reporteDisco(string,string);
+  float retornarPorcentaje(int,int);
+  void escribirDot(string,string,string,string);
 };
 
 #endif // COMANDO_REP_H
