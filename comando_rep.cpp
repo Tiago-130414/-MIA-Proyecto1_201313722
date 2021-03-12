@@ -75,7 +75,7 @@ void comando_rep::generarReporte(string name,string path,string id,string ruta){
   if(name == "mbr"){
       ReporteMBR(path,id);
     }else if(name == "disk"){
-
+      reporteDisco(path,id);
     }else if(name == "inode"){
 
     }else if(name == "journaling"){
@@ -301,6 +301,177 @@ void comando_rep::reporteSuperBloque(string path,string id){
           escribirReporte(reporte,carpetas,nomTemp,ext);
         }else{
           cout<<"*** La particion que se busco para reporte de Super bloque no se encuentra montada ***"<<endl;
+        }
+    }else{
+      cout<<"*** Ruta no encontrada, disco no esta montado o no existe ***"<<endl;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// DISCO /////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
+void comando_rep::reporteDisco(string path,string id){
+  int idDisco = stoi(retornarIndiceDisco(id));
+  string pathDisco = retornarPathDisco(idDisco);
+  string reporte="";
+  string nombreParticion = retornarNombreParticion(idDisco,id);
+  if(pathDisco != "-1"){
+      if(nombreParticion != "-1"){
+          mbr MBR = retornarMBRdisco(pathDisco);
+
+          //vector de datos
+          vector<espacio> particiones;
+          //CON ESTE FOR RECOLECTO LOS DATOS
+          for(int i=0;i<4;i++){
+              espacio part;
+              //cout<<"--------------------------------------------------"<<endl;
+              //cout<<"Nombre de particion"<<string(MBR.mbr_particiones[i].part_name)<<endl;
+              part.inicioParticion = MBR.mbr_particiones[i].part_start;
+              //cout<<"inicio particion"<<MBR.mbr_particiones[i].part_start<<endl;
+              part.tamanoParticion = MBR.mbr_particiones[i].part_size;
+              //cout<<"tamano particion"<<MBR.mbr_particiones[i].part_size<<endl;
+              particiones.push_back(part);
+            }
+
+          //ESTE FOR ME SIRVE DE PIVOTE PARA ORDENAR LAS PARTICIONES RECOLECTADAS POR EL INICIO
+          //vector de sizes
+          vector<int> tamano;
+          int tam = particiones.size();
+          for(int i =0;i<tam;i++){
+              int temp = particiones[i].inicioParticion;
+              tamano.push_back(temp);
+            }
+
+          int tamanosPsize= tamano.size();
+          //ORDENO DE MENOR A MAYOR
+          //sort(tamano.begin(),tamano.end());
+          for(int i=0;i<tamanosPsize-1;i++){
+              for(int j=i+1;j<tamanosPsize;j++){
+                  if(tamano[i] >tamano[j]){
+                      int aux = tamano[i];
+                      tamano[i] = tamano[j];
+                      tamano [j] = aux;
+                    }
+                }
+            }
+
+          //CREO UN VECTOR TEMPORAL PARA RETORNAR ORDENADO EL VECTOR
+          vector<espacio> temporal;
+          for(int i = 0;i<tamanosPsize;i++){
+              int tamTemp = tamano[i];
+              for(int j =0;j<tam;j++){
+                  int pOcTemp = particiones[j].inicioParticion;
+                  if(tamTemp == pOcTemp){
+                      temporal.push_back(particiones[j]);
+                      break;
+                    }
+                }
+            }
+
+          //VECTOR DE ESPACIOS LIBRES
+          vector<vacios> freeSpaces;
+          //VARIABLES PARA CALCULOS
+          int espaciosLibres = 0;//variable de espacios libres
+          int inicio = sizeof(mbr);
+          int inicioParticion = 0;
+          int temporalSize = temporal.size();
+          //CON ESTE FOR CALCULO LOS ESPACIOS LIBRES
+          for(int i = 0;i<temporalSize;i++){
+              inicioParticion = temporal[i].inicioParticion;
+              espaciosLibres = inicioParticion - inicio;
+              if(espaciosLibres>0){
+                  vacios ajustes;
+                  ajustes.inicio = inicio;
+                  ajustes.espacioLibre = espaciosLibres;
+                  freeSpaces.push_back(ajustes);
+                }
+              inicio = inicioParticion + temporal[i].tamanoParticion;
+            }
+          espaciosLibres = MBR.mbr_tamano - inicio;
+
+          if(espaciosLibres>0){
+              vacios ajustes;
+              ajustes.inicio = inicio;
+              ajustes.espacioLibre = espaciosLibres;
+              freeSpaces.push_back(ajustes);
+            }
+
+          //eliminando espacios con inicio <0
+          vector <vacios> tempEspacios;
+          for(int i=0;i<freeSpaces.size();i++){
+              if(freeSpaces[i].inicio > 0){
+                  vacios t = freeSpaces[i];
+                  tempEspacios.push_back(t);
+                }
+            }
+          //mostrando espacios libres
+          /*for(int i=0;i<tempEspacios.size();i++){
+              cout<<"--------------------------------------------------"<<endl;
+              cout<<i<<" "<<tempEspacios[i].inicio<<" -- "<<tempEspacios[i].espacioLibre<<endl;
+              //cout<<i<<" "<<freeSpaces[i].inicio<<" -- "<<freeSpaces[i].espacioLibre<<endl;
+
+            }*/
+
+
+          //recolectando particiones activas
+          vector<particion> particionesActivas;
+          for(int i = 0; i < 4;i++){
+              if(MBR.mbr_particiones[i].part_status == '1'){
+                  particion temp = MBR.mbr_particiones[i];
+                  particionesActivas.push_back(temp);
+                }
+            }
+
+
+          //mostrando particiones activas
+          /*for(int i = 0; i < particionesActivas.size();i++){
+              cout<<particionesActivas[i].part_status<<endl;
+              cout<<string(particionesActivas[i].part_name)<<endl;
+            }
+          */
+
+          for(int i=0;i<particionesActivas.size()-1;i++){
+              for(int j=i+1;j<particionesActivas.size();j++){
+                  if(particionesActivas[i].part_start >particionesActivas[j].part_start){
+                      particion aux = particionesActivas[j];
+                      particionesActivas[j] = particionesActivas[i];
+                      particionesActivas [i] = aux;
+                    }
+                }
+            }
+          for(int i = 0;i<particionesActivas.size();i++){
+              vacios temp;
+              temp.inicio = particionesActivas[i].part_start;
+              temp.espacioLibre = particionesActivas[i].part_size;
+              temp.tipoParticion = particionesActivas[i].part_type;
+              tempEspacios.push_back(temp);
+            }
+
+
+          for(int i=0;i<tempEspacios.size()-1;i++){
+              for(int j=i+1;j<tempEspacios.size();j++){
+                  if(tempEspacios[i].inicio >tempEspacios[j].inicio){
+                      vacios aux = tempEspacios[j];
+                      tempEspacios[j] = tempEspacios[i];
+                      tempEspacios [i] = aux;
+                    }
+                }
+            }
+
+          //mostrando espacios libres
+          for(int i=0;i<tempEspacios.size();i++){
+              cout<<"--------------------------------------------------"<<endl;
+              string lb = "LIBRE";
+              if(!tempEspacios[i].tipoParticion.empty()){
+                  lb = tempEspacios[i].tipoParticion;
+                }
+              cout<<i<<" "<<lb<<" "<<tempEspacios[i].inicio<<" -- "<<tempEspacios[i].espacioLibre<<endl;
+            }
+
+
+        }else{
+          cout<<"*** La particion que se busco para reporte disk no se encuentra montada ***"<<endl;
         }
     }else{
       cout<<"*** Ruta no encontrada, disco no esta montado o no existe ***"<<endl;

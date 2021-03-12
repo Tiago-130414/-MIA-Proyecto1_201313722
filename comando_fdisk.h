@@ -41,7 +41,7 @@ public:
 
   void eliminacionFast(string path,string name);
   void eliminacionFull(string path,string name);
-
+  int validarEspacioParaParticion(int,vector<vacios>);
   string rNombreParticion(char nomb[16]);
 
 };

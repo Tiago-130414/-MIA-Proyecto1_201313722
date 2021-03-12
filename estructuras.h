@@ -40,6 +40,7 @@ typedef struct{
 typedef struct{
   int inicio;
   int espacioLibre;
+  string tipoParticion;
 }vacios;
 
 ////////////////////////////////////

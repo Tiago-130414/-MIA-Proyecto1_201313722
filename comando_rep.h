@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <estructuras.h>
+#include <bits/stdc++.h>
 #include "libreria.h"
 using namespace std;
 class comando_rep
@@ -20,6 +21,7 @@ public:
   void reporteBitmapB(string,string);
   void escribirBitmapTXT(string,string,string);
   void reporteSuperBloque(string,string);
+  void reporteDisco(string,string);
 };
 
 #endif // COMANDO_REP_H

@@ -85,7 +85,7 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
                   //si el size llego antes que el delete
                   if(posicionSize<posicionDelete){
                       //se crea particion
-                      if(size>0){                      
+                      if(size>0){
                           if(name.length()<17){
                               crearParticion(size,unit,path,type,name,fit);
                             }else{
@@ -101,7 +101,7 @@ void comando_fdisk::ejecutarFdisk(vector<string>fdisk){
                   //si no viene delete ni add
                   if(validarParametrosOpcionales(unit,type,fit)==1){
                       //si el tamanio de la particion es mayor que 0
-                      if(size>0){                        
+                      if(size>0){
                           if(name.length()<17){
                               crearParticion(size,unit,path,type,name,fit);
                             }else{
@@ -174,21 +174,37 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
                       //aqui se procede a crear la particion
                       tamanioParticion = tamanoParticionNueva(unit,size);
                       //segun el tipo de ajuste se obtiene el inicio de la particion
-                      if(ajusteDisco == 'B'){
-                          //Mejor ajuste
-                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,ajusteDisco));
-                          int inicio = posicionMejorAjuste(infoEspacios,tamanioParticion);
-                          escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
-                        }else if(ajusteDisco == 'F'){
-                          //Primer ajuste
-                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,ajusteDisco));
-                          int inicio = posicionPrimerAjuste(infoEspacios,tamanioParticion);
-                          escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
-                        }else if(ajusteDisco == 'W'){
-                          //Peor ajuste
-                          vector<vacios> infoEspacios(particionesOcupadas(rTemporal,ajusteDisco));
-                          int inicio = posicionPeorAjuste(infoEspacios,tamanioParticion);
-                          escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
+                      if(tamanioParticion<MBR.mbr_tamano){
+                          if(ajusteDisco == 'B'){
+                              //Mejor ajuste
+                              vector<vacios> infoEspacios(particionesOcupadas(rTemporal,ajusteDisco));
+                              if(validarEspacioParaParticion(tamanioParticion,infoEspacios)==1){
+                                  int inicio = posicionMejorAjuste(infoEspacios,tamanioParticion);
+                                  escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
+                                }else{
+                                  cout<<"*** Espacio insuficiente para ingresar particion ***"<<endl;
+                                }
+                            }else if(ajusteDisco == 'F'){
+                              //Primer ajuste
+                              vector<vacios> infoEspacios(particionesOcupadas(rTemporal,ajusteDisco));
+                              if(validarEspacioParaParticion(tamanioParticion,infoEspacios)==1){
+                                  int inicio = posicionPrimerAjuste(infoEspacios,tamanioParticion);
+                                  escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
+                                }else{
+                                  cout<<"*** Espacio insuficiente para ingresar particion ***"<<endl;
+                                }
+                            }else if(ajusteDisco == 'W'){
+                              //Peor ajuste
+                              vector<vacios> infoEspacios(particionesOcupadas(rTemporal,ajusteDisco));
+                              if(validarEspacioParaParticion(tamanioParticion,infoEspacios)==1){
+                                  int inicio = posicionPeorAjuste(infoEspacios,tamanioParticion);
+                                  escribirParticion(tamanioParticion,inicio,rTemporal,typeT,name,fitT);
+                                }else{
+                                  cout<<"*** Espacio insuficiente para ingresar particion ***"<<endl;
+                                }
+                            }
+                        }else{
+                          cout<<"*** La particion que desea insertar es mas grande que el disco ***"<<endl;
                         }
                     }else{
                       cout<<"*** El limite de particiones primarias se ha alcanzado ***"<<endl;
@@ -211,6 +227,19 @@ void comando_fdisk::crearParticion(int size,string unit,string path,string type,
       cout<<"*** La extension del archivo proporcionado no es valida ***"<<endl;
     }
 }
+
+int comando_fdisk::validarEspacioParaParticion(int tamParticion,vector<vacios> espaciosVacios){
+  int puedoInsertar = 0;
+  int tamEspaciosVacios = espaciosVacios.size();
+  for(int i = 0;i<tamEspaciosVacios;i++){
+      if(tamParticion <= espaciosVacios[i].espacioLibre){
+          puedoInsertar = 1;
+          break;
+        }
+    }
+  return puedoInsertar;
+}
+
 
 void comando_fdisk::escribirParticion(int size,int start,string path,char type,string name,char fit){
   FILE *archivo;
@@ -410,6 +439,7 @@ vector<vacios> comando_fdisk::particionesOcupadas(string path,char ajuste){
   int tamanosPsize= tamanosP.size();
   //ORDENO DE MENOR A MAYOR
   sort(tamanosP.begin(),tamanosP.end());
+
   //CREO UN VECTOR TEMPORAL PARA RETORNAR ORDENADO EL VECTOR
   vector<espacio> temporal;
   for(int i = 0;i<tamanosPsize;i++){
