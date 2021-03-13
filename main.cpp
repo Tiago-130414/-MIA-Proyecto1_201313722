@@ -20,7 +20,7 @@ int main()
     QString line;
 
     while(line!="salir"){    //esto me sirve para seguir leyendo siempre los comandos sin salirme
-        printf("********************* Ingrese Comando *********************\n\n");
+        printf("******************************* Ingrese Comando ********************************\n\n");
         line = qtin.readLine();
         if(line!="salir"){
             if(line.isEmpty()==false){
@@ -30,7 +30,7 @@ int main()
                 yylineno = 0;
                 if(yyparse()==0)
                 {
-                    printf("\n\n************* Comando ejecutado correctamente *************\n\n");
+                    printf("\n\n*********************** Comando ejecutado correctamente ************************\n\n");
 
                 }else {
 

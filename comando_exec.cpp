@@ -30,7 +30,7 @@ void comando_exec::leerScript(vector<string> ruta){
                   //ya se puede enviar codigo a la gramatica
                   int coment = 0;
                   if(line[0]!='#'){
-                      printf("\n\n************************* Comando *************************\n\n");
+                      printf("\n\n********************************** Comando *************************************\n\n");
                       //exec -path=/home/santi/Escritorio/archivo.script
                       cout<<line<<endl;
                     }else{
@@ -39,7 +39,7 @@ void comando_exec::leerScript(vector<string> ruta){
                   YY_BUFFER_STATE buffer = yy_scan_string(line.c_str());
                   int val = yyparse();
                   if(val == 0 && coment == 0){
-                      printf("\n\n************* Comando ejecutado correctamente *************\n\n");
+                      printf("\n\n************************* Comando ejecutado correctamente **********************\n\n");
                     }
 
                 }

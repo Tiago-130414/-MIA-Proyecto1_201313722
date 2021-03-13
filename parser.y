@@ -17,6 +17,7 @@
 #include <comando_logout.h>
 #include <comando_rep.h>
 #include <comando_pause.h>
+#include <comando_mkdir.h>
 //#include "obmkdisk.h"
 using namespace std;
 extern int yylineno; //linea actual donde se encuentra el parser (analisis lexico) lo maneja BISON
@@ -32,6 +33,7 @@ vector <string> valores_unmount;
 vector <string> valores_mkfs;
 vector <string> valores_login;
 vector <string> valores_rep;
+vector <string> valores_mkdir;
 int yyerror(const char* mens)
 {
 std::cout << mens <<" "<<yytext<< std::endl;
@@ -44,6 +46,7 @@ valores_unmount.clear();
 valores_mkfs.clear();
 valores_login.clear();
 valores_rep.clear();
+valores_mkdir.clear();
 return 0;
 }
 %}
@@ -151,6 +154,7 @@ COMANDOS :  MKDISK
           | c_logout                                   {comando_logout objlogout;objlogout.ejecutarLogout();}
           | REP
           | c_pause                                    {comando_pause objpause;objpause.ejecutarPause();}
+          | MKDIR
 ; 
 
 MKDISK : c_mkdisk LS_PAR_MKDISK {
@@ -255,3 +259,15 @@ PARAMETROS_REP: menos p_name igual identificador       {valores_rep.push_back($2
               | menos p_id igual identificador         {valores_rep.push_back($2);valores_rep.push_back($4);}
               | menos p_ruta igual identificador       {valores_rep.push_back($2);valores_rep.push_back($4);}
 ;             | menos p_ruta igual cadena              {valores_rep.push_back($2);valores_rep.push_back($4);}
+
+MKDIR : c_mkdir LS_MKDIR                               {comando_mkdir objmkdir;objmkdir.ejecutarMkdir(valores_mkdir);valores_mkdir.clear();}
+;
+
+LS_MKDIR : LS_MKDIR PARAMETROS_MKDIR
+         | PARAMETROS_MKDIR
+;
+
+PARAMETROS_MKDIR : menos p_path igual cadena           {valores_mkdir.push_back($2);valores_mkdir.push_back($4);}
+                 | menos p_path igual ruta             {valores_mkdir.push_back($2);valores_mkdir.push_back($4);}
+                 | menos p_p                           {valores_mkdir.push_back($2);valores_mkdir.push_back("p_p");}
+;
