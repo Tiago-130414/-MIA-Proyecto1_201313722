@@ -26,6 +26,13 @@ public:
   void escribirDot(string,string,string,string);
   void reporteInode(string,string);
   void reporteJournal(string,string);
+  void reporteTree(string,string);
+  string leerBloqueCarpeta(string,int,int);
+  string leerBloqueArchivo(string,int,int);
+  string leerInodo(string,int,int);
+  string recorrerInodos(int,inodo);
+  string recorrerBloqueCarpetas(int,bloqueCarpetas);
+  string recorrerBloqueArchivos(int,bloqueArchivos);
 };
 
 #endif // COMANDO_REP_H

@@ -47,4 +47,8 @@ string recorrerBloqueArchivos(int,string,int);
 void escribirReporte(string,string,string,string);
 string quitarExtension(string);
 string retornarExtension(string);
+int buscarCarpeta(vector<string>,string,int);
+int rutaFaltanteCarpeta(vector<string>,string,int);
+int  retornarIndiceUltimoInodo(vector<string>,string,int);
+int retornarIndiceUltimoBloque(vector<string>,string,int);
 #endif // LIBRERIA_H

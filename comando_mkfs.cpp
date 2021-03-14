@@ -190,7 +190,6 @@ void comando_mkfs::imprimirsize(){
 }
 
 ///////////CREAR RAIZ Y USUARIOS POR DEFECTO
-
 void comando_mkfs::inicializarFileSystem(string path, int initPart,string type){
 
   ////inodo de raiz
@@ -215,7 +214,7 @@ void comando_mkfs::inicializarFileSystem(string path, int initPart,string type){
   string self = ".";
   string nBloqueVacio ="-";
   nuevoBloqueCarpetas.b_content[0].b_inodo = 0;
-  strcpy(nuevoBloqueCarpetas.b_content[2].b_name,self.c_str());
+  strcpy(nuevoBloqueCarpetas.b_content[0].b_name,self.c_str());
   nuevoBloqueCarpetas.b_content[1].b_inodo = 0;
   strcpy(nuevoBloqueCarpetas.b_content[1].b_name,pad.c_str());
   nuevoBloqueCarpetas.b_content[2].b_inodo = 1;

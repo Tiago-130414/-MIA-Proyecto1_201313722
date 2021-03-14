@@ -11,6 +11,8 @@ class comando_mkdir
 public:
   comando_mkdir();
   void ejecutarMkdir(vector <string>);
+  void generarCarpeta(string,int);
+  string rRutaFaltante(vector<string>,int);
 };
 
 #endif // COMANDO_MKDIR_H

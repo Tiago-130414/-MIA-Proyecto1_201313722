@@ -601,3 +601,144 @@ void escribirReporte(string contenido,string ruta,string nombre,string extension
       cout<<"*** No se pudo generar el reporte, extension no valida -path ***"<<endl;
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// BUSCAR INODOS ////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+//metodo que busca carpetas a partir del usuario en linea
+//path es la ruta que se buscara en los inodos
+int buscarCarpeta(vector<string> carpetas,string pathDisco,int partInit){
+  //inodo retornarInodo(string path,int partInit,int indice)
+  int idInodo = -1;
+  int tamVCarpeta = carpetas.size();
+  inodo pivote = retornarInodo(pathDisco,partInit,0);
+  string cp = "";
+  for(int i =0;i<tamVCarpeta;i++){
+      idInodo = -1;
+      cp = carpetas[i];
+      for(int j =0;j<12;j++){
+          if(pivote.i_block[j]!=-1){
+              //buscando el bloque de carpeta
+              bloqueCarpetas carpetas (retornarBloqueCarpetas(pathDisco,partInit,pivote.i_block[j]));
+              for(int k = 0;k<4;k++){
+                  //cout<<direccion<<"---"<<carpetas.b_content[k].b_name<<endl;
+                  if(cp == carpetas.b_content[k].b_name){
+                      pivote = retornarInodo(pathDisco,partInit,carpetas.b_content[k].b_inodo);
+                      actualizarFechaInodo(pathDisco,partInit,carpetas.b_content[k].b_inodo);
+                      idInodo = 1;
+                    }
+                }
+
+            }
+        }
+      if(idInodo == -1){
+          break;
+        }
+    }
+  actualizarFechaInodo(pathDisco,partInit,0);
+  return idInodo;
+}
+
+//metodo que retorna la posicion del vector de carpetas que no se ha creado
+int rutaFaltanteCarpeta(vector<string> carpetas,string pathDisco,int partInit){
+  //inodo retornarInodo(string path,int partInit,int indice)
+  int idInodo = -1;
+  int tamVCarpeta = carpetas.size();
+  inodo pivote = retornarInodo(pathDisco,partInit,0);
+  string cp = "";
+  for(int i =0;i<tamVCarpeta;i++){
+      idInodo = -1;
+      cp = carpetas[i];
+      for(int j =0;j<12;j++){
+          if(pivote.i_block[j]!=-1){
+              //buscando el bloque de carpeta
+              bloqueCarpetas carpetas (retornarBloqueCarpetas(pathDisco,partInit,pivote.i_block[j]));
+              for(int k = 0;k<4;k++){
+                  //cout<<direccion<<"---"<<carpetas.b_content[k].b_name<<endl;
+                  if(cp == carpetas.b_content[k].b_name){
+                      pivote = retornarInodo(pathDisco,partInit,carpetas.b_content[k].b_inodo);
+                      actualizarFechaInodo(pathDisco,partInit,carpetas.b_content[k].b_inodo);
+                      idInodo = -2;
+                    }
+                }
+
+            }
+        }
+      if(idInodo == -1){
+          idInodo = i;
+          return idInodo;
+        }
+    }
+  actualizarFechaInodo(pathDisco,partInit,0);
+  return idInodo;
+}
+
+//metodo que retorna el indice del ultimo inodo
+int  retornarIndiceUltimoInodo(vector<string> carpetas,string pathDisco,int partInit){
+  //inodo retornarInodo(string path,int partInit,int indice)
+  int idInodo = -1;
+  int indIno = 0;
+  int tamVCarpeta = carpetas.size();
+  inodo pivote = retornarInodo(pathDisco,partInit,0);
+  string cp = "";
+  for(int i =0;i<tamVCarpeta;i++){
+      idInodo = -1;
+      cp = carpetas[i];
+      for(int j =0;j<12;j++){
+          if(pivote.i_block[j]!=-1){
+              //buscando el bloque de carpeta
+              bloqueCarpetas carpetas (retornarBloqueCarpetas(pathDisco,partInit,pivote.i_block[j]));
+              for(int k = 0;k<4;k++){
+                  //cout<<direccion<<"---"<<carpetas.b_content[k].b_name<<endl;
+                  if(cp == carpetas.b_content[k].b_name){
+                      indIno = carpetas.b_content[k].b_inodo;
+                      pivote = retornarInodo(pathDisco,partInit,indIno);
+                      actualizarFechaInodo(pathDisco,partInit,carpetas.b_content[k].b_inodo);
+                      idInodo = 1;
+                    }
+                }
+
+            }
+        }
+      if(idInodo == -1){
+          break;
+        }
+    }
+  actualizarFechaInodo(pathDisco,partInit,0);
+  return indIno;
+}
+
+//metodo que retorna el indice del ultimo bloque
+int retornarIndiceUltimoBloque(vector<string> carpetas,string pathDisco,int partInit){
+  //inodo retornarInodo(string path,int partInit,int indice)
+  int idInodo = -1;
+  int indBlo = 0;
+  int tamVCarpeta = carpetas.size();
+  inodo pivote = retornarInodo(pathDisco,partInit,0);
+  string cp = "";
+  for(int i =0;i<tamVCarpeta;i++){
+      idInodo = -1;
+      cp = carpetas[i];
+      for(int j =0;j<12;j++){
+          if(pivote.i_block[j]!=-1){
+              //buscando el bloque de carpeta
+              indBlo = pivote.i_block[j];
+              bloqueCarpetas carpetas (retornarBloqueCarpetas(pathDisco,partInit,indBlo));
+              for(int k = 0;k<4;k++){
+                  //cout<<direccion<<"---"<<carpetas.b_content[k].b_name<<endl;
+                  if(cp == carpetas.b_content[k].b_name){
+                      pivote = retornarInodo(pathDisco,partInit,carpetas.b_content[k].b_inodo);
+                      actualizarFechaInodo(pathDisco,partInit,carpetas.b_content[k].b_inodo);
+                      idInodo = 1;
+                    }
+                }
+
+            }
+        }
+      if(idInodo == -1){
+          break;
+        }
+    }
+  actualizarFechaInodo(pathDisco,partInit,0);
+  return indBlo;
+}

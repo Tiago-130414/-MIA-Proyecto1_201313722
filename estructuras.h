@@ -129,7 +129,21 @@ typedef struct{
 typedef struct{
   string usuario;
   string contrasena;
+  string idParticion;
+  string rutaDisco;
+  string nombreParticion;
 }datosUSR;
+/////////////////////////////////////
+/////PARA CARPETAS
+typedef struct{
+  int indInodo;
+  int indBloque;
+  inodo in;
+  bloqueCarpetas bl;
+}infoCarpetas;
+
+
+
 class estructuras
 {
 public:

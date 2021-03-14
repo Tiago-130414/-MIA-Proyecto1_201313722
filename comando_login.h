@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <estructuras.h>
 #include "libreria.h"
 using namespace std;
 class comando_login
@@ -15,7 +16,7 @@ public:
   vector<datosUSR>obtenerDatos(string);
   vector<datosUSR>splitPorComasUSR(string);
   datosUSR analizarUsuarios(vector<string>);
-  void realizarLogin(vector<datosUSR>,string,string);
+  void realizarLogin(vector<datosUSR>,string,string,string,string,string);
 };
 
 #endif // COMANDO_LOGIN_H

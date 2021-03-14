@@ -57,7 +57,7 @@ void comando_login::validarDatos(string usuario, string password,string id){
               string usuariosArchivo = recorrerBloqueArchivos(temp,pathDisco,initPart);
               if(!usuariosArchivo.empty()){
                   vector<datosUSR> temp(obtenerDatos(usuariosArchivo));
-                  realizarLogin(temp,usuario,password);
+                  realizarLogin(temp,usuario,password,id,pathDisco,nombreParticion);
                 }
             }else{
               cout<<"*** No existe un sistema de archivos ***"<<endl;
@@ -123,14 +123,20 @@ datosUSR comando_login::analizarUsuarios(vector<string> usuario){
 /////////////////////////// VALIDAR USUARIOS ///////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
-void comando_login::realizarLogin(vector<datosUSR>usuariosSistema,string nombre,string contra){
+void comando_login::realizarLogin(vector<datosUSR>usuariosSistema,string nombre,string contra,string id,string pathDisco, string nombreParticion){
   extern string usuario;
+  extern datosUSR infoUSR;
   int encontreUS = 0;
   if(usuario.empty()){
       for(int i = 0;i<usuariosSistema.size();i++){
           if(usuariosSistema[i].usuario == nombre){
               if(usuariosSistema[i].contrasena == contra){
                   usuario = nombre;
+                  infoUSR.usuario = nombre;
+                  infoUSR.contrasena = contra;
+                  infoUSR.idParticion = id;
+                  infoUSR.rutaDisco = pathDisco;
+                  infoUSR.nombreParticion = nombreParticion;
                   encontreUS = 1;
                   break;
                 }
@@ -147,7 +153,3 @@ void comando_login::realizarLogin(vector<datosUSR>usuariosSistema,string nombre,
       cout<<"->>> Inicio sesion correctamente "<< nombre<<" <<<-"<<endl;
     }
 }
-
-////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////// VALIDAR USUARIOS ///////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////

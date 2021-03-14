@@ -717,7 +717,6 @@ void comando_rep::reporteTree(string path,string id){
     }
 }
 
-
 //metodo qeu genera la tabla del bloque de carpetas
 string comando_rep::leerBloqueCarpeta(string pathDisco,int initPart,int indB){
   bloqueCarpetas bc = retornarBloqueCarpetas(pathDisco,initPart,indB);

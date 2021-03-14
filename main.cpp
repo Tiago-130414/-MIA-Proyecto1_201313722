@@ -12,6 +12,7 @@ extern int columna; // Columna de los tokens
 extern int yylineno;
 vector <disco> registro;
 string usuario;//guarda el usuario en linea
+datosUSR infoUSR; //guarda informacion de usuario
 int estado=0; //indica si el usuario esta en linea o no
 using namespace std;
 int main()
