@@ -33,6 +33,11 @@ public:
   string recorrerInodos(int,inodo);
   string recorrerBloqueCarpetas(int,bloqueCarpetas);
   string recorrerBloqueArchivos(int,bloqueArchivos);
+  void reporteBloques(string,string);
+  string leerInodoRB(string,int,int);
+  string leerBloqueCarpetaRB(string,int,int);
+  string leerBloqueArchivosRB(string,int,int);
+  string realizarApuntadoresRB(string,int);
 };
 
 #endif // COMANDO_REP_H

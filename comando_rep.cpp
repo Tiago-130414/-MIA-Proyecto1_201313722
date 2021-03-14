@@ -81,7 +81,7 @@ void comando_rep::generarReporte(string name,string path,string id,string ruta){
     }else if(name == "journaling"){
       reporteJournal(path,id);
     }else if(name == "block"){
-
+      reporteBloques(path,id);
     }else if(name == "bm_inode"){
       reporteBitmapI(path,id);
     }else if(name == "bm_block"){
@@ -685,8 +685,6 @@ void comando_rep::reporteJournal(string path,string id){
 ////////////////////////////////// TREE ////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
-string rTree = "";
-int cont = 0;
 void comando_rep::reporteTree(string path,string id){
   int idDisco = stoi(retornarIndiceDisco(id));
   string pathDisco = retornarPathDisco(idDisco);
@@ -699,7 +697,7 @@ void comando_rep::reporteTree(string path,string id){
           string rep = "rankdir=\"LR\";\n";
           rep += "ordering=out;\n";
           rep += "splines=true;\n";
-          rep += "nodesep=0.5;\n";
+          rep += "graph [pad=\"0.5\", nodesep=\"0.5\", ranksep=\"2\"];\n";
           rep += leerInodo(pathDisco,initPart,0);
           //cout<<rep<<endl;
           vector <string> temp(descomponerRuta(path));
@@ -817,3 +815,93 @@ string comando_rep::recorrerBloqueArchivos(int indB ,bloqueArchivos bc){
   return cad;
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// BLOQUES /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
+void comando_rep::reporteBloques(string path,string id){
+  int idDisco = stoi(retornarIndiceDisco(id));
+  string pathDisco = retornarPathDisco(idDisco);
+  string reporte="";
+  string nombreParticion = retornarNombreParticion(idDisco,id);
+  if(pathDisco != "-1"){
+      if(nombreParticion != "-1"){
+          particion particionTemp = retornarParticion(pathDisco,nombreParticion);
+          int initPart = particionTemp.part_start;
+          string rep = "rankdir=\"LR\";\n";
+          rep += "ordering=out;\n";
+          rep += "splines=ortho;\n";
+          rep += "graph [pad=\"0.5\", nodesep=\"0.5\", ranksep=\"1\"];\n";
+          rep += leerInodoRB(pathDisco,initPart,0);
+          rep += realizarApuntadoresRB(pathDisco,initPart);
+
+          vector <string> temp(descomponerRuta(path));
+          string nomArchivo = temp[temp.size()-1];
+          string ext = aMinuscula(retornarExtension(nomArchivo));
+          string nomTemp = quitarExtension(nomArchivo);
+          string carpetas = rRuta(temp);
+
+          escribirDot(carpetas,rep,nomTemp,ext);
+        }else{
+          cout<<"*** La particion que se busco para reporte de Tree no se encuentra montada ***"<<endl;
+        }
+    }else{
+      cout<<"*** Ruta no encontrada, disco no esta montado o no existe ***"<<endl;
+    }
+}
+
+string comando_rep::leerInodoRB(string pathDisco,int initPart,int indI){
+  inodo inodoTemp = retornarInodo(pathDisco,initPart,indI);
+  string reporte = "";
+  for(int j = 0;j<12;j++){
+      if(inodoTemp.i_block[j] != -1){
+          if(inodoTemp.i_type == '0'){
+              reporte += leerBloqueCarpetaRB(pathDisco,initPart,inodoTemp.i_block[j]);
+            }else if(inodoTemp.i_type == '1'){
+              reporte += leerBloqueArchivosRB(pathDisco,initPart,inodoTemp.i_block[j]);
+            }
+        }
+    }
+  return reporte;
+}
+
+string comando_rep::leerBloqueCarpetaRB(string pathDisco,int initPart,int indB){
+  bloqueCarpetas bc = retornarBloqueCarpetas(pathDisco,initPart,indB);
+  string cad = recorrerBloqueCarpetas(indB,bc);
+  for(int i =0;i<4;i++){
+      if(string(bc.b_content[i].b_name) != "." && string(bc.b_content[i].b_name) != ".." && bc.b_content[i].b_inodo != -1){
+          cad += leerInodoRB(pathDisco,initPart,bc.b_content[i].b_inodo);
+        }
+    }
+  return cad;
+}
+
+string comando_rep::leerBloqueArchivosRB(string pathDisco,int initPart,int indB){
+  bloqueArchivos bc = retornarBloqueArchivos(pathDisco,initPart,indB);
+  string cad = recorrerBloqueArchivos(indB,bc);
+  return cad;
+}
+
+string comando_rep::realizarApuntadoresRB(string pathDisco,int initPart){
+  string bitmap = leerBitmapB(pathDisco,initPart);
+  //convirtiendo a vector de char el bitmap de inodo
+  //longitud del vector
+  int longBitmap = bitmap.length();
+  //vector con todas el contenido del bitmap
+  char vector_bitmap[longBitmap+1];
+  //guardando el bitmap en el vector
+  strcpy(vector_bitmap,bitmap.c_str());
+  //leyendo el bitmap para hacer apuntadores
+  string rep = "";
+  for(int i = 0;i<longBitmap;i++){
+      if(bitmap[i] == '1'){
+          for(int j = i + 1;j<longBitmap;j++){
+              if(bitmap[j] == '1'){
+                  rep += "bloque" + to_string(i) + ":T" + "->" + "bloque" + to_string(j)+":T";
+                  i = j+1;
+                }
+            }
+        }
+    }
+  return rep;
+}
