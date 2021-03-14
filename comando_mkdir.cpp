@@ -77,8 +77,8 @@ void comando_mkdir:: generarCarpeta(string path,int existeP){
                     }else{
                       //si no existen se crean las carpetas que faltan
                       //guarda el indice de donde hace falta la ruta
-                      int indF = rutaFaltanteCarpeta(carpetasPadre,pathDisco,inicioParticion);
-                      //ruta faltante -> cout<<rRutaFaltante(carpetasPadre,indF)<<rRutaFaltante(carpetasPadre,indF).length()<<endl;
+                      int indF = rutaFaltanteCarpeta(carpetas,pathDisco,inicioParticion);
+                      /*ruta faltante ->*/ cout<<rRutaFaltante(carpetas,indF)<<"  "<<rRutaFaltante(carpetas,indF).length()<<endl;
                       //ultimo inodo  -> cout<<"UltIno"<<retornarIndiceUltimoInodo(carpetas,pathDisco,inicioParticion)<<endl;
                       //cout<<"UltBlo"<<retornarIndiceUltimoBloque(carpetas,pathDisco,inicioParticion)<<endl;
                     }
@@ -99,6 +99,7 @@ void comando_mkdir:: generarCarpeta(string path,int existeP){
       cout<<"*** Necesita iniciar sesion en una particion ***"<<endl;
     }
 }
+
 //metodo que retorna la ruta faltante
 string comando_mkdir::rRutaFaltante(vector<string> ruta,int ind){
   string cad = "";

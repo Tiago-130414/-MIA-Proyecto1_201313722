@@ -115,11 +115,11 @@ void comando_rep::ReporteMBR(string path,string id){
       string ext = aMinuscula(retornarExtension(nomArchivo));
       string carpetas = rRuta(temp);
       string fecha = MBRDISCO.mbr_fecha_creacion;
-      string fit(MBRDISCO.disk_fit);
+      string fit = string(1,MBRDISCO.disk_fit[0]);
       reporte += "label=\" * REPORTE MBR * \";\n" ;
       reporte += "ReporteMBR[label=<\n";
       reporte += "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n";
-      reporte += "<tr><td><i>NOMBRE</i></td><td><i>VALOR</i></td></tr>\n";
+      reporte += "<tr><td  bgcolor=\"orange\"><i>NOMBRE</i></td><td  bgcolor=\"orange\"><i>VALOR</i></td></tr>\n";
       reporte += "<tr><td>Tamanio MBR</td><td>"+ to_string(MBRDISCO.mbr_tamano) + "</td></tr>\n";
       reporte += "<tr><td>Fecha de creacion</td><td>"+fecha+"</td></tr>\n";
       reporte += "<tr><td>Disk signature</td><td>"+to_string(MBRDISCO.mbr_disk_signature)+"</td></tr>\n";
@@ -139,7 +139,7 @@ string comando_rep::infoParticiones(mbr temp){
       if(temp.mbr_particiones[i].part_status == '1'){
           string nm = temp.mbr_particiones[i].part_name;
           string fitT(1,temp.mbr_particiones[i].part_fit);
-          rep+= "<tr><td>Particion </td><td>"+ to_string(i+1) +"</td></tr>\n";
+          rep+= "<tr><td bgcolor=\"orange\" colspan = \"2\">Particion"+ to_string(i+1) +"</td></tr>\n";
           rep+= "<tr><td>Part status </td><td>"+ string(1,temp.mbr_particiones[i].part_status) +"</td></tr>\n";
           rep+= "<tr><td>Part type </td><td>"+ string(1,temp.mbr_particiones[i].part_type) +"</td></tr>\n";
           rep+= "<tr><td>Part fit </td><td>"+ fitT +"</td></tr>\n";
@@ -553,7 +553,6 @@ void comando_rep::escribirDot(string ruta,string cont,string nombre,string exten
 void comando_rep::reporteInode(string path,string id){
   int idDisco = stoi(retornarIndiceDisco(id));
   string pathDisco = retornarPathDisco(idDisco);
-  string reporte="";
   string nombreParticion = retornarNombreParticion(idDisco,id);
   if(pathDisco != "-1"){
       if(nombreParticion != "-1"){
@@ -572,6 +571,8 @@ void comando_rep::reporteInode(string path,string id){
           vector<int> indicesActivos;
 
           string reporte = "rankdir = \"LR\";\n";
+          reporte += "splines=ortho;\n";
+          reporte += "graph [pad=\"0.5\", nodesep=\"0.5\", ranksep=\"1\"];\n";
           reporte += "label=\" *** REPORTE INODO *** \";\n" ;
           for(int i = 0; i<longBitmap;i++){
               //si es 1 significa que hay inodo en esa posicion de indice
@@ -582,6 +583,7 @@ void comando_rep::reporteInode(string path,string id){
                   //cout<<"UID - "<<to_string(inodoTemp.i_uid)<<endl;
                   reporte += "inodo"+to_string(i)+"[label=<\n";
                   reporte += "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n";
+                  reporte += "<tr><td bgcolor=\"skyblue\" colspan=\"2\"><i>Inodo</i></td></tr>\n";
                   reporte += "<tr><td><i>NOMBRE</i></td><td><i>VALOR</i></td></tr>\n";
                   reporte += "<tr><td>i_uid</td><td>"+ to_string(inodoTemp.i_uid) + "</td></tr>\n";
                   reporte += "<tr><td>i_gid</td><td>"+ to_string(inodoTemp.i_gid) + "</td></tr>\n";
@@ -607,7 +609,7 @@ void comando_rep::reporteInode(string path,string id){
           int tamIndicesAct = indicesActivos.size();
           for(int i=0;i<tamIndicesAct;i++){
               if(i < indicesActivos.size()-1){
-                  reporte += "inodo" + to_string(indicesActivos[i]) + "->inodo" + to_string(indicesActivos[i + 1]);
+                  reporte += "inodo" + to_string(indicesActivos[i])+ "->inodo" + to_string(indicesActivos[i + 1])+ ";\n";
                 }
             }
 
@@ -789,7 +791,7 @@ string comando_rep::recorrerBloqueCarpetas(int indB,bloqueCarpetas bc){
   string cad="";
   cad += "bloque"+to_string(indB)+"[label=<\n";
   cad += "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n";
-  cad += "<tr><td port = \"T\" bgcolor=\"green\" colspan=\"2\"><i>Bloque de Carpetas</i></td></tr>\n";
+  cad += "<tr><td bgcolor=\"green\" colspan=\"2\"><i>Bloque de Carpetas</i></td></tr>\n";
   cad += "<tr><td><i>NOMBRE</i></td><td><i>VALOR</i></td></tr>\n";
   for(int i =0;i<4;i++){
 
@@ -809,7 +811,7 @@ string comando_rep::recorrerBloqueArchivos(int indB ,bloqueArchivos bc){
   string cad="";
   cad += "bloque"+to_string(indB)+"[label=<\n";
   cad += "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">\n";
-  cad += "<tr><td port = \"T\" bgcolor=\"orange\" colspan=\"2\"><i>Bloque de Archivos</i></td></tr>\n";
+  cad += "<tr><td bgcolor=\"orange\" colspan=\"2\"><i>Bloque de Archivos</i></td></tr>\n";
   cad += "<tr><td>"+string(bc.b_content)+"</td></tr>\n";
   cad += "</table>>,shape=plaintext];\n\n";
   return cad;
@@ -834,7 +836,6 @@ void comando_rep::reporteBloques(string path,string id){
           rep += "graph [pad=\"0.5\", nodesep=\"0.5\", ranksep=\"1\"];\n";
           rep += leerInodoRB(pathDisco,initPart,0);
           rep += realizarApuntadoresRB(pathDisco,initPart);
-
           vector <string> temp(descomponerRuta(path));
           string nomArchivo = temp[temp.size()-1];
           string ext = aMinuscula(retornarExtension(nomArchivo));
@@ -895,10 +896,10 @@ string comando_rep::realizarApuntadoresRB(string pathDisco,int initPart){
   string rep = "";
   for(int i = 0;i<longBitmap;i++){
       if(bitmap[i] == '1'){
-          for(int j = i + 1;j<longBitmap;j++){
+          for(int j = i+1;j<longBitmap;j++){
               if(bitmap[j] == '1'){
-                  rep += "bloque" + to_string(i) + ":T" + "->" + "bloque" + to_string(j)+":T";
-                  i = j+1;
+                  rep += "bloque" + to_string(i)+ " -> " + "bloque" + to_string(j) + ";\n";
+                  break;
                 }
             }
         }
